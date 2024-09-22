@@ -1,3 +1,6 @@
+import processing.core.PApplet;
+import processing.core.PConstants;
+
 public class Elevator {
     
     private final int secPerFloor = 1;
@@ -17,6 +20,24 @@ public class Elevator {
 
 
 
+    public void draw(PApplet d) {
+        d.push();          // Save original settings
+
+        
+        // Rectangle representing the elevator I guess
+        d.rectMode(PConstants.CENTER);
+        d.rect(d.width / 2 - 200, d.height / 2, 100, 200);
+        
+        // Text
+        d.textAlign(PConstants.LEFT, PConstants.CENTER);
+        d.textSize(32);
+        d.fill(0);
+        d.text("Elevator is currently at floor " + this.getCurrentFloor()
+                , d.width / 2 - 50, d.height / 2);
+        
+        d.pop();           // Restore original settings
+    }
+    
     /**
      * Moves the elevator to the newFloor.
      * @return if the elevator is now at newFloor
