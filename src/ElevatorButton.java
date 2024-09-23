@@ -1,28 +1,23 @@
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public class ElevatorButton implements DrawableObject, ClickableObject {
+public class ElevatorButton implements DrawableObject {
     private int x;
     private int y;
+    private int floorNum;
     private String text;
     private int radius;
     private int color;
 
 
 
-    public ElevatorButton(int x, int y, String text) {
+    public ElevatorButton(int x, int y, int floorNum) {
         this.x = x;
         this.y = y;
-        this.text = text;
+        this.floorNum = floorNum;
+        this.text = String.valueOf(floorNum);
         this.radius = 32;
         this.color = 100;
-    }
-
-    public ElevatorButton(int x, int y, String text, int radius, int color) {
-        this.x = x;
-        this.y = y;
-        this.radius = radius;
-        this.color = color;
     }
 
 
@@ -44,7 +39,8 @@ public class ElevatorButton implements DrawableObject, ClickableObject {
         d.pop();           // Restore original settings
     }
 
-    @Override
+
+
     public boolean contains(int x, int y) {
         double distanceX = x - this.x;
         double distanceY = y - this.y;
@@ -56,9 +52,10 @@ public class ElevatorButton implements DrawableObject, ClickableObject {
         }
     }
 
-    @Override
-    public void clicked() {
-        System.out.println("BUTTON CLICKED");
+
+
+    public int getFloorNum() {
+        return this.floorNum;
     }
     
 }

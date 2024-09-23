@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-// import java.util.Scanner;
 
 import processing.core.PApplet;
 
@@ -10,10 +9,9 @@ public class Main extends PApplet {
     private final int WINDOW_SIZE = 60;
 
     private ArrayList<DrawableObject> drawableObjects;
-    private ArrayList<ClickableObject> clickableObjects;
-    // private Elevator elevator;
-    // private ElevatorUser user;
-    // private ElevatorButton button;
+    private ArrayList<ElevatorButton> buttons;
+
+    private Elevator elevator;
 
     public static void main(String[] args) {
         PApplet.main("Main");
@@ -24,23 +22,18 @@ public class Main extends PApplet {
     }
 
     public void setup() {
-        // ElevatorUser user = new ElevatorUser();
-        Elevator elevator = new Elevator();
-        ElevatorButton button1 = new ElevatorButton(this.width / 2, this.height / 2 + 25, "1");
-        
         drawableObjects = new ArrayList<>();
-        clickableObjects = new ArrayList<>();
-
-        drawableObjects.add(elevator);
-        drawableObjects.add(button1);
-
-        clickableObjects.add(button1);
+        buttons = new ArrayList<>();
         
-        // new Thread(() -> {
-        //     while (true) {
-        //         user.promptForInput(elevator, new Scanner(System.in));
-        //     }
-        // }).start();
+        elevator = new Elevator();
+        drawableObjects.add(elevator);
+
+        for (int i = 0; i < 5; i++) {
+            ElevatorButton button = new ElevatorButton(this.width / 2 + i * 100, this.height / 2 + 25, i + 1);
+            drawableObjects.add(button);
+            buttons.add(button);
+        }
+        
     }
 
     public void draw() {        
@@ -49,14 +42,15 @@ public class Main extends PApplet {
         for (DrawableObject dObject : drawableObjects) {
             dObject.draw(this);
         }
-
-        // if (clickableObjects.get(0).contains(mouseX, mouseY)) System.out.println("TRUE");
-        // else System.out.println("FALSE");
     }
 
     public void mousePressed() {
-        for (ClickableObject cObject : clickableObjects) {
-            if (cObject.contains(mouseX, mouseY)) cObject.clicked();
+        for (ElevatorButton button : buttons) {
+            if (button.contains(mouseX, mouseY)) {
+                new Thread(() -> {
+                    elevator.goToNewFloor(button.getFloorNum());
+                }).start();
+            }
         }
     }
 
