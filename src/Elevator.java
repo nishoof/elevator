@@ -1,5 +1,7 @@
 // import java.util.Arrays;
 
+import java.util.ArrayList;
+
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -13,18 +15,25 @@ public class Elevator implements DrawableObject {
     private int highestFloor;
     private int lowestFloor;
     
-    private boolean[] queuedFloors;
-    
     private int floorsInQueue;
+    private boolean[] queuedFloors;
     private boolean moving;
     private boolean doorsOpen;
+    
+    private int x;
+    private int y;
+    private int width;
+    private int height;
+    
+    private ArrayList<ElevatorButton> buttons;
+
 
 
 
     /**
      * Constructs a new Elevator
      */
-    public Elevator() {
+    public Elevator(int x, int y, int width, int height) {        
         currentFloor = 1;
         highestFloor = 5;
         lowestFloor = 1;
@@ -33,6 +42,18 @@ public class Elevator implements DrawableObject {
         
         moving = false;
         doorsOpen = false;
+
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+
+        buttons = new ArrayList<>();
+
+        for (int i = lowestFloor; i <= highestFloor; i++) {
+            ElevatorButton button = new ElevatorButton(x + 85 + i * 100, y + 25, i);
+            buttons.add(button);
+        }
     }
 
 
@@ -44,7 +65,7 @@ public class Elevator implements DrawableObject {
         // Rectangle representing the elevator I guess
         d.rectMode(PConstants.CENTER);
         d.fill(doorsOpen ? 170 : 255);
-        d.rect(d.width / 2 - 200, d.height / 2, 100, 200);
+        d.rect(x, y, width, height);
         
         // Text
         d.textAlign(PConstants.LEFT, PConstants.CENTER);
@@ -53,12 +74,28 @@ public class Elevator implements DrawableObject {
         d.text("Elevator is currently at floor " + this.getCurrentFloor()
         , d.width / 2 - 50, d.height / 2 - 85);
         
+        // Buttons
+        for (ElevatorButton button : buttons) {
+            button.setOn(queuedFloors[button.getFloorNum() - lowestFloor]);
+            button.draw(d);
+        }
+
         // Testing Purposes, show queue
         // d.textSize(20);
         // d.text(Arrays.toString(queuedFloors)
         //         , d.width / 2 - 50, d.height / 2 - 125);
         
         d.pop();           // Restore original settings
+    }
+
+    public void mousePressed(PApplet d) {
+        for (ElevatorButton button : buttons) {
+            if (button.contains(d.mouseX, d.mouseY)) {
+                new Thread(() -> {
+                    this.addFloorToQueue(button.getFloorNum());
+                }).start();
+            }
+        }
     }
     
     /**

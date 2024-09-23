@@ -9,7 +9,7 @@ public class Main extends PApplet {
     private final int WINDOW_SIZE = 60;
 
     private ArrayList<DrawableObject> drawableObjects;
-    private ArrayList<ElevatorButton> buttons;
+    // private ArrayList<ElevatorButton> buttons;
 
     private Elevator elevator;
 
@@ -23,21 +23,15 @@ public class Main extends PApplet {
 
     public void setup() {
         drawableObjects = new ArrayList<>();
-        buttons = new ArrayList<>();
         
-        elevator = new Elevator();
+        elevator = new Elevator(this.width / 2 - 200, this.height / 2, 100, 200);
         drawableObjects.add(elevator);
-
-        for (int i = 0; i < 5; i++) {
-            ElevatorButton button = new ElevatorButton(this.width / 2 + i * 100, this.height / 2 + 25, i + 1);
-            drawableObjects.add(button);
-            buttons.add(button);
-        }
-        
     }
 
     public void draw() {        
         background(200);
+
+        // System.out.println(color(36, 235, 252));
 
         for (DrawableObject dObject : drawableObjects) {
             dObject.draw(this);
@@ -45,13 +39,7 @@ public class Main extends PApplet {
     }
 
     public void mousePressed() {
-        for (ElevatorButton button : buttons) {
-            if (button.contains(mouseX, mouseY)) {
-                new Thread(() -> {
-                    elevator.addFloorToQueue(button.getFloorNum());
-                }).start();
-            }
-        }
+        elevator.mousePressed(this);
     }
 
 }

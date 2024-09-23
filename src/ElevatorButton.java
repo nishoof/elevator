@@ -2,12 +2,14 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 
 public class ElevatorButton implements DrawableObject {
+    
     private int x;
     private int y;
     private int floorNum;
     private String text;
     private int radius;
-    // private int color;
+    private boolean on;
+    private int onOutlineColor;
 
 
 
@@ -17,7 +19,8 @@ public class ElevatorButton implements DrawableObject {
         this.floorNum = floorNum;
         this.text = String.valueOf(floorNum);
         this.radius = 32;
-        // this.color = 100;
+        this.on = false;
+        this.onOutlineColor = -14357508;
     }
 
 
@@ -27,6 +30,14 @@ public class ElevatorButton implements DrawableObject {
         d.push();          // Save original settings
         
         // Circle representing the button
+        if (on) {
+            d.stroke(onOutlineColor);
+            d.strokeWeight(3);
+        } else {
+            d.stroke(0);
+            d.strokeWeight(1);
+        }
+        d.fill(250);
         d.ellipseMode(PConstants.CENTER);
         d.circle(x, y, radius * 2);
         
@@ -56,6 +67,10 @@ public class ElevatorButton implements DrawableObject {
 
     public int getFloorNum() {
         return this.floorNum;
+    }
+
+    public void setOn(boolean on) {
+        this.on = on;
     }
     
 }
