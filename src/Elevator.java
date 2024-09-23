@@ -1,7 +1,7 @@
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public class Elevator {
+public class Elevator implements DrawableObject {
     
     private final int secPerFloor = 1;
 
@@ -20,9 +20,9 @@ public class Elevator {
 
 
 
+    @Override
     public void draw(PApplet d) {
         d.push();          // Save original settings
-
         
         // Rectangle representing the elevator I guess
         d.rectMode(PConstants.CENTER);
@@ -33,7 +33,7 @@ public class Elevator {
         d.textSize(32);
         d.fill(0);
         d.text("Elevator is currently at floor " + this.getCurrentFloor()
-                , d.width / 2 - 50, d.height / 2);
+                , d.width / 2 - 50, d.height / 2 - 85);
         
         d.pop();           // Restore original settings
     }
