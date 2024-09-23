@@ -48,7 +48,7 @@ public class Main extends PApplet {
         for (ElevatorButton button : buttons) {
             if (button.contains(mouseX, mouseY)) {
                 new Thread(() -> {
-                    elevator.goToNewFloor(button.getFloorNum());
+                    elevator.addFloorToQueue(button.getFloorNum());
                 }).start();
             }
         }

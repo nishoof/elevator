@@ -7,7 +7,7 @@ public class ElevatorButton implements DrawableObject {
     private int floorNum;
     private String text;
     private int radius;
-    private int color;
+    // private int color;
 
 
 
@@ -17,7 +17,7 @@ public class ElevatorButton implements DrawableObject {
         this.floorNum = floorNum;
         this.text = String.valueOf(floorNum);
         this.radius = 32;
-        this.color = 100;
+        // this.color = 100;
     }
 
 

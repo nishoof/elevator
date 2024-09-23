@@ -16,6 +16,6 @@ public class ElevatorUser {
 
         String input = scanner.nextLine();
 
-        elevator.goToNewFloor(Integer.parseInt(input));
+        elevator.addFloorToQueue(Integer.parseInt(input));
     }
 }
