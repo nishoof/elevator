@@ -16,11 +16,12 @@ public class Elevator implements DrawableObject {
     private int currentFloor;
     private int highestFloor;
     private int lowestFloor;
+    private int floorPercent;                           // used for animation
     
     private int floorsInQueue;
     private boolean[] queuedFloors;
     private boolean moving;
-    private int doorsOpenPercent;
+    private int doorsOpenPercent;                       // used for animation
     
     private int x;
     private int y;
@@ -72,10 +73,13 @@ public class Elevator implements DrawableObject {
 
         // Elevator Cabin
         if (doorsOpenPercent == 0) {
+            // If the door is 100% closed, then we just need to draw a rect
             d.fill(0);
-            d.rect(x - width / 2, y + shaftHeight / 2 - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, width, cabinHeight);
+            d.rect(x - width / 2, y + shaftHeight / 2 - cabinHeight - (currentFloor - lowestFloor) * cabinHeight - (floorPercent * cabinHeight / 100), width, cabinHeight);
         } else {
-            // Outer box
+            // Otherwise, we need to draw in the inside of the elevator and the doors seperately (3 rects)
+            
+            // Inside of elevator
             d.fill(200);
             d.rect(x - width / 2, y + shaftHeight / 2 - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, width, cabinHeight);
 
@@ -90,8 +94,8 @@ public class Elevator implements DrawableObject {
         d.textAlign(PConstants.LEFT, PConstants.CENTER);
         d.textSize(32);
         d.fill(0);
-        d.text("Elevator is currently at floor " + this.getCurrentFloor()
-        , d.width / 2 - 50, d.height / 2 - 85);
+        d.text("Elevator is currently at floor " + this.getCurrentFloor(),
+                d.width / 2 - 50, d.height / 2 - 85);
         
         // Buttons
         for (ElevatorButton button : buttons) {
@@ -102,7 +106,7 @@ public class Elevator implements DrawableObject {
         // Testing Purposes, show queue
         d.textAlign(PConstants.LEFT, PConstants.TOP);
         d.textSize(20);
-        d.text(Arrays.toString(queuedFloors) + "\n" + doorsOpenPercent,
+        d.text(Arrays.toString(queuedFloors) + "\n" + "doorsOpenPercent: " + doorsOpenPercent + "\n" + "floorPercent" + floorPercent,
                 0, 0);
         
         d.pop();           // Restore original settings
@@ -190,15 +194,7 @@ public class Elevator implements DrawableObject {
             // If we got to this point, that means there are floors in the current direction that we need to hit.
             // So we start moving towards them. First call Thread.sleep to simulate the time it takes for an elevator to go up
 
-            try {
-                Thread.sleep(secPerFloor * 1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            // After the wait, we are at the next floor. Update currentFloor appropriately
-
-            currentFloor += direction;
+            animateMovingOneFloor(direction);
 
             // If this was a queued floor (floor we need to stop at), remove it from the queue then call reachedFloor() since we reached the floor
 
@@ -210,6 +206,28 @@ public class Elevator implements DrawableObject {
         }
 
         moving = false;
+    }
+
+    private void animateMovingOneFloor(int direction) {
+        final int SMOOTHNESS = 25;      // 100 must be divisible by this number for proper animation
+        
+        floorPercent = 0;
+
+        // Animate the floor moving
+        while (Math.abs(floorPercent) < 100) {
+            try {
+                Thread.sleep(secPerFloor * 1000 / SMOOTHNESS);
+                floorPercent += 100 / SMOOTHNESS * direction;
+                System.out.println(floorPercent);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // After the wait, we are at the next floor. Update currentFloor appropriately
+        currentFloor += direction;
+
+        floorPercent = 0;
     }
 
     /**
@@ -233,7 +251,7 @@ public class Elevator implements DrawableObject {
             try {
                 Thread.sleep((long)(secDoorsToOpen * 1000 / SMOOTHNESS));
                 doorsOpenPercent += 100 / SMOOTHNESS;
-                System.out.println(doorsOpenPercent);
+                // System.out.println(doorsOpenPercent);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -252,7 +270,7 @@ public class Elevator implements DrawableObject {
             try {
                 Thread.sleep((long)(secDoorsToOpen * 1000 / SMOOTHNESS));
                 doorsOpenPercent -= 100 / SMOOTHNESS;
-                System.out.println(doorsOpenPercent);
+                // System.out.println(doorsOpenPercent);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
