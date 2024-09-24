@@ -1,6 +1,7 @@
 // import java.util.Arrays;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -8,8 +9,9 @@ import processing.core.PConstants;
 public class Elevator implements DrawableObject {
     
     private final int secPerFloor = 1;
-    private final int secDoorsOpen = 3;
-    private final double secDoorsDelay = 0.25;
+    private final int secDoorsOpen = 3;                 // how long the door stays open for
+    private final double secDoorsDelay = 0.5;           // the delay between elevator stop -> door open or door open -> elevator move
+    private final double secDoorsToOpen = 0.5;          // the time it takes for the door to open/close (animation time)
 
     private int currentFloor;
     private int highestFloor;
@@ -18,22 +20,22 @@ public class Elevator implements DrawableObject {
     private int floorsInQueue;
     private boolean[] queuedFloors;
     private boolean moving;
-    private boolean doorsOpen;
+    private int doorsOpenPercent;
     
     private int x;
     private int y;
     private int width;
-    private int height;
+    private int shaftHeight;
+    private int cabinHeight;
     
     private ArrayList<ElevatorButton> buttons;
-
 
 
 
     /**
      * Constructs a new Elevator
      */
-    public Elevator(int x, int y, int width, int height) {        
+    public Elevator(int x, int y, int width, int shaftHeight) {        
         currentFloor = 1;
         highestFloor = 5;
         lowestFloor = 1;
@@ -41,12 +43,13 @@ public class Elevator implements DrawableObject {
         queuedFloors = new boolean[highestFloor - lowestFloor + 1];
         
         moving = false;
-        doorsOpen = false;
+        doorsOpenPercent = 0;
 
         this.x = x;
         this.y = y;
         this.width = width;
-        this.height = height;
+        this.shaftHeight = shaftHeight;
+        this.cabinHeight = shaftHeight / queuedFloors.length;
 
         buttons = new ArrayList<>();
 
@@ -62,10 +65,26 @@ public class Elevator implements DrawableObject {
     public void draw(PApplet d) {
         d.push();          // Save original settings
         
-        // Rectangle representing the elevator I guess
-        d.rectMode(PConstants.CENTER);
-        d.fill(doorsOpen ? 170 : 255);
-        d.rect(x, y, width, height);
+        // Elevator Shaft
+        d.rectMode(PConstants.CORNER);
+        d.fill(255);
+        d.rect(x - width / 2, y - shaftHeight / 2, width, shaftHeight);
+
+        // Elevator Cabin
+        if (doorsOpenPercent == 0) {
+            d.fill(0);
+            d.rect(x - width / 2, y + shaftHeight / 2 - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, width, cabinHeight);
+        } else {
+            // Outer box
+            d.fill(200);
+            d.rect(x - width / 2, y + shaftHeight / 2 - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, width, cabinHeight);
+
+            // Doors
+            int doorWidth = width / 2 * (100 - doorsOpenPercent) / 100;
+            d.fill(0);
+            d.rect(x - width / 2, y + shaftHeight / 2 - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight);
+            d.rect(x + width / 2 - doorWidth, y + shaftHeight / 2 - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight);
+        }
         
         // Text
         d.textAlign(PConstants.LEFT, PConstants.CENTER);
@@ -81,9 +100,10 @@ public class Elevator implements DrawableObject {
         }
 
         // Testing Purposes, show queue
-        // d.textSize(20);
-        // d.text(Arrays.toString(queuedFloors)
-        //         , d.width / 2 - 50, d.height / 2 - 125);
+        d.textAlign(PConstants.LEFT, PConstants.TOP);
+        d.textSize(20);
+        d.text(Arrays.toString(queuedFloors) + "\n" + doorsOpenPercent,
+                0, 0);
         
         d.pop();           // Restore original settings
     }
@@ -197,22 +217,53 @@ public class Elevator implements DrawableObject {
      */
     private void reachedFloor() {
         System.out.println("Reached floor " + currentFloor);
+        final int SMOOTHNESS = 25;      // 100 must be divisible by this number for proper animation
 
+        // Delay
         try {
             Thread.sleep((long)(secDoorsDelay * 1000));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        
-        doorsOpen = true;
 
+        // Open doors
+        System.out.println("OPENING DOOR");
+        doorsOpenPercent = 0;
+        while (doorsOpenPercent < 100) {
+            try {
+                Thread.sleep((long)(secDoorsToOpen * 1000 / SMOOTHNESS));
+                doorsOpenPercent += 100 / SMOOTHNESS;
+                System.out.println(doorsOpenPercent);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        // Hold doors open
         try {
-            Thread.sleep(secDoorsOpen * 1000 + (long)(secDoorsDelay * 1000));
+            Thread.sleep((long)(secDoorsOpen * 1000));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        
+        // Close doors
+        System.out.println("CLOSING DOOR");
+        while (doorsOpenPercent > 0) {
+            try {
+                Thread.sleep((long)(secDoorsToOpen * 1000 / SMOOTHNESS));
+                doorsOpenPercent -= 100 / SMOOTHNESS;
+                System.out.println(doorsOpenPercent);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
-        doorsOpen = false;
+        // Delay
+        try {
+            Thread.sleep((long)(secDoorsDelay * 1000));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }
