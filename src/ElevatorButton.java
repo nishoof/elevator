@@ -1,7 +1,7 @@
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public class ElevatorButton implements DrawableObject {
+public class ElevatorButton {
     
     private int x;
     private int y;
@@ -48,7 +48,6 @@ public class ElevatorButton implements DrawableObject {
 
 
 
-    @Override
     public void draw(PApplet d) {
         d.push();          // Save original settings
         
@@ -60,6 +59,7 @@ public class ElevatorButton implements DrawableObject {
             d.stroke(0);
             d.strokeWeight(1);
         }
+        
         d.fill(250);
         d.ellipseMode(PConstants.CENTER);
         d.circle(x, y, radius * 2);

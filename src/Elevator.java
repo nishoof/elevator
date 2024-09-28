@@ -4,12 +4,14 @@ import java.util.Arrays;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public class Elevator implements DrawableObject {
+public class Elevator implements Drawable, Clickable {
     
     private final double secPerFloor = 0.6;
     private final double secDoorsOpen = 1.5;                 // how long the door stays open for
     private final double secDoorsDelay = 0.5;             // the delay between elevator stop -> door open or door open -> elevator move
     private final double secDoorsToOpen = 0.25;          // the time it takes for the door to open/close (animation time)
+
+    private final String[] statusToStr = {"Going down", "Stationary", "Going up"};
 
     private int currentFloor;
     private int highestFloor;
@@ -18,7 +20,7 @@ public class Elevator implements DrawableObject {
     
     private int floorsInQueue;
     private boolean[] queuedFloors;
-    private boolean moving;
+    private int status;
     private int doorsOpenPercent;                       // used for animation
     
     private int x;
@@ -46,7 +48,7 @@ public class Elevator implements DrawableObject {
 
         queuedFloors = new boolean[numFloors];
         
-        moving = false;
+        status = 0;
         doorsOpenPercent = 0;
 
         this.x = x;
@@ -118,12 +120,13 @@ public class Elevator implements DrawableObject {
         d.textAlign(PConstants.LEFT, PConstants.TOP);
         d.textSize(20);
         d.fill(0);
-        d.text("Elevator is currently at floor " + this.getCurrentFloor(),
-                x, y);
+        String statusStr = statusToStr[status + 1];
+        d.text("Floor " + this.getCurrentFloor() + ", " + statusStr, x, y);
+        // d.text("Floor", x, y);
         
         // Buttons
         for (ElevatorButton button : buttons) {
-            // button.setOn(queuedFloors[button.getFloorNum() - lowestFloor]);
+            button.setOn(queuedFloors[button.getFloorNum() - lowestFloor]);
             button.draw(d);
         }
 
@@ -166,7 +169,7 @@ public class Elevator implements DrawableObject {
         floorsInQueue++;
 
         // If the elevator is stationary, we need to get it to start moving. Otherwise, it will get there on its own
-        if (!moving) new Thread(() -> move(newFloor > currentFloor ? 1 : -1)).start();
+        if (status == 0) new Thread(() -> move(newFloor > currentFloor ? 1 : -1)).start();
 
         return true;
     }
@@ -188,7 +191,7 @@ public class Elevator implements DrawableObject {
     private void move(int direction) {
         if (direction != 1 && direction != -1) throw new IllegalArgumentException("Invalid direction \"" + direction + "\", must be -1 or 1");
         
-        moving = true;
+        status = direction;
         
         // If there are floors in the queue, keep the elevator moving until all floors have been reached and removed from queue
         while (floorsInQueue > 0) {
@@ -229,7 +232,7 @@ public class Elevator implements DrawableObject {
             }
         }
 
-        moving = false;
+        status = 0;
     }
 
     private void animateMovingOneFloor(int direction) {

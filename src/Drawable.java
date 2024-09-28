@@ -1,5 +1,5 @@
 import processing.core.PApplet;
 
-public interface DrawableObject {
+public interface Drawable {
     public void draw(PApplet d);
 }
