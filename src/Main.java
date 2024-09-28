@@ -52,6 +52,8 @@ public class Main extends PApplet {
         peopleInLine = new ArrayList<>();
 
         points = 0;
+
+        loopSpawnNewPeople(3000, 8000);
     }
 
     public void draw() {
@@ -115,27 +117,7 @@ public class Main extends PApplet {
             // Otherwise, tell the elevator to go to this floor
             selectedElevator.addFloorToQueue(key - '0');
         } else if (key == '`') {
-            int currentFloor, desiredFloor;
-            
-            currentFloor = (int)(Math.random() * 9 + 1);
-            
-            do {
-                desiredFloor = (int)(Math.random() * 9 + 1);
-            } while (desiredFloor == currentFloor);
-
-            Person person = new Person(currentFloor, desiredFloor);
-
-            boolean personAddedToElevator = false;
-            
-            for (Elevator elevator : elevators) {
-                if (elevator.getCurrentFloor() == currentFloor) {
-                    elevator.getPeopleInElevator().add(person);
-                    personAddedToElevator = true;
-                    break;
-                }
-            }
-            
-            if (!personAddedToElevator) peopleInLine.add(person);
+            newPerson();
         }
     }
 
@@ -146,4 +128,42 @@ public class Main extends PApplet {
     public static void incrementPoints() {
         points++;
     }
+
+    private void newPerson() {
+        int currentFloor, desiredFloor;
+        
+        currentFloor = (int)(Math.random() * 9 + 1);
+        
+        do {
+            desiredFloor = (int)(Math.random() * 9 + 1);
+        } while (desiredFloor == currentFloor);
+
+        Person person = new Person(currentFloor, desiredFloor);
+
+        boolean personAddedToElevator = false;
+        
+        for (Elevator elevator : elevators) {
+            if (elevator.getCurrentFloor() == currentFloor) {
+                elevator.getPeopleInElevator().add(person);
+                personAddedToElevator = true;
+                break;
+            }
+        }
+        
+        if (!personAddedToElevator) peopleInLine.add(person);
+    }
+
+    private void loopSpawnNewPeople(int minDelay, int maxDelay) {
+        new Thread(() -> {
+            while (true) {
+                newPerson();
+                try {
+                    Thread.sleep((long)(Math.random() * (maxDelay - minDelay) + minDelay));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
 }
