@@ -35,16 +35,16 @@ public class Elevator implements DrawableObject {
     /**
      * Constructs a new Elevator
      */
-    public Elevator(int x, int y, int width, int shaftHeight, int floors) {
-        
+    public Elevator(int x, int y, int width, int height, int numFloors) {
+        this.shaftHeight = height - 20;
 
         currentFloor = 1;
         lowestFloor = 1;
-        highestFloor = lowestFloor + floors - 1;
+        highestFloor = lowestFloor + numFloors - 1;
 
-        shaftHeight -= shaftHeight % (highestFloor - lowestFloor + 1);
+        shaftHeight -= shaftHeight % (numFloors);
 
-        queuedFloors = new boolean[highestFloor - lowestFloor + 1];
+        queuedFloors = new boolean[numFloors];
         
         moving = false;
         doorsOpenPercent = 0;
@@ -53,24 +53,24 @@ public class Elevator implements DrawableObject {
         this.y = y;
         this.shaftY = y + 20;
         this.shaftWidth = width / 4;
-        this.shaftHeight = shaftHeight;
-        this.cabinHeight = shaftHeight / queuedFloors.length;
+        this.cabinHeight = shaftHeight / numFloors;
 
         buttons = new ArrayList<>();
 
-        int numFloors = highestFloor - lowestFloor + 1;
-        int radius = 20;
+        int m1 = 10;                // margin between each button, adjustable
+        int m2 = 40;                // margin between right bound of shaft and left bound of left most button, adjustable
+        int radius = ((width * 3 / 4) - m2 - (4 * m1)) / 10;
         int numButtonsPerRow = 5;
-        int leftMostButton = x + shaftWidth + 40;
-        int topMostButton = shaftY + radius;
+        int leftMostButtonCenter = x + shaftWidth + m2 + radius;
+        int topMostButtonCenter = shaftY + radius;
         int numButtonsCreated = 0;
 
         for (int i = 0; i <= numFloors / numButtonsPerRow; i++) {
             for (int j = 0; j < 5; j++) {
                 if (numButtonsCreated == queuedFloors.length) break;
 
-                int buttonX = leftMostButton + (j * 50);
-                int buttonY = topMostButton + (i * 50);
+                int buttonX = leftMostButtonCenter + (j * (m1 + radius * 2));
+                int buttonY = topMostButtonCenter + (i * (m1 + radius * 2));
 
                 ElevatorButton button = new ElevatorButton(buttonX, buttonY, i*5 + j + 1, radius);
                 buttons.add(button);
