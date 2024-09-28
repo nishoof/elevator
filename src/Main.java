@@ -9,7 +9,6 @@ public class Main extends PApplet {
     private final int WINDOW_SIZE = 60;
 
     private ArrayList<DrawableObject> drawableObjects;
-    // private ArrayList<ElevatorButton> buttons;
 
     private Elevator elevator;
 
@@ -23,15 +22,13 @@ public class Main extends PApplet {
 
     public void setup() {
         drawableObjects = new ArrayList<>();
-        
-        elevator = new Elevator(this.width / 2 - 200, this.height / 2, 100, 200);
+
+        elevator = new Elevator(this.width / 2 - 200, this.height / 2, 400, 200);
         drawableObjects.add(elevator);
     }
 
-    public void draw() {        
+    public void draw() {
         background(200);
-
-        // System.out.println(color(36, 235, 252));
 
         for (DrawableObject dObject : drawableObjects) {
             dObject.draw(this);

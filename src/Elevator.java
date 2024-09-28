@@ -1,5 +1,3 @@
-// import java.util.Arrays;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -25,7 +23,7 @@ public class Elevator implements DrawableObject {
     
     private int x;
     private int y;
-    private int width;
+    private int shaftWidth;
     private int shaftHeight;
     private int cabinHeight;
     
@@ -36,10 +34,12 @@ public class Elevator implements DrawableObject {
     /**
      * Constructs a new Elevator
      */
-    public Elevator(int x, int y, int width, int shaftHeight) {        
+    public Elevator(int x, int y, int width, int shaftHeight) {
         currentFloor = 1;
-        highestFloor = 5;
+        highestFloor = 10;
         lowestFloor = 1;
+
+        if (shaftHeight % (highestFloor - lowestFloor + 1) != 0) throw new IllegalArgumentException("shaftHeight must be divisible by the number of floors");
 
         queuedFloors = new boolean[highestFloor - lowestFloor + 1];
         
@@ -48,15 +48,25 @@ public class Elevator implements DrawableObject {
 
         this.x = x;
         this.y = y;
-        this.width = width;
+        this.shaftWidth = width / 4;
         this.shaftHeight = shaftHeight;
         this.cabinHeight = shaftHeight / queuedFloors.length;
 
         buttons = new ArrayList<>();
 
-        for (int i = lowestFloor; i <= highestFloor; i++) {
-            ElevatorButton button = new ElevatorButton(x + 85 + i * 100, y + 25, i);
-            buttons.add(button);
+        int numFloors = highestFloor - lowestFloor + 1;
+        int radius = 20;
+        int numButtonsPerRow = 5;
+        int leftMostButton = x + 140;
+        int topMostButton = y + radius;
+
+        for (int i = 0; i < numFloors / numButtonsPerRow; i++) {
+            for (int j = 0; j < 5; j++) {
+                int buttonX = leftMostButton + (j * 60);
+                int buttonY = topMostButton + (i * 50);
+                ElevatorButton button = new ElevatorButton(buttonX, buttonY, i * 5 + j + 1, radius);
+                buttons.add(button);
+            }
         }
     }
 
@@ -66,28 +76,33 @@ public class Elevator implements DrawableObject {
     public void draw(PApplet d) {
         d.push();          // Save original settings
         
+        // Boundary
+        // d.rectMode(PConstants.CORNER);
+        // d.rect(x, y, width, shaftHeight);
+
         // Elevator Shaft
         d.rectMode(PConstants.CORNER);
         d.fill(255);
-        d.rect(x - width / 2, y - shaftHeight / 2, width, shaftHeight);
+        // d.rect(x - width / 2, y - shaftHeight / 2, width, shaftHeight);
+        d.rect(x, y, shaftWidth, shaftHeight);
 
         // Elevator Cabin
         if (doorsOpenPercent == 0) {
             // If the door is 100% closed, then we just need to draw a rect
             d.fill(0);
-            d.rect(x - width / 2, y + shaftHeight / 2 - cabinHeight - (currentFloor - lowestFloor) * cabinHeight - (floorPercent * cabinHeight / 100), width, cabinHeight);
+            d.rect(x, y + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight - (floorPercent * cabinHeight / 100), shaftWidth, cabinHeight);
         } else {
             // Otherwise, we need to draw in the inside of the elevator and the doors seperately (3 rects)
             
             // Inside of elevator
             d.fill(200);
-            d.rect(x - width / 2, y + shaftHeight / 2 - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, width, cabinHeight);
+            d.rect(x, y + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, shaftWidth, cabinHeight);
 
             // Doors
-            int doorWidth = width / 2 * (100 - doorsOpenPercent) / 100;
+            int doorWidth = shaftWidth / 2 * (100 - doorsOpenPercent) / 100;
             d.fill(0);
-            d.rect(x - width / 2, y + shaftHeight / 2 - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight);
-            d.rect(x + width / 2 - doorWidth, y + shaftHeight / 2 - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight);
+            d.rect(x, y + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight);
+            d.rect(x + shaftWidth - doorWidth, y + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight);
         }
         
         // Text

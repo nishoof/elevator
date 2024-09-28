@@ -7,18 +7,41 @@ public class ElevatorButton implements DrawableObject {
     private int y;
     private int floorNum;
     private String text;
-    private int radius;
+    private long radius;
     private boolean on;
     private int onOutlineColor;
 
 
 
+    /**
+     * Constructs a new ElevatorButton
+     * @param x x-coordinate of the center of this ElevatorButton
+     * @param y y-coordinate of the center of this ElevatorButton
+     * @param floorNum floor number of this ElevatorButton
+     */
     public ElevatorButton(int x, int y, int floorNum) {
         this.x = x;
         this.y = y;
         this.floorNum = floorNum;
         this.text = String.valueOf(floorNum);
         this.radius = 32;
+        this.on = false;
+        this.onOutlineColor = -14357508;
+    }
+
+    /**
+     * Constructs a new ElevatorButton
+     * @param x x-coordinate of the center of this ElevatorButton
+     * @param y y-coordinate of the center of this ElevatorButton
+     * @param floorNum floor number of this ElevatorButton
+     * @param radius the radius of the UI element representing this ElevatorButton
+     */
+    public ElevatorButton(int x, int y, int floorNum, long radius) {
+        this.x = x;
+        this.y = y;
+        this.floorNum = floorNum;
+        this.text = String.valueOf(floorNum);
+        this.radius = radius;
         this.on = false;
         this.onOutlineColor = -14357508;
     }
@@ -43,7 +66,7 @@ public class ElevatorButton implements DrawableObject {
         
         // Text
         d.textAlign(PConstants.CENTER, PConstants.CENTER);
-        d.textSize(32);
+        d.textSize(radius);
         d.fill(0);
         d.text(text, x, y);
         
