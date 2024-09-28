@@ -21,9 +21,9 @@ public class Main extends PApplet {
     }
 
     public void setup() {
+        elevator = new Elevator(50, 200, 400, 200, 10);
+        
         drawableObjects = new ArrayList<>();
-
-        elevator = new Elevator(this.width / 2 - 200, this.height / 2, 400, 200);
         drawableObjects.add(elevator);
     }
 

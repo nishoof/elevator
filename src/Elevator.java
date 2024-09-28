@@ -6,10 +6,10 @@ import processing.core.PConstants;
 
 public class Elevator implements DrawableObject {
     
-    private final int secPerFloor = 1;
-    private final int secDoorsOpen = 3;                 // how long the door stays open for
-    private final double secDoorsDelay = 0.5;           // the delay between elevator stop -> door open or door open -> elevator move
-    private final double secDoorsToOpen = 0.5;          // the time it takes for the door to open/close (animation time)
+    private final double secPerFloor = 0.6;
+    private final double secDoorsOpen = 1.5;                 // how long the door stays open for
+    private final double secDoorsDelay = 0.5;             // the delay between elevator stop -> door open or door open -> elevator move
+    private final double secDoorsToOpen = 0.25;          // the time it takes for the door to open/close (animation time)
 
     private int currentFloor;
     private int highestFloor;
@@ -23,6 +23,7 @@ public class Elevator implements DrawableObject {
     
     private int x;
     private int y;
+    private int shaftY;
     private int shaftWidth;
     private int shaftHeight;
     private int cabinHeight;
@@ -34,12 +35,14 @@ public class Elevator implements DrawableObject {
     /**
      * Constructs a new Elevator
      */
-    public Elevator(int x, int y, int width, int shaftHeight) {
-        currentFloor = 1;
-        highestFloor = 10;
-        lowestFloor = 1;
+    public Elevator(int x, int y, int width, int shaftHeight, int floors) {
+        
 
-        if (shaftHeight % (highestFloor - lowestFloor + 1) != 0) throw new IllegalArgumentException("shaftHeight must be divisible by the number of floors");
+        currentFloor = 1;
+        lowestFloor = 1;
+        highestFloor = lowestFloor + floors - 1;
+
+        shaftHeight -= shaftHeight % (highestFloor - lowestFloor + 1);
 
         queuedFloors = new boolean[highestFloor - lowestFloor + 1];
         
@@ -48,6 +51,7 @@ public class Elevator implements DrawableObject {
 
         this.x = x;
         this.y = y;
+        this.shaftY = y + 20;
         this.shaftWidth = width / 4;
         this.shaftHeight = shaftHeight;
         this.cabinHeight = shaftHeight / queuedFloors.length;
@@ -57,15 +61,21 @@ public class Elevator implements DrawableObject {
         int numFloors = highestFloor - lowestFloor + 1;
         int radius = 20;
         int numButtonsPerRow = 5;
-        int leftMostButton = x + 140;
-        int topMostButton = y + radius;
+        int leftMostButton = x + shaftWidth + 40;
+        int topMostButton = shaftY + radius;
+        int numButtonsCreated = 0;
 
-        for (int i = 0; i < numFloors / numButtonsPerRow; i++) {
+        for (int i = 0; i <= numFloors / numButtonsPerRow; i++) {
             for (int j = 0; j < 5; j++) {
-                int buttonX = leftMostButton + (j * 60);
+                if (numButtonsCreated == queuedFloors.length) break;
+
+                int buttonX = leftMostButton + (j * 50);
                 int buttonY = topMostButton + (i * 50);
-                ElevatorButton button = new ElevatorButton(buttonX, buttonY, i * 5 + j + 1, radius);
+
+                ElevatorButton button = new ElevatorButton(buttonX, buttonY, i*5 + j + 1, radius);
                 buttons.add(button);
+
+                numButtonsCreated++;
             }
         }
     }
@@ -83,38 +93,37 @@ public class Elevator implements DrawableObject {
         // Elevator Shaft
         d.rectMode(PConstants.CORNER);
         d.fill(255);
-        // d.rect(x - width / 2, y - shaftHeight / 2, width, shaftHeight);
-        d.rect(x, y, shaftWidth, shaftHeight);
+        d.rect(x, shaftY, shaftWidth, shaftHeight);
 
         // Elevator Cabin
         if (doorsOpenPercent == 0) {
             // If the door is 100% closed, then we just need to draw a rect
             d.fill(0);
-            d.rect(x, y + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight - (floorPercent * cabinHeight / 100), shaftWidth, cabinHeight);
+            d.rect(x, shaftY + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight - (floorPercent * cabinHeight / 100), shaftWidth, cabinHeight);
         } else {
             // Otherwise, we need to draw in the inside of the elevator and the doors seperately (3 rects)
             
             // Inside of elevator
-            d.fill(200);
-            d.rect(x, y + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, shaftWidth, cabinHeight);
+            d.fill(220);
+            d.rect(x, shaftY + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, shaftWidth, cabinHeight);
 
             // Doors
             int doorWidth = shaftWidth / 2 * (100 - doorsOpenPercent) / 100;
             d.fill(0);
-            d.rect(x, y + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight);
-            d.rect(x + shaftWidth - doorWidth, y + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight);
+            d.rect(x, shaftY + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight);
+            d.rect(x + shaftWidth - doorWidth, shaftY + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight);
         }
         
         // Text
-        d.textAlign(PConstants.LEFT, PConstants.CENTER);
-        d.textSize(32);
+        d.textAlign(PConstants.LEFT, PConstants.TOP);
+        d.textSize(20);
         d.fill(0);
         d.text("Elevator is currently at floor " + this.getCurrentFloor(),
-                d.width / 2 - 50, d.height / 2 - 85);
+                x, y);
         
         // Buttons
         for (ElevatorButton button : buttons) {
-            button.setOn(queuedFloors[button.getFloorNum() - lowestFloor]);
+            // button.setOn(queuedFloors[button.getFloorNum() - lowestFloor]);
             button.draw(d);
         }
 
@@ -231,7 +240,7 @@ public class Elevator implements DrawableObject {
         // Animate the floor moving
         while (Math.abs(floorPercent) < 100) {
             try {
-                Thread.sleep(secPerFloor * 1000 / SMOOTHNESS);
+                Thread.sleep((long)(secPerFloor * 1000 / SMOOTHNESS));
                 floorPercent += 100 / SMOOTHNESS * direction;
                 System.out.println(floorPercent);
             } catch (InterruptedException e) {
