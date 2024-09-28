@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -33,6 +32,8 @@ public class Elevator implements Drawable, Clickable {
     private boolean highlighted;
     
     private ArrayList<ElevatorButton> buttons;
+
+    private ArrayList<Person> peopleInElevator;
 
 
 
@@ -84,6 +85,8 @@ public class Elevator implements Drawable, Clickable {
                 numButtonsCreated++;
             }
         }
+
+        peopleInElevator = new ArrayList<>();
     }
 
 
@@ -197,6 +200,14 @@ public class Elevator implements Drawable, Clickable {
         this.highlighted = highlighted;
     }
 
+    /**
+     * Returns an ArrayList of Persons in this elevator
+     * @return an ArrayList of Persons in this elevator
+     */
+    public ArrayList<Person> getPeopleInElevator() {
+        return peopleInElevator;
+    }
+
 
 
     /**
@@ -260,7 +271,6 @@ public class Elevator implements Drawable, Clickable {
             try {
                 Thread.sleep((long)(secPerFloor * 1000 / SMOOTHNESS));
                 floorPercent += 100 / SMOOTHNESS * direction;
-                System.out.println(floorPercent);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -299,6 +309,28 @@ public class Elevator implements Drawable, Clickable {
             }
         }
         
+        // Take the people out the elevator if they at the right floor
+        int n1 = 0;      // number of people removed from the elevator
+        for (int i = 0; i < peopleInElevator.size() + n1; i++) {
+            Person person = peopleInElevator.get(i - n1);
+            if (person.getDesiredFloor() != this.getCurrentFloor()) continue;
+            n1++;
+            peopleInElevator.remove(person);
+            System.out.println("removed person " + person + " from elevator");
+        }
+
+        // Bring people into the elevator
+        int n2 = 0;      // number of people removed from the line
+        ArrayList<Person> peopleInLine = Main.getPeopleInLine();
+        for (int i = 0; i < peopleInLine.size() + n2; i++) {
+            Person person = peopleInLine.get(i - n2);
+            if (person.getCurrentFloor() != this.getCurrentFloor()) continue;
+            n2++;
+            peopleInLine.remove(person);
+            peopleInElevator.add(person);
+            System.out.println("removed person " + person + " from line, added to elevator");
+        }
+
         // Hold doors open
         try {
             Thread.sleep((long)(secDoorsOpen * 1000));
