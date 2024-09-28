@@ -283,7 +283,7 @@ public class Elevator implements Drawable, Clickable {
     }
 
     /**
-     * Called when we reach a floor so that we can open the doors
+     * Called when we reach a floor so that we can open/close the doors, handle people going in/out of elevators, and give points if needed
      */
     private void reachedFloor() {
         System.out.println("Reached floor " + currentFloor);
@@ -309,13 +309,14 @@ public class Elevator implements Drawable, Clickable {
             }
         }
         
-        // Take the people out the elevator if they at the right floor
+        // Take the people out the elevator if they at the right floor and give points
         int n1 = 0;      // number of people removed from the elevator
         for (int i = 0; i < peopleInElevator.size() + n1; i++) {
             Person person = peopleInElevator.get(i - n1);
             if (person.getDesiredFloor() != this.getCurrentFloor()) continue;
             n1++;
             peopleInElevator.remove(person);
+            Main.incrementPoints();
             System.out.println("removed person " + person + " from elevator");
         }
 

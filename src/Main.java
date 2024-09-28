@@ -62,6 +62,7 @@ public class Main extends PApplet {
         }
 
         fill(0);
+        textSize(20);
         
         text("People in line", 20, 20);
         for (int i = 0; i < peopleInLine.size(); i++) {
@@ -77,6 +78,9 @@ public class Main extends PApplet {
         for (int i = 0; i < elevators.get(1).getPeopleInElevator().size(); i++) {
             text(elevators.get(1).getPeopleInElevator().get(i).toString(), 175, 220 + i * 20);
         }
+
+        textSize(40);
+        text("Points: " + points, 20, 480);
     }
 
     public void mousePressed() {
@@ -139,4 +143,7 @@ public class Main extends PApplet {
         return peopleInLine;
     }
 
+    public static void incrementPoints() {
+        points++;
+    }
 }
