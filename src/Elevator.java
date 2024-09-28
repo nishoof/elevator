@@ -29,6 +29,8 @@ public class Elevator implements Drawable, Clickable {
     private int shaftWidth;
     private int shaftHeight;
     private int cabinHeight;
+
+    private boolean highlighted;
     
     private ArrayList<ElevatorButton> buttons;
 
@@ -67,6 +69,8 @@ public class Elevator implements Drawable, Clickable {
         int topMostButtonCenter = shaftY + radius;
         int numButtonsCreated = 0;
 
+        highlighted = false;
+
         for (int i = 0; i <= numFloors / numButtonsPerRow; i++) {
             for (int j = 0; j < 5; j++) {
                 if (numButtonsCreated == queuedFloors.length) break;
@@ -95,8 +99,11 @@ public class Elevator implements Drawable, Clickable {
         // Elevator Shaft
         d.rectMode(PConstants.CORNER);
         d.fill(255);
+        d.stroke(highlighted ? -65536 : 0);
+        d.strokeWeight(highlighted ? 3 : 1);
         d.rect(x, shaftY, shaftWidth, shaftHeight);
-
+        d.strokeWeight(1);
+        
         // Elevator Cabin
         if (doorsOpenPercent == 0) {
             // If the door is 100% closed, then we just need to draw a rect
@@ -131,10 +138,10 @@ public class Elevator implements Drawable, Clickable {
         }
 
         // Testing Purposes, show queue
-        d.textAlign(PConstants.LEFT, PConstants.TOP);
-        d.textSize(20);
-        d.text(Arrays.toString(queuedFloors) + "\n" + "doorsOpenPercent: " + doorsOpenPercent + "\n" + "floorPercent" + floorPercent,
-                0, 0);
+        // d.textAlign(PConstants.LEFT, PConstants.TOP);
+        // d.textSize(20);
+        // d.text(Arrays.toString(queuedFloors) + "\n" + "doorsOpenPercent: " + doorsOpenPercent + "\n" + "floorPercent: " + floorPercent,
+        //         0, 0);
         
         d.pop();           // Restore original settings
     }
@@ -180,6 +187,14 @@ public class Elevator implements Drawable, Clickable {
      */
     public int getCurrentFloor() {
         return this.currentFloor;
+    }
+
+    /**
+     * Sets whether this Elevator is highlighted or not. When this Elevator is highlighted, the shaft is drawn with a red stroke
+     * @param highlighted new value for if this Elevator is highlighted or not
+     */
+    public void setHighlighted(boolean highlighted) {
+        this.highlighted = highlighted;
     }
 
 
