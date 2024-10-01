@@ -24,10 +24,13 @@ public class Main extends PApplet {
     }
 
     public void settings() {
-        this.size(WINDOW_SIZE * X_RATIO, WINDOW_SIZE * Y_RATIO);
+        size(WINDOW_SIZE * X_RATIO, WINDOW_SIZE * Y_RATIO);
+        smooth();
     }
-
+    
     public void setup() {
+        windowResizable(true);
+
         Elevator elevator1 = new Elevator(500, 50, 400, 200, 9);
         Elevator elevator2 = new Elevator(500, 300, 400, 200, 9);
         
@@ -57,6 +60,8 @@ public class Main extends PApplet {
     }
 
     public void draw() {
+        windowRatio(WINDOW_SIZE * X_RATIO, WINDOW_SIZE * Y_RATIO);
+        
         background(200);
 
         for (Drawable element : drawables) {
@@ -87,7 +92,7 @@ public class Main extends PApplet {
 
     public void mousePressed() {
         for (Clickable element : clickables) {
-            element.mousePressed(this);
+            element.mousePressed((int)(1.0 * mouseX / width * WINDOW_SIZE * X_RATIO), (int)(1.0 * mouseY / height * WINDOW_SIZE * Y_RATIO));
         }
     }
 

@@ -6,21 +6,21 @@ import processing.core.PConstants;
 public class Elevator implements Drawable, Clickable {
     
     private final double secPerFloor = 0.6;
-    private final double secDoorsOpen = 1.5;                 // how long the door stays open for
-    private final double secDoorsDelay = 0.5;             // the delay between elevator stop -> door open or door open -> elevator move
-    private final double secDoorsToOpen = 0.25;          // the time it takes for the door to open/close (animation time)
+    private final double secDoorsOpen = 1.5;                // how long the door stays open for
+    private final double secDoorsDelay = 0.5;               // the delay between elevator stop -> door open or door open -> elevator move
+    private final double secDoorsToOpen = 0.25;             // the time it takes for the door to open/close (animation time)
 
     private final String[] statusToStr = {"Going down", "Stationary", "Going up"};
 
     private int currentFloor;
     private int highestFloor;
     private int lowestFloor;
-    private int floorPercent;                           // used for animation
+    private int floorPercent;                               // used for animation
     
     private int floorsInQueue;
     private boolean[] queuedFloors;
     private int status;
-    private int doorsOpenPercent;                       // used for animation
+    private int doorsOpenPercent;                           // used for animation
     
     private int x;
     private int y;
@@ -34,8 +34,6 @@ public class Elevator implements Drawable, Clickable {
     private ArrayList<ElevatorButton> buttons;
 
     private ArrayList<Person> peopleInElevator;
-
-
 
     /**
      * Constructs a new Elevator
@@ -88,8 +86,6 @@ public class Elevator implements Drawable, Clickable {
 
         peopleInElevator = new ArrayList<>();
     }
-
-
 
     @Override
     public void draw(PApplet d) {
@@ -149,9 +145,10 @@ public class Elevator implements Drawable, Clickable {
         d.pop();           // Restore original settings
     }
 
-    public void mousePressed(PApplet d) {
+    public void mousePressed(int mouseX, int mouseY) {
+        // System.out.println(mouseX + "\t" + mouseY);
         for (ElevatorButton button : buttons) {
-            if (button.contains(d.mouseX, d.mouseY)) {
+            if (button.contains(mouseX, mouseY)) {
                 new Thread(() -> {
                     this.addFloorToQueue(button.getFloorNum());
                 }).start();
@@ -207,8 +204,6 @@ public class Elevator implements Drawable, Clickable {
     public ArrayList<Person> getPeopleInElevator() {
         return peopleInElevator;
     }
-
-
 
     /**
      * Makes the elevator move. Should be called in its own thread. 
