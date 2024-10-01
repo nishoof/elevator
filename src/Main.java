@@ -4,7 +4,7 @@ import java.util.HashMap;
 import processing.core.PApplet;
 
 public class Main extends PApplet {
-    
+
     private final int X_RATIO = 16;
     private final int Y_RATIO = 9;
     private final int WINDOW_SIZE = 60;
@@ -117,7 +117,7 @@ public class Main extends PApplet {
             // Otherwise, tell the elevator to go to this floor
             selectedElevator.addFloorToQueue(key - '0');
         } else if (key == '`') {
-            newPerson();
+            newPerson(1, 9);
         }
     }
 
@@ -129,13 +129,13 @@ public class Main extends PApplet {
         points++;
     }
 
-    private void newPerson() {
+    private void newPerson(int minFloor, int maxFloor) {
         int currentFloor, desiredFloor;
         
-        currentFloor = (int)(Math.random() * 9 + 1);
+        currentFloor = (int)(Math.random() * (maxFloor - minFloor) + minFloor);
         
         do {
-            desiredFloor = (int)(Math.random() * 9 + 1);
+            desiredFloor = (int)(Math.random() * (maxFloor - minFloor) + minFloor);
         } while (desiredFloor == currentFloor);
 
         Person person = new Person(currentFloor, desiredFloor);
@@ -156,7 +156,7 @@ public class Main extends PApplet {
     private void loopSpawnNewPeople(int minDelay, int maxDelay) {
         new Thread(() -> {
             while (true) {
-                newPerson();
+                newPerson(1, 9);
                 try {
                     Thread.sleep((long)(Math.random() * (maxDelay - minDelay) + minDelay));
                 } catch (InterruptedException e) {
