@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import processing.core.PApplet;
+import processing.core.PFont;
+import processing.core.PConstants;
 
 public class Main extends PApplet {
 
@@ -27,9 +29,15 @@ public class Main extends PApplet {
         size(WINDOW_SIZE * X_RATIO, WINDOW_SIZE * Y_RATIO);
         smooth();
     }
-    
+
     public void setup() {
         windowResizable(true);
+        windowTitle("Elevator Simulator");
+
+        textMode(PConstants.MODEL);
+
+        PFont pixelFont = createFont("GeistMono-Regular.otf", 128);
+        textFont(pixelFont);
 
         Elevator elevator1 = new Elevator(500, 50, 400, 200, 9);
         Elevator elevator2 = new Elevator(500, 300, 400, 200, 9);
@@ -61,8 +69,8 @@ public class Main extends PApplet {
 
     public void draw() {
         windowRatio(WINDOW_SIZE * X_RATIO, WINDOW_SIZE * Y_RATIO);
-        
-        background(200);
+
+        background(255);
 
         for (Drawable element : drawables) {
             element.draw(this);
