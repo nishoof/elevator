@@ -29,7 +29,7 @@ public class Person {
     }
 
     public String toString() {
-        return "Person " + currentFloor + " -> " + desiredFloor;
+        return currentFloor + " -> " + desiredFloor;
     }
 
 }

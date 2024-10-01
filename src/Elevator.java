@@ -100,26 +100,30 @@ public class Elevator implements Drawable, Clickable {
         d.fill(255);
         d.stroke(highlighted ? -65536 : 0);
         d.strokeWeight(highlighted ? 3 : 1);
-        d.rect(x, shaftY, shaftWidth, shaftHeight);
+        d.rect(x, shaftY, shaftWidth, shaftHeight, 8);
         d.strokeWeight(1);
         
         // Elevator Cabin
+        int bottomRectCornerRounding = (currentFloor == lowestFloor && floorPercent == 0) ? 8 : 0;
+        int topRectCornerRounding = (currentFloor == highestFloor && floorPercent == 0) ? 8 : 0;
         if (doorsOpenPercent == 0) {
             // If the door is 100% closed, then we just need to draw a rect
             d.fill(0);
-            d.rect(x, shaftY + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight - (floorPercent * cabinHeight / 100), shaftWidth, cabinHeight);
+            d.rect(x, shaftY + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight - (floorPercent * cabinHeight / 100), shaftWidth, cabinHeight, topRectCornerRounding, topRectCornerRounding, bottomRectCornerRounding, bottomRectCornerRounding);
         } else {
             // Otherwise, we need to draw in the inside of the elevator and the doors seperately (3 rects)
             
             // Inside of elevator
             d.fill(220);
-            d.rect(x, shaftY + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, shaftWidth, cabinHeight);
+            d.rect(x, shaftY + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, shaftWidth, cabinHeight, topRectCornerRounding, topRectCornerRounding, bottomRectCornerRounding, bottomRectCornerRounding);
 
             // Doors
             int doorWidth = shaftWidth / 2 * (100 - doorsOpenPercent) / 100;
-            d.fill(0);
-            d.rect(x, shaftY + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight);
-            d.rect(x + shaftWidth - doorWidth, shaftY + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight);
+            if (doorWidth != 0) {
+                d.fill(0);
+                d.rect(x, shaftY + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight, topRectCornerRounding, topRectCornerRounding, bottomRectCornerRounding, bottomRectCornerRounding);
+                d.rect(x + shaftWidth - doorWidth, shaftY + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight, topRectCornerRounding, topRectCornerRounding, bottomRectCornerRounding, bottomRectCornerRounding);
+            }
         }
         
         // Text

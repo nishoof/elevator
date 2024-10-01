@@ -21,6 +21,9 @@ public class Main extends PApplet {
     private static ArrayList<Person> peopleInLine;
     private static int points;
 
+    private PFont geistMonoRegular;
+    private PFont geistMonoMedium;
+
     public static void main(String[] args) {
         PApplet.main("Main");
     }
@@ -35,9 +38,8 @@ public class Main extends PApplet {
         windowTitle("Elevator Simulator");
 
         textMode(PConstants.MODEL);
-
-        PFont pixelFont = createFont("GeistMono-Regular.otf", 128);
-        textFont(pixelFont);
+        geistMonoRegular = createFont("GeistMono-Regular.otf", 128);
+        geistMonoMedium = createFont("GeistMono-Medium.otf", 128);
 
         Elevator elevator1 = new Elevator(500, 50, 400, 200, 9);
         Elevator elevator2 = new Elevator(500, 300, 400, 200, 9);
@@ -72,6 +74,38 @@ public class Main extends PApplet {
 
         background(255);
 
+        // Game Title
+        textFont(geistMonoRegular);
+        fill(0);
+        rect(15, 15, 400, 50);      // outer black rect
+        textSize(32);
+        fill(255);
+        textAlign(PConstants.LEFT, PConstants.CENTER);
+        text("Elevator Simulator", 20, 40);
+        rect(380, 25, 20, 30);      // small white rectangle symbol
+
+        // Queue
+        fill(0);
+        textFont(geistMonoMedium);
+        textSize(24);
+        text("Queue", 20, 100);
+        textFont(geistMonoRegular);
+        textSize(19);
+        int numPeopleInLine = peopleInLine.size();
+        int numPeopleToDisplay, numPeopleNotDisplayed;
+        if (numPeopleInLine > 13) {
+            numPeopleToDisplay = 13;
+            numPeopleNotDisplayed = numPeopleInLine - 13;
+        } else {
+            numPeopleToDisplay = numPeopleInLine;
+            numPeopleNotDisplayed = 0;
+        }
+        for (int i = 0; i < numPeopleToDisplay; i++) {
+            text(peopleInLine.get(i).toString(), 20, 130 + i * 24);
+        }
+        if (numPeopleNotDisplayed > 0) text(numPeopleNotDisplayed + " more...", 20, 130 + numPeopleToDisplay * 24);
+
+        // Draw Elevators
         for (Drawable element : drawables) {
             element.draw(this);
         }
@@ -79,26 +113,28 @@ public class Main extends PApplet {
         fill(0);
         textSize(20);
         
-        text("People in line", 20, 20);
-        for (int i = 0; i < peopleInLine.size(); i++) {
-            text(peopleInLine.get(i).toString(), 20, 40 + i * 20);
-        }
+        // text("People in line", 20, 20);
+        // for (int i = 0; i < peopleInLine.size(); i++) {
+        //     text(peopleInLine.get(i).toString(), 20, 40 + i * 20);
+        // }
 
-        text("People in elevator1", 175, 20);
-        for (int i = 0; i < elevators.get(0).getPeopleInElevator().size(); i++) {
-            text(elevators.get(0).getPeopleInElevator().get(i).toString(), 175, 40 + i * 20);
-        }
+        // text("People in elevator1", 175, 20);
+        // for (int i = 0; i < elevators.get(0).getPeopleInElevator().size(); i++) {
+        //     text(elevators.get(0).getPeopleInElevator().get(i).toString(), 175, 40 + i * 20);
+        // }
 
-        text("People in elevator2", 175, 200);
-        for (int i = 0; i < elevators.get(1).getPeopleInElevator().size(); i++) {
-            text(elevators.get(1).getPeopleInElevator().get(i).toString(), 175, 220 + i * 20);
-        }
+        // text("People in elevator2", 175, 200);
+        // for (int i = 0; i < elevators.get(1).getPeopleInElevator().size(); i++) {
+        //     text(elevators.get(1).getPeopleInElevator().get(i).toString(), 175, 220 + i * 20);
+        // }
 
         textSize(40);
         text("Points: " + points, 20, 480);
     }
 
     public void mousePressed() {
+        System.out.println(mouseX + "\t" + mouseY);
+
         for (Clickable element : clickables) {
             element.mousePressed((int)(1.0 * mouseX / width * WINDOW_SIZE * X_RATIO), (int)(1.0 * mouseY / height * WINDOW_SIZE * Y_RATIO));
         }
