@@ -62,10 +62,10 @@ public class Elevator implements Drawable, Clickable {
 
         int m1 = 10;                // margin between each button, adjustable
         int m2 = 40;                // margin between right bound of shaft and left bound of left most button, adjustable
-        int radius = ((width * 3 / 4) - m2 - (4 * m1)) / 10;
+        int size = ((width * 3 / 4) - m2 - (4 * m1)) / 10;
         int numButtonsPerRow = 5;
-        int leftMostButtonCenter = x + shaftWidth + m2 + radius;
-        int topMostButtonCenter = shaftY + radius;
+        int leftMostButtonCenter = x + shaftWidth + m2 + size;
+        int topMostButtonCenter = shaftY + size;
         int numButtonsCreated = 0;
 
         highlighted = false;
@@ -74,10 +74,10 @@ public class Elevator implements Drawable, Clickable {
             for (int j = 0; j < 5; j++) {
                 if (numButtonsCreated == queuedFloors.length) break;
 
-                int buttonX = leftMostButtonCenter + (j * (m1 + radius * 2));
-                int buttonY = topMostButtonCenter + (i * (m1 + radius * 2));
+                int buttonX = leftMostButtonCenter + (j * (m1 + size * 2));
+                int buttonY = topMostButtonCenter + (i * (m1 + size * 2));
 
-                ElevatorButton button = new ElevatorButton(buttonX, buttonY, i*5 + j + 1, radius);
+                ElevatorButton button = new ElevatorButton(buttonX, buttonY, i*5 + j + 1, size, 10);
                 buttons.add(button);
 
                 numButtonsCreated++;
@@ -99,9 +99,8 @@ public class Elevator implements Drawable, Clickable {
         d.rectMode(PConstants.CORNER);
         d.fill(255);
         d.stroke(highlighted ? -65536 : 0);
-        d.strokeWeight(highlighted ? 3 : 1);
+        d.strokeWeight(3);
         d.rect(x, shaftY, shaftWidth, shaftHeight, 8);
-        d.strokeWeight(1);
         
         // Elevator Cabin
         int bottomRectCornerRounding = (currentFloor == lowestFloor && floorPercent == 0) ? 8 : 0;

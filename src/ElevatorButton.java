@@ -7,11 +7,10 @@ public class ElevatorButton {
     private int y;
     private int floorNum;
     private String text;
-    private long radius;
+    private int size;
+    private int cornerRounding;
     private boolean on;
     private int onOutlineColor;
-
-
 
     /**
      * Constructs a new ElevatorButton
@@ -24,7 +23,7 @@ public class ElevatorButton {
         this.y = y;
         this.floorNum = floorNum;
         this.text = String.valueOf(floorNum);
-        this.radius = 32;
+        this.size = 32;
         this.on = false;
         this.onOutlineColor = -14357508;
     }
@@ -34,59 +33,53 @@ public class ElevatorButton {
      * @param x x-coordinate of the center of this ElevatorButton
      * @param y y-coordinate of the center of this ElevatorButton
      * @param floorNum floor number of this ElevatorButton
-     * @param radius the radius of the UI element representing this ElevatorButton
+     * @param size the size of the UI element (half the width / height of the square)
      */
-    public ElevatorButton(int x, int y, int floorNum, long radius) {
+    public ElevatorButton(int x, int y, int floorNum, int size, int cornerRounding) {
         this.x = x;
         this.y = y;
         this.floorNum = floorNum;
         this.text = String.valueOf(floorNum);
-        this.radius = radius;
+        this.size = size;
+        this.cornerRounding = cornerRounding;
         this.on = false;
         this.onOutlineColor = -14357508;
     }
 
-
-
     public void draw(PApplet d) {
         d.push();          // Save original settings
         
-        // Circle representing the button
+        // Decide the stroke color and weight based on whether the button is on
         if (on) {
             d.stroke(onOutlineColor);
-            d.strokeWeight(3);
+            d.strokeWeight(4);
         } else {
             d.stroke(0);
-            d.strokeWeight(1);
+            d.strokeWeight(3);
         }
-        
+
+        // Square representing the button
         d.fill(250);
-        d.ellipseMode(PConstants.CENTER);
-        d.circle(x, y, radius * 2);
+        d.rectMode(PConstants.CENTER);
+        d.rect(x, y, size * 2, size * 2, cornerRounding);
         
         // Text
         d.textAlign(PConstants.CENTER, PConstants.CENTER);
-        d.textSize(radius);
+        d.textSize(size * 7 / 6);
         d.fill(0);
         d.text(text, x, y);
         
         d.pop();           // Restore original settings
     }
 
-
-
     public boolean contains(int x, int y) {
-        double distanceX = x - this.x;
-        double distanceY = y - this.y;
-        double distance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
-        if (distance <= radius) {
-            return true;
-        } else {
-            return false;
-        }
+        if (x < this.x - size) return false;
+        if (x > this.x + size) return false;
+        if (y < this.y - size) return false;
+        if (y > this.y + size) return false;
+        
+        return true;
     }
-
-
 
     public int getFloorNum() {
         return this.floorNum;

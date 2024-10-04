@@ -32,7 +32,7 @@ public class Main extends PApplet {
         size(WINDOW_SIZE * X_RATIO, WINDOW_SIZE * Y_RATIO);
         smooth();
     }
-
+    
     public void setup() {
         windowResizable(true);
         windowTitle("Elevator Simulator");
@@ -75,6 +75,7 @@ public class Main extends PApplet {
         background(255);
 
         // Game Title
+        strokeWeight(0);
         textFont(geistMonoRegular);
         fill(0);
         rect(15, 15, 400, 50);      // outer black rect
@@ -105,7 +106,12 @@ public class Main extends PApplet {
         }
         if (numPeopleNotDisplayed > 0) text(numPeopleNotDisplayed + " more...", 20, 130 + numPeopleToDisplay * 24);
 
+        // Points
+        textSize(40);
+        text("Points: " + points, 20, 480);
+        
         // Draw Elevators
+        textFont(geistMonoMedium);
         for (Drawable element : drawables) {
             element.draw(this);
         }
@@ -128,8 +134,7 @@ public class Main extends PApplet {
         //     text(elevators.get(1).getPeopleInElevator().get(i).toString(), 175, 220 + i * 20);
         // }
 
-        textSize(40);
-        text("Points: " + points, 20, 480);
+        
     }
 
     public void mousePressed() {
