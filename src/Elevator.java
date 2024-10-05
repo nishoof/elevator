@@ -12,6 +12,8 @@ public class Elevator implements Drawable, Clickable {
 
     private final String[] statusToStr = {"Going down", "Stationary", "Going up"};
 
+    private final int SHAFT_BUTTON_MARGIN = 40;             // margin between right bound of shaft and left bound of left most button
+
     private int currentFloor;
     private int highestFloor;
     private int lowestFloor;
@@ -24,7 +26,6 @@ public class Elevator implements Drawable, Clickable {
     
     private int x;
     private int y;
-    private int shaftY;
     private int shaftWidth;
     private int shaftHeight;
     private int cabinHeight;
@@ -39,12 +40,11 @@ public class Elevator implements Drawable, Clickable {
      * Constructs a new Elevator
      */
     public Elevator(int x, int y, int width, int height, int numFloors) {
-        this.shaftHeight = height - 20;
-
         currentFloor = 1;
         lowestFloor = 1;
         highestFloor = lowestFloor + numFloors - 1;
-
+        
+        this.shaftHeight = height;
         shaftHeight -= shaftHeight % (numFloors);
 
         queuedFloors = new boolean[numFloors];
@@ -54,18 +54,17 @@ public class Elevator implements Drawable, Clickable {
 
         this.x = x;
         this.y = y;
-        this.shaftY = y + 20;
         this.shaftWidth = width / 4;
         this.cabinHeight = shaftHeight / numFloors;
 
         buttons = new ArrayList<>();
 
-        int m1 = 10;                // margin between each button, adjustable
-        int m2 = 40;                // margin between right bound of shaft and left bound of left most button, adjustable
+        int m1 = 10;                    // margin between each button, adjustable
+        int m2 = SHAFT_BUTTON_MARGIN;
         int size = ((width * 3 / 4) - m2 - (4 * m1)) / 10;
         int numButtonsPerRow = 5;
         int leftMostButtonCenter = x + shaftWidth + m2 + size;
-        int topMostButtonCenter = shaftY + size;
+        int topMostButtonCenter = y + size;
         int numButtonsCreated = 0;
 
         highlighted = false;
@@ -93,14 +92,16 @@ public class Elevator implements Drawable, Clickable {
         
         // Boundary
         // d.rectMode(PConstants.CORNER);
-        // d.rect(x, y, width, shaftHeight);
+        // d.fill(255);
+        // d.strokeWeight(3);
+        // d.rect(x, y, shaftWidth * 4, shaftHeight);
 
         // Elevator Shaft
         d.rectMode(PConstants.CORNER);
         d.fill(255);
         d.stroke(highlighted ? -65536 : 0);
         d.strokeWeight(3);
-        d.rect(x, shaftY, shaftWidth, shaftHeight, 8);
+        d.rect(x, y, shaftWidth, shaftHeight, 8);
         
         // Elevator Cabin
         int bottomRectCornerRounding = (currentFloor == lowestFloor && floorPercent == 0) ? 8 : 0;
@@ -108,37 +109,46 @@ public class Elevator implements Drawable, Clickable {
         if (doorsOpenPercent == 0) {
             // If the door is 100% closed, then we just need to draw a rect
             d.fill(0);
-            d.rect(x, shaftY + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight - (floorPercent * cabinHeight / 100), shaftWidth, cabinHeight, topRectCornerRounding, topRectCornerRounding, bottomRectCornerRounding, bottomRectCornerRounding);
+            d.rect(x, y + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight - (floorPercent * cabinHeight / 100), shaftWidth, cabinHeight, topRectCornerRounding, topRectCornerRounding, bottomRectCornerRounding, bottomRectCornerRounding);
         } else {
             // Otherwise, we need to draw in the inside of the elevator and the doors seperately (3 rects)
             
             // Inside of elevator
             d.fill(220);
-            d.rect(x, shaftY + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, shaftWidth, cabinHeight, topRectCornerRounding, topRectCornerRounding, bottomRectCornerRounding, bottomRectCornerRounding);
+            d.rect(x, y + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, shaftWidth, cabinHeight, topRectCornerRounding, topRectCornerRounding, bottomRectCornerRounding, bottomRectCornerRounding);
 
             // Doors
             int doorWidth = shaftWidth / 2 * (100 - doorsOpenPercent) / 100;
             if (doorWidth != 0) {
                 d.fill(0);
-                d.rect(x, shaftY + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight, topRectCornerRounding, topRectCornerRounding, bottomRectCornerRounding, bottomRectCornerRounding);
-                d.rect(x + shaftWidth - doorWidth, shaftY + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight, topRectCornerRounding, topRectCornerRounding, bottomRectCornerRounding, bottomRectCornerRounding);
+                d.rect(x, y + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight, topRectCornerRounding, topRectCornerRounding, bottomRectCornerRounding, bottomRectCornerRounding);
+                d.rect(x + shaftWidth - doorWidth, y + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, doorWidth, cabinHeight, topRectCornerRounding, topRectCornerRounding, bottomRectCornerRounding, bottomRectCornerRounding);
             }
         }
-        
-        // Text
-        d.textAlign(PConstants.LEFT, PConstants.TOP);
-        d.textSize(20);
-        d.fill(0);
-        String statusStr = statusToStr[status + 1];
-        d.text("Floor " + this.getCurrentFloor() + ", " + statusStr, x, y);
-        // d.text("Floor", x, y);
-        
+
         // Buttons
         for (ElevatorButton button : buttons) {
             button.setOn(queuedFloors[button.getFloorNum() - lowestFloor]);
             button.draw(d);
         }
 
+        // People in the elevator
+        StringBuilder peopleInElevatorStr = new StringBuilder();
+        for (int i = 0; i < peopleInElevator.size(); i++) {
+            peopleInElevatorStr.append(peopleInElevator.get(i).getDesiredFloor());
+            if (i != peopleInElevator.size() - 1) peopleInElevatorStr.append(", ");
+        }
+        d.textAlign(PConstants.LEFT, PConstants.BOTTOM);
+        d.fill(0);
+        d.textSize(20);
+        String peopleInElevatorDisplayStr = null;
+        if (peopleInElevator.size() == 0) {
+            peopleInElevatorDisplayStr = "No one in elevator";
+        } else {
+            peopleInElevatorDisplayStr = peopleInElevatorStr.toString();
+        }
+        d.text(peopleInElevatorDisplayStr, x + shaftWidth + SHAFT_BUTTON_MARGIN, y - 5, shaftWidth * 3 - SHAFT_BUTTON_MARGIN, shaftHeight);
+        
         // Testing Purposes, show queue
         // d.textAlign(PConstants.LEFT, PConstants.TOP);
         // d.textSize(20);
