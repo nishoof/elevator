@@ -4,26 +4,26 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 
 public class Elevator implements Drawable, Clickable {
-    
+
     private final double secPerFloor = 0.6;
     private final double secDoorsOpen = 1.5;                // how long the door stays open for
     private final double secDoorsDelay = 0.5;               // the delay between elevator stop -> door open or door open -> elevator move
     private final double secDoorsToOpen = 0.25;             // the time it takes for the door to open/close (animation time)
 
-    private final String[] statusToStr = {"Going down", "Stationary", "Going up"};
-
-    private final int SHAFT_BUTTON_MARGIN = 40;             // margin between right bound of shaft and left bound of left most button
+    private final double tickWidthPercent = 0.15;
+    private final int shaftButtonMargin = 40;               // margin between right bound of shaft and left bound of left most button
+    private final int maxfloorNumberTextSize = 25;
 
     private int currentFloor;
     private int highestFloor;
     private int lowestFloor;
     private int floorPercent;                               // used for animation
-    
+
     private int floorsInQueue;
     private boolean[] queuedFloors;
     private int status;
     private int doorsOpenPercent;                           // used for animation
-    
+
     private int x;
     private int y;
     private int shaftWidth;
@@ -31,7 +31,7 @@ public class Elevator implements Drawable, Clickable {
     private int cabinHeight;
 
     private boolean highlighted;
-    
+
     private ArrayList<ElevatorButton> buttons;
 
     private ArrayList<Person> peopleInElevator;
@@ -60,7 +60,7 @@ public class Elevator implements Drawable, Clickable {
         buttons = new ArrayList<>();
 
         int m1 = 10;                    // margin between each button, adjustable
-        int m2 = SHAFT_BUTTON_MARGIN;
+        int m2 = shaftButtonMargin;
         int size = ((width * 3 / 4) - m2 - (4 * m1)) / 10;
         int numButtonsPerRow = 5;
         int leftMostButtonCenter = x + shaftWidth + m2 + size;
@@ -89,6 +89,8 @@ public class Elevator implements Drawable, Clickable {
     @Override
     public void draw(PApplet d) {
         d.push();          // Save original settings
+
+        int strokeWeight = 3;
         
         // Boundary
         // d.rectMode(PConstants.CORNER);
@@ -100,8 +102,29 @@ public class Elevator implements Drawable, Clickable {
         d.rectMode(PConstants.CORNER);
         d.fill(255);
         d.stroke(highlighted ? -65536 : 0);
-        d.strokeWeight(3);
+        d.strokeWeight(strokeWeight);
         d.rect(x, y, shaftWidth, shaftHeight, 8);
+        
+        // Elevator Floor Ticks Marks
+        d.push();
+        int grey = 125;
+        int tickWidth = (int)(shaftWidth * tickWidthPercent);
+        for (int i = 0; i < highestFloor - lowestFloor; i++) {
+            int tickY = y + shaftHeight - cabinHeight - i * cabinHeight;
+            d.strokeWeight(1);
+            d.stroke(grey);
+            d.line(x + strokeWeight/2 + 1, tickY, x + tickWidth, tickY);
+        }
+        
+        // Elevator Floor Numbers
+        int floorHeight = shaftHeight / (highestFloor - lowestFloor + 1) - 6;
+        int floorNumberTextSize = (floorHeight > maxfloorNumberTextSize) ? maxfloorNumberTextSize : floorHeight;
+        d.textFont(FontHolder.getRegular());
+        d.textAlign(PConstants.CENTER, PConstants.CENTER);
+        d.fill(grey);
+        d.textSize(floorNumberTextSize);
+        d.text(highestFloor, x + shaftWidth / 2, y + strokeWeight/2+1 + floorHeight / 2);
+        d.pop();
         
         // Elevator Cabin
         int bottomRectCornerRounding = (currentFloor == lowestFloor && floorPercent == 0) ? 8 : 0;
@@ -147,7 +170,7 @@ public class Elevator implements Drawable, Clickable {
         } else {
             peopleInElevatorDisplayStr = peopleInElevatorStr.toString();
         }
-        d.text(peopleInElevatorDisplayStr, x + shaftWidth + SHAFT_BUTTON_MARGIN, y - 5, shaftWidth * 3 - SHAFT_BUTTON_MARGIN, shaftHeight);
+        d.text(peopleInElevatorDisplayStr, x + shaftWidth + shaftButtonMargin, y - 5, shaftWidth * 3 - shaftButtonMargin, shaftHeight);
         
         // Testing Purposes, show queue
         // d.textAlign(PConstants.LEFT, PConstants.TOP);
@@ -168,7 +191,7 @@ public class Elevator implements Drawable, Clickable {
             }
         }
     }
-    
+
     /**
      * Adds newFloor to the queue for this elevator so that it will eventually go to that floor. Will start the elevator up if it's not already moving.
      * @param newFloor The new floor number (NOT INDEX) to add to the queue
