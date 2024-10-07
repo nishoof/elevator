@@ -1,9 +1,6 @@
 # Ignore compiled binary files (such as .class files)
 bin/
 
-# Ignore library files
-lib/
-
 # Ignore Visual Studio Code settings folder
 .vscode
 
