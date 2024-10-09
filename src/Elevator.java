@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public class Elevator implements Drawable, Clickable {
+public class Elevator {
 
     private final double secPerFloor = 0.6;
     private final double secDoorsOpen = 1.5;                // how long the door stays open for
@@ -13,6 +13,8 @@ public class Elevator implements Drawable, Clickable {
     private final double tickWidthPercent = 0.15;
     private final int shaftButtonMargin = 40;               // margin between right bound of shaft and left bound of left most button
     private final int maxfloorNumberTextSize = 25;
+    
+    private final Game game;
 
     private int currentFloor;
     private int highestFloor;
@@ -39,7 +41,7 @@ public class Elevator implements Drawable, Clickable {
     /**
      * Constructs a new Elevator
      */
-    public Elevator(int x, int y, int width, int height, int numFloors) {
+    public Elevator(int x, int y, int width, int height, int numFloors, Game game) {
         currentFloor = 1;
         lowestFloor = 1;
         highestFloor = lowestFloor + numFloors - 1;
@@ -84,9 +86,10 @@ public class Elevator implements Drawable, Clickable {
         }
 
         peopleInElevator = new ArrayList<>();
+
+        this.game = game;
     }
 
-    @Override
     public void draw(PApplet d) {
         d.push();          // Save original settings
 
@@ -347,13 +350,13 @@ public class Elevator implements Drawable, Clickable {
             if (person.getDesiredFloor() != this.getCurrentFloor()) continue;
             n1++;
             peopleInElevator.remove(person);
-            Main.incrementPoints();
+            game.incrementPoints();
             System.out.println("removed person " + person + " from elevator");
         }
 
         // Bring people into the elevator
         int n2 = 0;      // number of people removed from the line
-        ArrayList<Person> peopleInLine = Main.getPeopleInLine();
+        ArrayList<Person> peopleInLine = game.getPeopleInLine();
         for (int i = 0; i < peopleInLine.size() + n2; i++) {
             Person person = peopleInLine.get(i - n2);
             if (person.getCurrentFloor() != this.getCurrentFloor()) continue;

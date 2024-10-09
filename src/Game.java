@@ -5,70 +5,61 @@ import processing.core.PApplet;
 
 import processing.core.PConstants;
 
-public class Main extends PApplet {
+public class Game extends PApplet {
 
     private final int X_RATIO = 16;
     private final int Y_RATIO = 9;
     private final int WINDOW_SIZE = 60;
 
-    private ArrayList<Drawable> drawables;
-    private ArrayList<Clickable> clickables;
+    private final char[] ELEVATOR_KEYS = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'};
+    private final int MAX_ELEVATORS = ELEVATOR_KEYS.length;
 
-    private HashMap<Character, Elevator> charToElevatorMap;
-    private ArrayList<Elevator> elevators;
+    private int currentNumFloors;
     private Elevator selectedElevator;
+    private ArrayList<Elevator> elevators;
+    private HashMap<Character, Elevator> charToElevatorMap;
 
-    private static ArrayList<Person> peopleInLine;
-    private static int points;
+    private ArrayList<Person> peopleInLine;
+    private int points;
+
 
     public static void main(String[] args) {
-        PApplet.main("Main");
+        PApplet.main("Game");
     }
 
     public void settings() {
         size(WINDOW_SIZE * X_RATIO, WINDOW_SIZE * Y_RATIO);
         smooth();
     }
-    
+
     public void setup() {
+        // Window
         windowResizable(true);
         windowTitle("Elevator Simulator");
 
-        textMode(PConstants.MODEL);
+        // Fonts
         FontHolder.setRegular(createFont("GeistMono-Regular.otf", 128));
         FontHolder.setMedium(createFont("GeistMono-Medium.otf", 128));
+        textMode(PConstants.MODEL);
 
-        Elevator elevator1 = new Elevator(500, 50, 400, 200, 9);
-        Elevator elevator2 = new Elevator(500, 300, 400, 200, 3);
-        
-        drawables = new ArrayList<>();
-        drawables.add(elevator1);
-        drawables.add(elevator2);
-
-        clickables = new ArrayList<>();
-        clickables.add(elevator1);
-        clickables.add(elevator2);
-
-        charToElevatorMap = new HashMap<>();
-        charToElevatorMap.put('q', elevator1);
-        charToElevatorMap.put('w', elevator2);
-
-        elevators = new ArrayList<>();
-        elevators.add(elevator1);
-        elevators.add(elevator2);
-
+        // Elevators
+        currentNumFloors = 3;
         selectedElevator = null;
+        elevators = new ArrayList<>();
+        charToElevatorMap = new HashMap<>();
+        addElevator(500, 50, 400, 200);
+        addElevator(500, 300, 400, 200);
 
+        // People / Points
         peopleInLine = new ArrayList<>();
-
         points = 0;
-
-        loopSpawnNewPeople(3000, 8000);
+        loopSpawnNewPeople(3000, 5000);
     }
 
     public void draw() {
         windowRatio(WINDOW_SIZE * X_RATIO, WINDOW_SIZE * Y_RATIO);
 
+        // Background (clears screen too)
         background(255);
 
         // Game Title
@@ -109,36 +100,19 @@ public class Main extends PApplet {
         
         // Draw Elevators
         textFont(FontHolder.getMedium());
-        for (Drawable element : drawables) {
-            element.draw(this);
+        for (Elevator elevator : elevators) {
+            elevator.draw(this);
         }
 
         fill(0);
         textSize(20);
-        
-        // text("People in line", 20, 20);
-        // for (int i = 0; i < peopleInLine.size(); i++) {
-        //     text(peopleInLine.get(i).toString(), 20, 40 + i * 20);
-        // }
-
-        // text("People in elevator1", 175, 20);
-        // for (int i = 0; i < elevators.get(0).getPeopleInElevator().size(); i++) {
-        //     text(elevators.get(0).getPeopleInElevator().get(i).toString(), 175, 40 + i * 20);
-        // }
-
-        // text("People in elevator2", 175, 200);
-        // for (int i = 0; i < elevators.get(1).getPeopleInElevator().size(); i++) {
-        //     text(elevators.get(1).getPeopleInElevator().get(i).toString(), 175, 220 + i * 20);
-        // }
-
-        
     }
 
     public void mousePressed() {
         // System.out.println(mouseX + "\t" + mouseY);
 
-        for (Clickable element : clickables) {
-            element.mousePressed((int)(1.0 * mouseX / width * WINDOW_SIZE * X_RATIO), (int)(1.0 * mouseY / height * WINDOW_SIZE * Y_RATIO));
+        for (Elevator elevator : elevators) {
+            elevator.mousePressed((int)(1.0 * mouseX / width * WINDOW_SIZE * X_RATIO), (int)(1.0 * mouseY / height * WINDOW_SIZE * Y_RATIO));
         }
     }
 
@@ -169,25 +143,25 @@ public class Main extends PApplet {
             // Otherwise, tell the elevator to go to this floor
             selectedElevator.addFloorToQueue(key - '0');
         } else if (key == '`') {
-            newPerson(1, 9);
+            newPerson(1, currentNumFloors);
         }
     }
 
-    public static ArrayList<Person> getPeopleInLine() {
+    public ArrayList<Person> getPeopleInLine() {
         return peopleInLine;
     }
 
-    public static void incrementPoints() {
+    public void incrementPoints() {
         points++;
     }
 
     private void newPerson(int minFloor, int maxFloor) {
         int currentFloor, desiredFloor;
         
-        currentFloor = (int)(Math.random() * (maxFloor - minFloor) + minFloor);
+        currentFloor = (int)(Math.random() * (maxFloor - minFloor + 1) + minFloor);
         
         do {
-            desiredFloor = (int)(Math.random() * (maxFloor - minFloor) + minFloor);
+            desiredFloor = (int)(Math.random() * (maxFloor - minFloor + 1) + minFloor);
         } while (desiredFloor == currentFloor);
 
         Person person = new Person(currentFloor, desiredFloor);
@@ -208,7 +182,7 @@ public class Main extends PApplet {
     private void loopSpawnNewPeople(int minDelay, int maxDelay) {
         new Thread(() -> {
             while (true) {
-                newPerson(1, 9);
+                newPerson(1, currentNumFloors);
                 try {
                     Thread.sleep((long)(Math.random() * (maxDelay - minDelay) + minDelay));
                 } catch (InterruptedException e) {
@@ -216,6 +190,19 @@ public class Main extends PApplet {
                 }
             }
         }).start();
+    }
+
+    private void addElevator(int x, int y, int width, int height) {
+        // Get the number of elevators that are currently in the game
+        int numElevators = elevators.size();
+
+        // Make sure we aren't exceeding the maximum number of elevators
+        if (numElevators >= MAX_ELEVATORS) throw new IllegalStateException("Cannot add more elevators");
+
+        // Create the elevator and add it to the list of elevators and the map
+        Elevator elevator = new Elevator(x, y, width, height, currentNumFloors, this);
+        elevators.add(elevator);
+        charToElevatorMap.put(ELEVATOR_KEYS[numElevators], elevator);
     }
 
 }
