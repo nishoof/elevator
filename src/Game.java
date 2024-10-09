@@ -1,3 +1,5 @@
+import java.awt.Point;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -7,9 +9,9 @@ import processing.core.PConstants;
 
 public class Game extends PApplet {
 
-    private final int X_RATIO = 16;
-    private final int Y_RATIO = 9;
-    private final int WINDOW_SIZE = 60;
+    public final int X_RATIO = 16;
+    public final int Y_RATIO = 9;
+    public final int WINDOW_SIZE = 60;
 
     private final char[] ELEVATOR_KEYS = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'};
     private final int MAX_ELEVATORS = ELEVATOR_KEYS.length;
@@ -19,8 +21,9 @@ public class Game extends PApplet {
     private Elevator selectedElevator;
     private ArrayList<Elevator> elevators;
     private HashMap<Character, Elevator> charToElevatorMap;
-
+    
     private ArrayList<Person> peopleInLine;
+    private Upgrades upgrades;
     private int points;
     private int credits;
 
@@ -52,11 +55,14 @@ public class Game extends PApplet {
         addElevator(500, 50, 400, 200);
         // addElevator(500, 300, 400, 200);
 
-        // People / Points
+        // People
         peopleInLine = new ArrayList<>();
+        loopSpawnNewPeople(3000, 5000);
+
+        // Points / Upgrades
         points = 0;
         credits = 0;
-        loopSpawnNewPeople(3000, 5000);
+        upgrades = new Upgrades(this);
     }
 
     public void draw() {
@@ -109,21 +115,28 @@ public class Game extends PApplet {
         for (Elevator elevator : elevators) {
             elevator.draw(this);
         }
+
+        // Upgrades Menu
+        upgrades.draw(this);
     }
 
     public void mousePressed() {
-        // System.out.println(mouseX + "\t" + mouseY);
+        Point mouse = getMouse();
 
         for (Elevator elevator : elevators) {
-            elevator.mousePressed((int)(1.0 * mouseX / width * WINDOW_SIZE * X_RATIO), (int)(1.0 * mouseY / height * WINDOW_SIZE * Y_RATIO));
+            elevator.mousePressed(mouse.x, mouse.y);
         }
+
+        upgrades.mousePressed(mouse.x, mouse.y);
     }
 
     public void keyPressed() {
         // Make the key lowercase to make it work even if the user did a capital for some reason
         char key = Character.toLowerCase(this.key);
 
-        if (key >= 'a' && key <= 'z') {                   // keyIsALetter
+        if (key == 'b') {
+            upgrades.toggleMenuDisplay();
+        } else if (key >= 'a' && key <= 'z') {                   // keyIsALetter
             // Figure out what elevator is paired to the key that was pressed
             Elevator elevator = charToElevatorMap.get(key);
 
@@ -213,7 +226,7 @@ public class Game extends PApplet {
         charToElevatorMap.put(ELEVATOR_KEYS[numElevators], elevator);
     }
 
-    private void increaseFloorCount() {
+    public void increaseFloorCount() {
         try {
             for (Elevator elevator : elevators) {
                 elevator.addFloor();
@@ -224,6 +237,25 @@ public class Game extends PApplet {
             return;
         }
         currentNumFloors++;
+    }
+
+    public int getNumFloors() {
+        return currentNumFloors;
+    }
+
+    public int getCredits() {
+        return credits;
+    }
+
+    public void spendCredits(int amount) {
+        credits -= amount;
+    }
+
+    public Point getMouse() {
+        int scaledMouseX = (int)(1.0 * mouseX / width * WINDOW_SIZE * X_RATIO);
+        int scaledMouseY = (int)(1.0 * mouseY / height * WINDOW_SIZE * Y_RATIO);
+        
+        return new Point(scaledMouseX, scaledMouseY);
     }
 
 }
