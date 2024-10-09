@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -25,6 +26,7 @@ public class Elevator {
     private boolean[] queuedFloors;
     private int status;
     private int doorsOpenPercent;                           // used for animation
+    private boolean doorsInAnimation;                       // used for animation. If the doors are in the process of opening/closing (including the delay before & after), this is true
 
     private int x;
     private int y;
@@ -53,6 +55,7 @@ public class Elevator {
         
         status = 0;
         doorsOpenPercent = 0;
+        doorsInAnimation = false;
 
         this.x = x;
         this.y = y;
@@ -176,10 +179,10 @@ public class Elevator {
         d.text(peopleInElevatorDisplayStr, x + shaftWidth + shaftButtonMargin, y - 5, shaftWidth * 3 - shaftButtonMargin, shaftHeight);
         
         // Testing Purposes, show queue
-        // d.textAlign(PConstants.LEFT, PConstants.TOP);
-        // d.textSize(20);
-        // d.text(Arrays.toString(queuedFloors) + "\n" + "doorsOpenPercent: " + doorsOpenPercent + "\n" + "floorPercent: " + floorPercent,
-        //         0, 0);
+        d.textAlign(PConstants.LEFT, PConstants.TOP);
+        d.textSize(20);
+        d.text(Arrays.toString(queuedFloors) + "\n" + "doorsOpenPercent: " + doorsOpenPercent + "\n" + "floorPercent: " + floorPercent + "\n" + "status: " + status,
+                600, 400);
         
         d.pop();           // Restore original settings
     }
@@ -204,8 +207,14 @@ public class Elevator {
         // Check the input to make sure it's good before proceeding
         if (newFloor < lowestFloor || newFloor > highestFloor) throw new IllegalArgumentException("Floor " + newFloor + " is out of range");
         
-        // If we are already at the floor we wanted to go to, then there's nothing to do
-        if (this.currentFloor == newFloor) return true;
+        // If we are already at the floor, just open the doors and return
+        if (this.currentFloor == newFloor) {
+            // If the elevator isn't moving and doors are closed, then simply open the doors without delay
+            if (status == 0 && doorsOpenPercent == 0) {
+                reachedFloor(false);
+            }
+            return true;
+        }
 
         // If the floor we wanted to go to is already in the queue, then there's nothing to do
         if (queuedFloors[newFloor - lowestFloor]) return true;
@@ -249,6 +258,14 @@ public class Elevator {
      * @param direction Either 1 (going up) or -1 (going down)
      */
     private void move(int direction) {
+        while (doorsInAnimation) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        
         if (direction != 1 && direction != -1) throw new IllegalArgumentException("Invalid direction \"" + direction + "\", must be -1 or 1");
         
         status = direction;
@@ -259,7 +276,7 @@ public class Elevator {
 
             // First count the number of floors in the current direction
 
-            int floorsInCurrDirection = 0;
+            int floorsInCurrDirection = 0;              // TODO: could probably make this a boolean
 
             if (direction == 1) {
                 for (int i = currentFloor - lowestFloor; i < highestFloor - lowestFloor + 1; i++) {
@@ -288,7 +305,7 @@ public class Elevator {
             if (queuedFloors[currentFloor - lowestFloor]) {
                 queuedFloors[currentFloor - lowestFloor] = false;
                 floorsInQueue--;
-                reachedFloor();
+                reachedFloor(true);
             }
         }
 
@@ -319,19 +336,22 @@ public class Elevator {
     /**
      * Called when we reach a floor so that we can open/close the doors, handle people going in/out of elevators, and give points if needed
      */
-    private void reachedFloor() {
-        System.out.println("Reached floor " + currentFloor);
+    private void reachedFloor(boolean delayBeforeOpeningDoors) {
         final int SMOOTHNESS = 25;      // 100 must be divisible by this number for proper animation
+        doorsInAnimation = true;
+        
+        System.out.println("Reached floor " + currentFloor);
 
         // Delay
-        try {
-            Thread.sleep((long)(secDoorsDelay * 1000));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (delayBeforeOpeningDoors) {
+            try {
+                Thread.sleep((long)(secDoorsDelay * 1000));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         // Open doors
-        System.out.println("OPENING DOOR");
         doorsOpenPercent = 0;
         while (doorsOpenPercent < 100) {
             try {
@@ -374,7 +394,6 @@ public class Elevator {
         }
         
         // Close doors
-        System.out.println("CLOSING DOOR");
         while (doorsOpenPercent > 0) {
             try {
                 Thread.sleep((long)(secDoorsToOpen * 1000 / SMOOTHNESS));
@@ -391,6 +410,8 @@ public class Elevator {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        doorsInAnimation = false;
     }
 
 }

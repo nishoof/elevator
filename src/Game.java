@@ -48,7 +48,7 @@ public class Game extends PApplet {
         elevators = new ArrayList<>();
         charToElevatorMap = new HashMap<>();
         addElevator(500, 50, 400, 200);
-        addElevator(500, 300, 400, 200);
+        // addElevator(500, 300, 400, 200);
 
         // People / Points
         peopleInLine = new ArrayList<>();
@@ -103,9 +103,6 @@ public class Game extends PApplet {
         for (Elevator elevator : elevators) {
             elevator.draw(this);
         }
-
-        fill(0);
-        textSize(20);
     }
 
     public void mousePressed() {
@@ -166,17 +163,19 @@ public class Game extends PApplet {
 
         Person person = new Person(currentFloor, desiredFloor);
 
-        boolean personAddedToElevator = false;
+        // boolean personAddedToElevator = false;
         
-        for (Elevator elevator : elevators) {
-            if (elevator.getCurrentFloor() == currentFloor) {
-                elevator.getPeopleInElevator().add(person);
-                personAddedToElevator = true;
-                break;
-            }
-        }
+        // for (Elevator elevator : elevators) {
+        //     if (elevator.getCurrentFloor() == currentFloor) {
+        //         elevator.getPeopleInElevator().add(person);
+        //         personAddedToElevator = true;
+        //         break;
+        //     }
+        // }
         
-        if (!personAddedToElevator) peopleInLine.add(person);
+        // if (!personAddedToElevator) peopleInLine.add(person);
+        
+        peopleInLine.add(person);
     }
 
     private void loopSpawnNewPeople(int minDelay, int maxDelay) {

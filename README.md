@@ -1,8 +1,7 @@
 ## Elevator
 
-It's an elevator
-
-Run the main method in the Game class.
+- It's an elevator!
+- Run the main method in the Game class.
 
 ## Libraries
 
