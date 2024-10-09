@@ -1,11 +1,12 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
 
 public class Elevator {
 
+    private final int maxFloors = 10;
+    
     private final double secPerFloor = 0.6;
     private final double secDoorsOpen = 1.5;                // how long the door stays open for
     private final double secDoorsDelay = 0.5;               // the delay between elevator stop -> door open or door open -> elevator move
@@ -13,6 +14,7 @@ public class Elevator {
 
     private final double tickWidthPercent = 0.15;
     private final int shaftButtonMargin = 40;               // margin between right bound of shaft and left bound of left most button
+    private final int buttonButtonMargin = 10;              // margin between right bound of a button and left bound of the button to the right
     private final int maxfloorNumberTextSize = 25;
     
     private final Game game;
@@ -30,6 +32,7 @@ public class Elevator {
 
     private int x;
     private int y;
+    private int boundaryHeight;
     private int shaftWidth;
     private int shaftHeight;
     private int cabinHeight;
@@ -44,31 +47,28 @@ public class Elevator {
      * Constructs a new Elevator
      */
     public Elevator(int x, int y, int width, int height, int numFloors, Game game) {
-        currentFloor = 1;
-        lowestFloor = 1;
-        highestFloor = lowestFloor + numFloors - 1;
-        
-        this.shaftHeight = height;
-        shaftHeight -= shaftHeight % (numFloors);
-
-        queuedFloors = new boolean[numFloors];
-        
-        status = 0;
-        doorsOpenPercent = 0;
-        doorsInAnimation = false;
-
         this.x = x;
         this.y = y;
         this.shaftWidth = width / 4;
+        this.boundaryHeight = height;
+        this.shaftHeight = boundaryHeight - (boundaryHeight % numFloors);
         this.cabinHeight = shaftHeight / numFloors;
 
+        this.currentFloor = 1;
+        this.lowestFloor = 1;
+        this.highestFloor = numFloors;
+
+        this.queuedFloors = new boolean[numFloors];
+        
+        this.status = 0;
+        this.doorsOpenPercent = 0;
+        this.doorsInAnimation = false;
+        
         buttons = new ArrayList<>();
 
-        int m1 = 10;                    // margin between each button, adjustable
-        int m2 = shaftButtonMargin;
-        int size = ((width * 3 / 4) - m2 - (4 * m1)) / 10;
+        int size = ((shaftWidth * 3) - shaftButtonMargin - (4 * buttonButtonMargin)) / 10;
         int numButtonsPerRow = 5;
-        int leftMostButtonCenter = x + shaftWidth + m2 + size;
+        int leftMostButtonCenter = x + shaftWidth + shaftButtonMargin + size;
         int topMostButtonCenter = y + size;
         int numButtonsCreated = 0;
 
@@ -78,8 +78,8 @@ public class Elevator {
             for (int j = 0; j < 5; j++) {
                 if (numButtonsCreated == queuedFloors.length) break;
 
-                int buttonX = leftMostButtonCenter + (j * (m1 + size * 2));
-                int buttonY = topMostButtonCenter + (i * (m1 + size * 2));
+                int buttonX = leftMostButtonCenter + (j * (buttonButtonMargin + size * 2));
+                int buttonY = topMostButtonCenter + (i * (buttonButtonMargin + size * 2));
 
                 ElevatorButton button = new ElevatorButton(buttonX, buttonY, i*5 + j + 1, size, 10);
                 buttons.add(button);
@@ -115,8 +115,9 @@ public class Elevator {
         d.push();
         int grey = 125;
         int tickWidth = (int)(shaftWidth * tickWidthPercent);
+        int lowestTickY = y + shaftHeight - cabinHeight;
         for (int i = 0; i < highestFloor - lowestFloor; i++) {
-            int tickY = y + shaftHeight - cabinHeight - i * cabinHeight;
+            int tickY = lowestTickY - (i * cabinHeight);
             d.strokeWeight(1);
             d.stroke(grey);
             d.line(x + strokeWeight/2 + 1, tickY, x + tickWidth, tickY);
@@ -179,10 +180,10 @@ public class Elevator {
         d.text(peopleInElevatorDisplayStr, x + shaftWidth + shaftButtonMargin, y - 5, shaftWidth * 3 - shaftButtonMargin, shaftHeight);
         
         // Testing Purposes, show queue
-        d.textAlign(PConstants.LEFT, PConstants.TOP);
-        d.textSize(20);
-        d.text(Arrays.toString(queuedFloors) + "\n" + "doorsOpenPercent: " + doorsOpenPercent + "\n" + "floorPercent: " + floorPercent + "\n" + "status: " + status,
-                600, 400);
+        // d.textAlign(PConstants.LEFT, PConstants.TOP);
+        // d.textSize(20);
+        // d.text("Testing: " + "\n" + Arrays.toString(queuedFloors) + "\n" + "doorsOpenPercent: " + doorsOpenPercent + "\n" + "floorPercent: " + floorPercent + "\n" + "status: " + status,
+        //         600, 400);
         
         d.pop();           // Restore original settings
     }
@@ -272,8 +273,6 @@ public class Elevator {
         
         // If there are floors in the queue, keep the elevator moving until all floors have been reached and removed from queue
         while (floorsInQueue > 0) {
-            System.out.println("floors in queue: " + floorsInQueue);
-
             // First count the number of floors in the current direction
 
             int floorsInCurrDirection = 0;              // TODO: could probably make this a boolean
@@ -339,8 +338,6 @@ public class Elevator {
     private void reachedFloor(boolean delayBeforeOpeningDoors) {
         final int SMOOTHNESS = 25;      // 100 must be divisible by this number for proper animation
         doorsInAnimation = true;
-        
-        System.out.println("Reached floor " + currentFloor);
 
         // Delay
         if (delayBeforeOpeningDoors) {
@@ -370,8 +367,8 @@ public class Elevator {
             if (person.getDesiredFloor() != this.getCurrentFloor()) continue;
             n1++;
             peopleInElevator.remove(person);
-            game.incrementPoints();
-            System.out.println("removed person " + person + " from elevator");
+            game.rewardPoints();
+            System.out.println("Person from floor " + person.getCurrentFloor() + " delivered to " + person.getDesiredFloor());
         }
 
         // Bring people into the elevator
@@ -383,7 +380,7 @@ public class Elevator {
             n2++;
             peopleInLine.remove(person);
             peopleInElevator.add(person);
-            System.out.println("removed person " + person + " from line, added to elevator");
+            System.out.println("Person from floor " + person.getCurrentFloor() + " added to elevator");
         }
 
         // Hold doors open
@@ -412,6 +409,44 @@ public class Elevator {
         }
 
         doorsInAnimation = false;
+    }
+
+    /**
+     * Adds a floor to the elevator. This will add a button to the elevator for the new floor and update the elevator's fields accordingly
+     */
+    public void addFloor() {
+        // If we are already at the max number of floors, can't add more. Throw an exception
+        if (highestFloor == maxFloors) throw new IllegalStateException("Cannot add more floors, already at max");
+
+        // Update queuedFloors field while preserving the old values
+        boolean[] newQueuedFloors = new boolean[this.queuedFloors.length + 1];
+
+        for (int i = 0; i < this.queuedFloors.length; i++) {
+            newQueuedFloors[i] = this.queuedFloors[i];
+        }
+
+        this.queuedFloors = newQueuedFloors;
+
+        // Update other fields
+        this.highestFloor++;
+        int numFloors = highestFloor - lowestFloor + 1;
+        this.shaftHeight = boundaryHeight - shaftHeight % numFloors;
+        this.cabinHeight = shaftHeight / numFloors;
+
+        // Add a button
+        int numButtonsPerRow = 5;
+        int row = numFloors / (numButtonsPerRow + 1);
+        int col = numFloors - (row * numButtonsPerRow) - 1;
+
+        int size = ((shaftWidth * 3) - shaftButtonMargin - (4 * buttonButtonMargin)) / 10;
+        int leftMostButtonCenter = x + shaftWidth + shaftButtonMargin + size;
+        int topMostButtonCenter = y + size;
+
+        int buttonX = leftMostButtonCenter + (col * (buttonButtonMargin + size * 2));
+        int buttonY = topMostButtonCenter + (row * (buttonButtonMargin + size * 2));
+
+        ElevatorButton button = new ElevatorButton(buttonX, buttonY, highestFloor, size, 10);
+        buttons.add(button);
     }
 
 }

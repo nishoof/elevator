@@ -13,6 +13,7 @@ public class Game extends PApplet {
 
     private final char[] ELEVATOR_KEYS = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'};
     private final int MAX_ELEVATORS = ELEVATOR_KEYS.length;
+    private final int MAX_QUEUE_DISPLAYED = 10;
 
     private int currentNumFloors;
     private Elevator selectedElevator;
@@ -21,6 +22,7 @@ public class Game extends PApplet {
 
     private ArrayList<Person> peopleInLine;
     private int points;
+    private int credits;
 
 
     public static void main(String[] args) {
@@ -53,6 +55,7 @@ public class Game extends PApplet {
         // People / Points
         peopleInLine = new ArrayList<>();
         points = 0;
+        credits = 0;
         loopSpawnNewPeople(3000, 5000);
     }
 
@@ -82,9 +85,9 @@ public class Game extends PApplet {
         textSize(19);
         int numPeopleInLine = peopleInLine.size();
         int numPeopleToDisplay, numPeopleNotDisplayed;
-        if (numPeopleInLine > 13) {
-            numPeopleToDisplay = 13;
-            numPeopleNotDisplayed = numPeopleInLine - 13;
+        if (numPeopleInLine > MAX_QUEUE_DISPLAYED) {
+            numPeopleToDisplay = MAX_QUEUE_DISPLAYED;
+            numPeopleNotDisplayed = numPeopleInLine - MAX_QUEUE_DISPLAYED;
         } else {
             numPeopleToDisplay = numPeopleInLine;
             numPeopleNotDisplayed = 0;
@@ -95,6 +98,9 @@ public class Game extends PApplet {
         if (numPeopleNotDisplayed > 0) text(numPeopleNotDisplayed + " more...", 20, 130 + numPeopleToDisplay * 24);
 
         // Points
+        textAlign(PConstants.LEFT, PConstants.CENTER);
+        textSize(20);
+        text("Credits: " + credits, 20, 440);
         textSize(40);
         text("Points: " + points, 20, 480);
         
@@ -141,6 +147,8 @@ public class Game extends PApplet {
             selectedElevator.addFloorToQueue(key - '0');
         } else if (key == '`') {
             newPerson(1, currentNumFloors);
+        } else if (key == '+') {
+            increaseFloorCount();
         }
     }
 
@@ -148,7 +156,8 @@ public class Game extends PApplet {
         return peopleInLine;
     }
 
-    public void incrementPoints() {
+    public void rewardPoints() {
+        credits++;
         points++;
     }
 
@@ -202,6 +211,19 @@ public class Game extends PApplet {
         Elevator elevator = new Elevator(x, y, width, height, currentNumFloors, this);
         elevators.add(elevator);
         charToElevatorMap.put(ELEVATOR_KEYS[numElevators], elevator);
+    }
+
+    private void increaseFloorCount() {
+        try {
+            for (Elevator elevator : elevators) {
+                elevator.addFloor();
+            }
+        } catch (IllegalStateException e) {
+            System.err.println("Unable to add more floors");
+            e.printStackTrace();
+            return;
+        }
+        currentNumFloors++;
     }
 
 }
