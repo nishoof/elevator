@@ -216,7 +216,6 @@ public class Elevator {
                 if (status == 0 && doorsOpenPercent == 0) {
                     reachedFloor(false);
                 }
-                return;
             }
 
             // If the floor we wanted to go to is already in the queue, then there's nothing to do
@@ -262,43 +261,41 @@ public class Elevator {
      * @param direction Either 1 (going up) or -1 (going down)
      */
     private void move(int direction) {
+        if (direction != 1 && direction != -1) throw new IllegalArgumentException("Invalid direction \"" + direction + "\", must be -1 or 1");
+        
+        status = direction;
+        
         while (doorsInAnimation) {
             try {
-                Thread.sleep(100);
+                Thread.sleep(16);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
         
-        if (direction != 1 && direction != -1) throw new IllegalArgumentException("Invalid direction \"" + direction + "\", must be -1 or 1");
-        
-        status = direction;
-        
         // If there are floors in the queue, keep the elevator moving until all floors have been reached and removed from queue
         while (floorsInQueue > 0) {
-            // First count the number of floors in the current direction
+            
+            // First, check if we have queued floors in the current direction
 
-            int floorsInCurrDirection = 0;              // TODO: could probably make this a boolean
+            boolean floorsInCurrDirection = false;
+            int firstFloorIndex = (direction == 1) ? (currentFloor - lowestFloor) : (0);
+            int lastFloorIndex = (direction == 1) ? (highestFloor - lowestFloor) : (currentFloor - lowestFloor);
 
-            if (direction == 1) {
-                for (int i = currentFloor - lowestFloor; i < highestFloor - lowestFloor + 1; i++) {
-                    if (queuedFloors[i]) floorsInCurrDirection++;
-                }
-            } else {
-                for (int i = currentFloor - lowestFloor; i >= 0; i--) {
-                    if (queuedFloors[i]) floorsInCurrDirection++;
-                }
+            for (int i = firstFloorIndex; i <= lastFloorIndex; i++) {
+                if (!queuedFloors[i]) continue;
+                floorsInCurrDirection = true;
+                break;
             }
 
-            // If the floors in the current direction are 0, that means there are floors in the other direction that we need to hit so we call this method again in its own thread but going in the other direction
+            // If there are no queued floors in the current direction, that means there are floors in the other direction that we need to hit so we call this method again in its own thread but going in the other direction
 
-            if (floorsInCurrDirection == 0) {
+            if (!floorsInCurrDirection) {
                 new Thread(() -> move(direction * -1)).start();
                 return;
             }
 
-            // If we got to this point, that means there are floors in the current direction that we need to hit.
-            // So we start moving towards them. First call Thread.sleep to simulate the time it takes for an elevator to go up
+            // If we got to this point, that means there are floors in the current direction that we need to hit. So we start moving towards them.
 
             animateMovingOneFloor(direction);
 
