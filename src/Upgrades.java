@@ -5,7 +5,7 @@ import processing.core.PConstants;
 
 public class Upgrades {
 
-    private final int ELEVATOR_FLOOR_COST = 10;
+    private final int CAPACITY_UPGRADE_COST = 10;
 
     private Game game;
 
@@ -50,17 +50,17 @@ public class Upgrades {
         d.fill(0);
         d.text("Credits: " + game.getCredits(), game.width - 20, game.height - 20);
         
-        // Draw the elevator floors upgrade
+        // Draw the elevator capacity upgrade
         d.fill(elevatorFloorsUpgradeHovered ? 225 : 240);
         d.rect(15, 75, 300, 128);
         d.fill(0);
         d.textSize(24);
         d.textAlign(PConstants.LEFT, PConstants.TOP);
-        d.text("Elevator Floors", 22, 85);
+        d.text("Elevator capacity", 22, 85);
         d.textSize(20);
         d.text("Current: " + game.getNumFloors(), 22, 117);
         d.text("Upgrade to: " + (game.getNumFloors() + 1), 22, 145);
-        d.text("Cost: " + ELEVATOR_FLOOR_COST, 22, 173);
+        d.text("Cost: " + CAPACITY_UPGRADE_COST, 22, 173);
         
         d.pop();           // Restore original settings
     }
@@ -75,17 +75,14 @@ public class Upgrades {
 
         // Elevator floors upgrade
         if (mouseX > 15 && mouseX < 315 && mouseY > 75 && mouseY < 203) {
-            if (game.getCredits() < ELEVATOR_FLOOR_COST) {
+            if (game.getCredits() < CAPACITY_UPGRADE_COST) {
                 System.out.println("Not enough credits to upgrade elevator floors.");
             } else {
-                game.spendCredits(ELEVATOR_FLOOR_COST);
+                game.spendCredits(CAPACITY_UPGRADE_COST);
                 game.increaseFloorCount();
             }
         }
     }
-
-    // int scaledMouseX = (int)(1.0 * mouseX / width * WINDOW_SIZE * X_RATIO);
-    //     int scaledMouseY = (int)(1.0 * mouseY / height * WINDOW_SIZE * Y_RATIO);
 
     public void toggleMenuDisplay() {
         menuOpen = !menuOpen;

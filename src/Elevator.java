@@ -11,37 +11,40 @@ public class Elevator {
     private final double secDoorsOpen = 1.5;                // how long the door stays open for
     private final double secDoorsDelay = 0.5;               // the delay between elevator stop -> door open or door open -> elevator move
     private final double secDoorsToOpen = 0.25;             // the time it takes for the door to open/close (animation time)
-
+    
     private final double tickWidthPercent = 0.15;
     private final int shaftButtonMargin = 40;               // margin between right bound of shaft and left bound of left most button
     private final int buttonButtonMargin = 10;              // margin between right bound of a button and left bound of the button to the right
     private final int maxfloorNumberTextSize = 25;
     
     private final Game game;
-
+    
     private int currentFloor;
     private int highestFloor;
     private int lowestFloor;
     private int floorPercent;                               // used for animation
-
+    
     private int floorsInQueue;
     private boolean[] queuedFloors;
     private int status;
     private int doorsOpenPercent;                           // used for animation
     private boolean doorsInAnimation;                       // used for animation. If the doors are in the process of opening/closing (including the delay before & after), this is true
-
+    
     private int x;
     private int y;
     private int boundaryHeight;
     private int shaftWidth;
     private int shaftHeight;
     private int cabinHeight;
-
+    
     private boolean highlighted;
-
+    
     private ArrayList<ElevatorButton> buttons;
-
+    
     private ArrayList<Person> peopleInElevator;
+    
+    private int elevatorCapacity = 5;
+    
 
     /**
      * Constructs a new Elevator
@@ -375,6 +378,10 @@ public class Elevator {
         int n2 = 0;      // number of people removed from the line
         ArrayList<Person> peopleInLine = game.getPeopleInLine();
         for (int i = 0; i < peopleInLine.size() + n2; i++) {
+            if (peopleInElevator.size() == elevatorCapacity) {
+                System.out.println("Elevator is full");
+                break;
+            }
             Person person = peopleInLine.get(i - n2);
             if (person.getCurrentFloor() != this.getCurrentFloor()) continue;
             n2++;
@@ -447,6 +454,14 @@ public class Elevator {
 
         ElevatorButton button = new ElevatorButton(buttonX, buttonY, highestFloor, size, 10);
         buttons.add(button);
+    }
+
+    public int getCapacity() {
+        return elevatorCapacity;
+    }
+
+    public void upgradeCapacity() {
+        elevatorCapacity++;
     }
 
 }
