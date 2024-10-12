@@ -1,5 +1,3 @@
-import java.awt.Point;
-
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PFont;
@@ -15,6 +13,7 @@ public class Hint extends PApplet {
 
     private int x;
     private int y;
+    private int endingY;
     private int width;
     private int height;         // height of box. text won't be drawn within 3 px of box
 
@@ -49,8 +48,15 @@ public class Hint extends PApplet {
         this.height = 50;
     }
 
+    public Hint(int x, int startingY, int endingY, String text) {
+        this(x, startingY, text);
+        this.endingY = endingY;
+    }
+
     public void draw(PApplet d) {
         d.push();          // Save original settings
+
+        updateY();
 
         // Box
         d.fill(230);
@@ -70,12 +76,6 @@ public class Hint extends PApplet {
         d.pop();           // Restore original settings
     }
 
-    public void mousePressed(Point mouse) {
-        if (contains(mouse.x, mouse.y)) {
-            System.out.println("Hint clicked");
-        }
-    }
-
     public boolean contains(int x, int y) {
         if (x < this.x - width/2) return false;
         if (x > this.x + width/2) return false;
@@ -83,6 +83,22 @@ public class Hint extends PApplet {
         if (y > this.y + height/2) return false;
         
         return true;
+    }
+
+    private void updateY() {
+        if (y != endingY) {
+            if (y < endingY) {
+                y += 5;
+                if (y > endingY) {
+                    y = endingY;
+                }
+            } else {
+                y -= 5;
+                if (y < endingY) {
+                    y = endingY;
+                }
+            }
+        }
     }
 
 }

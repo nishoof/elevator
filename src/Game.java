@@ -27,7 +27,7 @@ public class Game extends PApplet {
     private int points;
     private int credits;
 
-    private ArrayList<Hint> hints;
+    private Hint hint;
     private boolean buyMenuHintShown;
 
 
@@ -68,7 +68,7 @@ public class Game extends PApplet {
         upgrades = new Upgrades(this);
 
         // Hints
-        hints = new ArrayList<>();
+        hint = null;
         buyMenuHintShown = false;
     }
 
@@ -127,7 +127,7 @@ public class Game extends PApplet {
         upgrades.draw(this);
 
         // Hints
-        for (Hint hint : hints) {
+        if (hint != null) {
             hint.draw(this);
         }
     }
@@ -135,11 +135,9 @@ public class Game extends PApplet {
     public void mousePressed() {
         Point mouse = getMouse();
 
-        for (int i = 0; i < hints.size(); i++) {
-            Hint hint = hints.get(i);
-            if (hint.contains(mouse.x, mouse.y)) {
-                hints.remove(i);
-            }
+        // If hint was clicked on, remove it
+        if (hint != null && hint.contains(mouse.x, mouse.y)) {
+            hint = null;
         }
 
         for (Elevator elevator : elevators) {
@@ -193,8 +191,7 @@ public class Game extends PApplet {
         points++;
 
         if (!buyMenuHintShown && credits >= 10) {
-            Hint hint = new Hint(500, 450, "Press 'b' to open the upgrades menu");
-            hints.add(hint);
+            hint = new Hint(500, height + 50, 450, "Press 'b' to open the upgrades menu");
             buyMenuHintShown = true;
         }
     }
