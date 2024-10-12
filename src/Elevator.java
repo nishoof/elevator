@@ -195,42 +195,42 @@ public class Elevator {
         // System.out.println(mouseX + "\t" + mouseY);
         for (ElevatorButton button : buttons) {
             if (button.contains(mouseX, mouseY)) {
-                new Thread(() -> {
-                    this.addFloorToQueue(button.getFloorNum());
-                }).start();
+                this.addFloorToQueue(button.getFloorNum());
             }
         }
     }
 
     /**
-     * Adds newFloor to the queue for this elevator so that it will eventually go to that floor. Will start the elevator up if it's not already moving.
+     * Adds newFloor to the queue for this elevator so that it will eventually go to that floor. Will start the elevator up if it's not already moving. This method will run in its own Thread.
      * @param newFloor The new floor number (NOT INDEX) to add to the queue
      * @return if newFloor was added to the queue successfully or if the elevator is already at newFloor
      */
-    public boolean addFloorToQueue(int newFloor) {
-        // Check the input to make sure it's good before proceeding
-        if (newFloor < lowestFloor || newFloor > highestFloor) throw new IllegalArgumentException("Floor " + newFloor + " is out of range");
-        
-        // If we are already at the floor, just open the doors and return
-        if (this.currentFloor == newFloor) {
-            // If the elevator isn't moving and doors are closed, then simply open the doors without delay
-            if (status == 0 && doorsOpenPercent == 0) {
-                reachedFloor(false);
+    public void addFloorToQueue(int newFloor) {
+        new Thread(() -> {
+            // Check the input to make sure it's good before proceeding
+            if (newFloor < lowestFloor || newFloor > highestFloor) throw new IllegalArgumentException("Floor " + newFloor + " is out of range");
+            
+            // If we are already at the floor, just open the doors and return
+            if (this.currentFloor == newFloor) {
+                // If the elevator isn't moving and doors are closed, then simply open the doors without delay
+                if (status == 0 && doorsOpenPercent == 0) {
+                    reachedFloor(false);
+                }
+                return;
             }
-            return true;
-        }
 
-        // If the floor we wanted to go to is already in the queue, then there's nothing to do
-        if (queuedFloors[newFloor - lowestFloor]) return true;
+            // If the floor we wanted to go to is already in the queue, then there's nothing to do
+            if (queuedFloors[newFloor - lowestFloor]) return;
 
-        // If we got here, then we have a floor to add to the queue...
-        queuedFloors[newFloor - lowestFloor] = true;
-        floorsInQueue++;
+            // If we got here, then we have a floor to add to the queue...
+            queuedFloors[newFloor - lowestFloor] = true;
+            floorsInQueue++;
 
-        // If the elevator is stationary, we need to get it to start moving. Otherwise, it will get there on its own
-        if (status == 0) new Thread(() -> move(newFloor > currentFloor ? 1 : -1)).start();
+            // If the elevator is stationary, we need to get it to start moving. Otherwise, it will get there on its own
+            if (status == 0) new Thread(() -> move(newFloor > currentFloor ? 1 : -1)).start();
 
-        return true;
+            return;
+        }).start();
     }
 
     /**
