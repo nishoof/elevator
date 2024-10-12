@@ -9,9 +9,9 @@ import processing.core.PConstants;
 
 public class Game extends PApplet {
 
-    public final int X_RATIO = 16;
-    public final int Y_RATIO = 9;
-    public final int WINDOW_SIZE = 60;
+    public static final int X_RATIO = 16;
+    public static final int Y_RATIO = 9;
+    public static final int WINDOW_SIZE = 60;
 
     private final char[] ELEVATOR_KEYS = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'};
     private final int MAX_ELEVATORS = ELEVATOR_KEYS.length;
@@ -133,7 +133,7 @@ public class Game extends PApplet {
     }
 
     public void mousePressed() {
-        Point mouse = getMouse();
+        Point mouse = Game.getScaledMouse(this);
 
         // If hint was clicked on, remove it
         if (hint != null && hint.contains(mouse.x, mouse.y)) {
@@ -206,18 +206,6 @@ public class Game extends PApplet {
         } while (desiredFloor == currentFloor);
 
         Person person = new Person(currentFloor, desiredFloor);
-
-        // boolean personAddedToElevator = false;
-        
-        // for (Elevator elevator : elevators) {
-        //     if (elevator.getCurrentFloor() == currentFloor) {
-        //         elevator.getPeopleInElevator().add(person);
-        //         personAddedToElevator = true;
-        //         break;
-        //     }
-        // }
-        
-        // if (!personAddedToElevator) peopleInLine.add(person);
         
         peopleInLine.add(person);
     }
@@ -273,9 +261,13 @@ public class Game extends PApplet {
         credits -= amount;
     }
 
-    public Point getMouse() {
-        int scaledMouseX = (int)(1.0 * mouseX / width * WINDOW_SIZE * X_RATIO);
-        int scaledMouseY = (int)(1.0 * mouseY / height * WINDOW_SIZE * Y_RATIO);
+    public Point getScaledMouse() {
+        return getScaledMouse(this);
+    }
+
+    public static Point getScaledMouse(PApplet d) {
+        int scaledMouseX = (int)(1.0 * d.mouseX / d.width * WINDOW_SIZE * X_RATIO);
+        int scaledMouseY = (int)(1.0 * d.mouseY / d.height * WINDOW_SIZE * Y_RATIO);
         
         return new Point(scaledMouseX, scaledMouseY);
     }

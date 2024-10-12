@@ -25,7 +25,6 @@ public class Hint extends PApplet {
 
         // Text
         this.font = FontHolder.getRegular();
-        System.out.println(text.length() + " " + (MAX_CHARS));
         if (text.length() <= MAX_CHARS) {
             this.text = text;
         } else {
@@ -37,7 +36,6 @@ public class Hint extends PApplet {
         int padding = 20;
         double charWidth = font.width('a');
         double textWidth = charWidth * text.length() * textSize;
-        System.out.println(charWidth + " " + text.length() + " " + textWidth);
         if (textWidth + padding < GREATEST_WIDTH) {
             this.width = (int) textWidth + padding;
         } else {

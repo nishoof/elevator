@@ -23,7 +23,7 @@ public class Upgrades {
         if (!menuOpen) return;
 
         // Check if the mouse is hovering over anything
-        Point mouse = game.getMouse();
+        Point mouse = game.getScaledMouse();
         elevatorFloorsUpgradeHovered = mouse.x > 15 && mouse.x < 315 && mouse.y > 75 && mouse.y < 203;
 
         d.push();          // Save original settings
@@ -76,7 +76,7 @@ public class Upgrades {
         // Elevator floors upgrade
         if (mouseX > 15 && mouseX < 315 && mouseY > 75 && mouseY < 203) {
             if (game.getCredits() < CAPACITY_UPGRADE_COST) {
-                System.out.println("Not enough credits to upgrade elevator floors.");
+                System.out.println("Not enough credits.");
             } else {
                 game.spendCredits(CAPACITY_UPGRADE_COST);
                 game.increaseFloorCount();

@@ -1,3 +1,5 @@
+import java.awt.Point;
+
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -49,17 +51,9 @@ public class ElevatorButton {
     public void draw(PApplet d) {
         d.push();          // Save original settings
         
-        // Decide the stroke color and weight based on whether the button is on
-        if (on) {
-            d.stroke(onOutlineColor);
-            d.strokeWeight(4);
-        } else {
-            d.stroke(0);
-            d.strokeWeight(3);
-        }
+        update(d);
 
         // Square representing the button
-        d.fill(250);
         d.rectMode(PConstants.CENTER);
         d.rect(x, y, size * 2, size * 2, cornerRounding);
         
@@ -89,4 +83,22 @@ public class ElevatorButton {
         this.on = on;
     }
     
+    private void update(PApplet d) {
+        // Decide the stroke color and weight based on whether the button is on
+        if (on) {
+            d.stroke(onOutlineColor);
+            d.strokeWeight(4);
+        } else {
+            d.stroke(0);
+            d.strokeWeight(3);
+        }
+
+        // Decide if the button is being hovered over
+        Point mouse = Game.getScaledMouse(d);
+        if (contains(mouse.x, mouse.y)) {
+            d.fill(235);
+        } else {
+            d.fill(250);
+        }
+    }
 }

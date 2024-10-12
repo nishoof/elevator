@@ -176,7 +176,7 @@ public class Elevator {
         d.textSize(20);
         String peopleInElevatorDisplayStr = null;
         if (peopleInElevator.size() == 0) {
-            peopleInElevatorDisplayStr = "No one in elevator";
+            peopleInElevatorDisplayStr = "Elevator is empty";
         } else {
             peopleInElevatorDisplayStr = peopleInElevatorStr.toString();
         }
