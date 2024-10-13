@@ -26,6 +26,7 @@ public class Game extends PApplet {
     private Upgrades upgrades;
     private int points;
     private int credits;
+    private long startTime;
 
     private Hint hint;
     private boolean buyMenuHintShown;
@@ -66,6 +67,7 @@ public class Game extends PApplet {
         points = 0;
         credits = 0;
         upgrades = new Upgrades(this);
+        startTime = System.currentTimeMillis();
 
         // Hints
         hint = null;
@@ -113,9 +115,16 @@ public class Game extends PApplet {
         // Points
         textAlign(PConstants.LEFT, PConstants.CENTER);
         textSize(20);
-        text("Credits: " + credits, 20, 440);
+        text("Credits: " + credits, 20, 420);
         textSize(40);
-        text("Points: " + points, 20, 480);
+        text("Points: " + points, 20, 460);
+
+        // Stopwatch
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        long seconds = (elapsedTime / 1000) % 60;
+        long minutes = elapsedTime / (1000 * 60);
+        textSize(20);
+        text(String.format("Time: %02d:%02d", minutes, seconds), 20, 500);
         
         // Draw Elevators
         textFont(FontHolder.getMedium());
