@@ -23,7 +23,7 @@ public class Upgrades {
         if (!menuOpen) return;
 
         // Check if the mouse is hovering over anything
-        Point mouse = game.getScaledMouse();
+        Point mouse = Main.getScaledMouse(d);
         elevatorFloorsUpgradeHovered = mouse.x > 15 && mouse.x < 315 && mouse.y > 75 && mouse.y < 203;
 
         d.push();          // Save original settings
@@ -36,19 +36,19 @@ public class Upgrades {
         d.fill(0);
         d.textSize(32);
         d.textAlign(PConstants.CENTER, PConstants.TOP);
-        d.text("Upgrades", d.width / 2, 30);
+        d.text("Upgrades", Main.WINDOW_WIDTH / 2, 30);
         
         // Draw the "Close" button
         d.fill(255, 0, 0);
         d.noStroke();
-        d.rect(d.width - 50, 15, 35, 35);
+        d.rect(910, 15, 35, 35);
 
         // Show the current credits
         d.textFont(FontHolder.getRegular());
         d.textAlign(PConstants.RIGHT, PConstants.BOTTOM);
         d.textSize(24);
         d.fill(0);
-        d.text("Credits: " + game.getCredits(), game.width - 20, game.height - 20);
+        d.text("Credits: " + game.getCredits(), 940, 520);
         
         // Draw the elevator capacity upgrade
         d.fill(elevatorFloorsUpgradeHovered ? 225 : 240);
@@ -69,7 +69,7 @@ public class Upgrades {
         if (!menuOpen) return;
 
         // Close button
-        if (mouseX > game.width - 50 && mouseX < game.width - 35 && mouseY > 15 && mouseY < 85) {
+        if (mouseX > Main.WINDOW_WIDTH - 50 && mouseX < Main.WINDOW_WIDTH - 35 && mouseY > 15 && mouseY < 85) {
             closeMenu();
         }
 

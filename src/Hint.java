@@ -2,7 +2,7 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PFont;
 
-public class Hint extends PApplet {
+public class Hint {
 
     private final int GREATEST_WIDTH = 350;
     private final int MAX_CHARS = 108;          // TODO: make this not hard-coded
