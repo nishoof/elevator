@@ -1,7 +1,6 @@
-import processing.core.PApplet;
 import processing.core.PFont;
 
-public class FontHolder extends PApplet {
+public class FontHolder extends Main {
 
     private static PFont regular;
     private static PFont medium;

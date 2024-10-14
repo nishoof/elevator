@@ -1,5 +1,3 @@
-import java.awt.Point;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -7,11 +5,7 @@ import processing.core.PApplet;
 
 import processing.core.PConstants;
 
-public class Game extends PApplet {
-
-    public static final int X_RATIO = 16;
-    public static final int Y_RATIO = 9;
-    public static final int WINDOW_SIZE = 60;
+public class Game implements Screen {
 
     private final char[] ELEVATOR_KEYS = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'};
     private final int MAX_ELEVATORS = ELEVATOR_KEYS.length;
@@ -31,26 +25,7 @@ public class Game extends PApplet {
     private Hint hint;
     private boolean buyMenuHintShown;
 
-
-    public static void main(String[] args) {
-        PApplet.main("Game");
-    }
-
-    public void settings() {
-        size(WINDOW_SIZE * X_RATIO, WINDOW_SIZE * Y_RATIO);
-        smooth();
-    }
-
-    public void setup() {
-        // Window
-        windowResizable(true);
-        windowTitle("Elevator Simulator");
-
-        // Fonts
-        FontHolder.setRegular(createFont("GeistMono-Regular.otf", 128));
-        FontHolder.setMedium(createFont("GeistMono-Medium.otf", 128));
-        textMode(PConstants.MODEL);
-
+    public Game() {
         // Elevators
         currentNumFloors = 3;
         selectedElevator = null;
@@ -74,30 +49,26 @@ public class Game extends PApplet {
         buyMenuHintShown = false;
     }
 
-    public void draw() {
-        windowRatio(WINDOW_SIZE * X_RATIO, WINDOW_SIZE * Y_RATIO);
-
-        // Background (clears screen too)
-        background(255);
-
+    @Override
+    public void draw(PApplet d) {
         // Game Title
-        strokeWeight(0);
-        textFont(FontHolder.getRegular());
-        fill(0);
-        rect(15, 15, 400, 50);      // outer black rect
-        textSize(32);
-        fill(255);
-        textAlign(PConstants.LEFT, PConstants.CENTER);
-        text("Elevator Simulator", 20, 40);
-        rect(380, 25, 20, 30);      // small white rectangle symbol
+        d.strokeWeight(0);
+        d.textFont(FontHolder.getRegular());
+        d.fill(0);
+        d.rect(15, 15, 400, 50);      // outer black rect
+        d.textSize(32);
+        d.fill(255);
+        d.textAlign(PConstants.LEFT, PConstants.CENTER);
+        d.text("Elevator Simulator", 20, 40);
+        d.rect(380, 25, 20, 30);      // small white rectangle symbol
 
         // Queue
-        fill(0);
-        textFont(FontHolder.getMedium());
-        textSize(24);
-        text("Queue", 20, 100);
-        textFont(FontHolder.getRegular());
-        textSize(19);
+        d.fill(0);
+        d.textFont(FontHolder.getMedium());
+        d.textSize(24);
+        d.text("Queue", 20, 100);
+        d.textFont(FontHolder.getRegular());
+        d.textSize(19);
         int numPeopleInLine = peopleInLine.size();
         int numPeopleToDisplay, numPeopleNotDisplayed;
         if (numPeopleInLine > MAX_QUEUE_DISPLAYED) {
@@ -108,57 +79,57 @@ public class Game extends PApplet {
             numPeopleNotDisplayed = 0;
         }
         for (int i = 0; i < numPeopleToDisplay; i++) {
-            text(peopleInLine.get(i).toString(), 20, 130 + i * 24);
+            d.text(peopleInLine.get(i).toString(), 20, 130 + i * 24);
         }
-        if (numPeopleNotDisplayed > 0) text(numPeopleNotDisplayed + " more...", 20, 130 + numPeopleToDisplay * 24);
+        if (numPeopleNotDisplayed > 0) d.text(numPeopleNotDisplayed + " more...", 20, 130 + numPeopleToDisplay * 24);
 
         // Points
-        textAlign(PConstants.LEFT, PConstants.CENTER);
-        textSize(20);
-        text("Credits: " + credits, 20, 420);
-        textSize(40);
-        text("Points: " + points, 20, 460);
+        d.textAlign(PConstants.LEFT, PConstants.CENTER);
+        d.textSize(20);
+        d.text("Credits: " + credits, 20, 420);
+        d.textSize(40);
+        d.text("Points: " + points, 20, 460);
 
         // Stopwatch
         long elapsedTime = System.currentTimeMillis() - startTime;
         long seconds = (elapsedTime / 1000) % 60;
         long minutes = elapsedTime / (1000 * 60);
-        textSize(20);
-        text(String.format("Time: %02d:%02d", minutes, seconds), 20, 500);
+        d.textSize(20);
+        d.text(String.format("Time: %02d:%02d", minutes, seconds), 20, 500);
         
         // Draw Elevators
-        textFont(FontHolder.getMedium());
+        d.textFont(FontHolder.getMedium());
         for (Elevator elevator : elevators) {
-            elevator.draw(this);
+            elevator.draw(d);
         }
 
         // Upgrades Menu
-        upgrades.draw(this);
+        upgrades.draw(d);
 
         // Hints
         if (hint != null) {
-            hint.draw(this);
+            hint.draw(d);
         }
     }
 
-    public void mousePressed() {
-        Point mouse = Game.getScaledMouse(this);
-
+    @Override
+    public void mousePressed(int mouseX, int mouseY) {
         // If hint was clicked on, remove it
-        if (hint != null && hint.contains(mouse.x, mouse.y)) {
+        if (hint != null && hint.contains(mouseX, mouseY)) {
             hint = null;
         }
 
         for (Elevator elevator : elevators) {
-            elevator.mousePressed(mouse.x, mouse.y);
+            elevator.mousePressed(mouseX, mouseY);
         }
 
-        upgrades.mousePressed(mouse.x, mouse.y);
+        upgrades.mousePressed(mouseX, mouseY);
     }
 
-    public void keyPressed() {
+    @Override
+    public void keyPressed(char key) {
         // Make the key lowercase to make it work even if the user did a capital for some reason
-        char key = Character.toLowerCase(this.key);
+        key = Character.toLowerCase(key);
 
         if (key == 'b') {
             upgrades.toggleMenuDisplay();
@@ -200,7 +171,7 @@ public class Game extends PApplet {
         points++;
 
         if (!buyMenuHintShown && credits >= 10) {
-            hint = new Hint(500, height + 50, 450, "Press 'b' to open the upgrades menu");
+            hint = new Hint(500, Main.WINDOW_HEIGHT + 50, Main.WINDOW_HEIGHT - 90, "Press 'b' to open the upgrades menu");
             buyMenuHintShown = true;
         }
     }
@@ -268,17 +239,6 @@ public class Game extends PApplet {
 
     public void spendCredits(int amount) {
         credits -= amount;
-    }
-
-    public Point getScaledMouse() {
-        return getScaledMouse(this);
-    }
-
-    public static Point getScaledMouse(PApplet d) {
-        int scaledMouseX = (int)(1.0 * d.mouseX / d.width * WINDOW_SIZE * X_RATIO);
-        int scaledMouseY = (int)(1.0 * d.mouseY / d.height * WINDOW_SIZE * Y_RATIO);
-        
-        return new Point(scaledMouseX, scaledMouseY);
     }
 
 }

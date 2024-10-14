@@ -94,7 +94,7 @@ public class ElevatorButton {
         }
 
         // Decide if the button is being hovered over
-        Point mouse = Game.getScaledMouse(d);
+        Point mouse = Main.getScaledMouse(d);
         if (contains(mouse.x, mouse.y)) {
             d.fill(235);
         } else {
