@@ -5,6 +5,11 @@ public class Menu {
 
     private boolean playButtonPressed;
 
+    private final int playButtonX = 380;
+    private final int playButtonY = 430;
+    private final int playButtonWidth = 200;
+    private final int playButtonHeight = 80;
+
     public Menu() {
         playButtonPressed = false;
     }
@@ -47,8 +52,8 @@ public class Menu {
         // Play button at the center bottom
         d.fill(255);
         d.strokeWeight(3);
-        d.rectMode(PConstants.CENTER);
-        d.rect(480, 470, 200, 80, 8);      // outer black rect
+        d.rectMode(PConstants.CORNER);
+        d.rect(playButtonX, playButtonY, playButtonWidth, playButtonHeight, 8);      // outer black rect
         d.fill(0);
         d.textFont(FontHolder.getMedium());
         d.textSize(32);
@@ -59,7 +64,8 @@ public class Menu {
 
     public void mousePressed(int mouseX, int mouseY) {
         // If play button was pressed, update playButtonPressed
-        if (mouseX >= 380 && mouseX <= 580 && mouseY >= 360 && mouseY <= 440) {
+        if (mouseX >= playButtonX && mouseX <= playButtonX + playButtonWidth &&
+            mouseY >= playButtonY && mouseY <= playButtonY + playButtonHeight) {
             playButtonPressed = true;
         }
     }
