@@ -1,3 +1,5 @@
+import java.awt.Point;
+
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -16,6 +18,9 @@ public class Menu {
 
     public void draw(PApplet d) {
         d.push();          // Save original settings
+
+        Point mouse = Main.getScaledMouse(d);
+        boolean playButtonIsHovered = buttonContains(mouse.x, mouse.y);
 
         // Game Title
         d.strokeWeight(0);
@@ -49,8 +54,8 @@ public class Menu {
         d.text("2) Type the floor number you want",                 480, 155 + s1*8 + s2*3);
         d.text("Have fun!",                                         480, 155 + s1*9 + s2*4);
 
-        // Play button at the center bottom
-        d.fill(255);
+        // Play button
+        d.fill(playButtonIsHovered ? 235 : 250);
         d.strokeWeight(3);
         d.rectMode(PConstants.CORNER);
         d.rect(playButtonX, playButtonY, playButtonWidth, playButtonHeight, 8);      // outer black rect
@@ -64,14 +69,21 @@ public class Menu {
 
     public void mousePressed(int mouseX, int mouseY) {
         // If play button was pressed, update playButtonPressed
-        if (mouseX >= playButtonX && mouseX <= playButtonX + playButtonWidth &&
-            mouseY >= playButtonY && mouseY <= playButtonY + playButtonHeight) {
+        if (buttonContains(mouseX, mouseY)) {
             playButtonPressed = true;
         }
     }
 
     public boolean playButtonPressed() {
         return playButtonPressed;
+    }
+
+    private boolean buttonContains(int x, int y) {
+        if (x < playButtonX) return false;
+        if (y < playButtonY) return false;
+        if (x > playButtonX + playButtonWidth) return false;
+        if (y > playButtonY + playButtonHeight) return false;
+        return true;
     }
 
 }
