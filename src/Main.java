@@ -1,5 +1,7 @@
 import java.awt.Point;
 
+import java.util.ArrayList;
+
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -12,8 +14,11 @@ public class Main extends PApplet {
     public static final int WINDOW_HEIGHT = WINDOW_SIZE * Y_RATIO;
 
     private int currentScreen;
-    private Menu menu;
-    private Game game;
+    private ArrayList<Screen> screens;
+    /*
+     * 0: Menu
+     * 1: Game
+     */
 
     public static void main(String[] args) {
         PApplet.main("Main");
@@ -36,8 +41,10 @@ public class Main extends PApplet {
         
         // Screens
         currentScreen = 0;
-        menu = new Menu();
-        game = null;
+        screens = new ArrayList<>();
+        Menu menu = new Menu();
+        screens.add(menu);
+        screens.add(null);
     }
 
     public void draw() {
@@ -47,33 +54,24 @@ public class Main extends PApplet {
         background(255);
 
         // Switch screens if menu's play button was pressed
+        Menu menu = (Menu)(screens.get(0));
         if (currentScreen == 0 && menu.playButtonPressed()) {
-            game = new Game();
+            screens.set(1, new Game());
             currentScreen = 1;
         }
 
         // Draw current screen
-        if (currentScreen == 0) {
-            menu.draw(this);
-        } else if (currentScreen == 1) {
-            game.draw(this);
-        }
+        screens.get(currentScreen).draw(this);
     }
 
     public void mousePressed() {
         Point mouse = getScaledMouse(this);
 
-        if (currentScreen == 0) {
-            menu.mousePressed(mouse.x, mouse.y);
-        } else if (currentScreen == 1) {
-            game.mousePressed(mouse.x, mouse.y);
-        }
+        screens.get(currentScreen).mousePressed(mouse.x, mouse.y);
     }
 
     public void keyPressed() {
-        if (currentScreen == 1) {
-            game.keyPressed(key);
-        }
+        screens.get(currentScreen).keyPressed(key);
     }
 
     public static Point getScaledMouse(PApplet d) {

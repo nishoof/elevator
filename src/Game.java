@@ -5,7 +5,7 @@ import processing.core.PApplet;
 
 import processing.core.PConstants;
 
-public class Game {
+public class Game implements Screen {
 
     private final char[] ELEVATOR_KEYS = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'};
     private final int MAX_ELEVATORS = ELEVATOR_KEYS.length;
@@ -49,6 +49,7 @@ public class Game {
         buyMenuHintShown = false;
     }
 
+    @Override
     public void draw(PApplet d) {
         // Game Title
         d.strokeWeight(0);
@@ -111,6 +112,7 @@ public class Game {
         }
     }
 
+    @Override
     public void mousePressed(int mouseX, int mouseY) {
         // If hint was clicked on, remove it
         if (hint != null && hint.contains(mouseX, mouseY)) {
@@ -124,6 +126,7 @@ public class Game {
         upgrades.mousePressed(mouseX, mouseY);
     }
 
+    @Override
     public void keyPressed(char key) {
         // Make the key lowercase to make it work even if the user did a capital for some reason
         key = Character.toLowerCase(key);

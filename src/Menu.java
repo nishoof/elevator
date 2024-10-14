@@ -3,7 +3,7 @@ import java.awt.Point;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public class Menu {
+public class Menu implements Screen {
 
     private boolean playButtonPressed;
 
@@ -16,6 +16,7 @@ public class Menu {
         playButtonPressed = false;
     }
 
+    @Override
     public void draw(PApplet d) {
         d.push();          // Save original settings
 
@@ -67,11 +68,17 @@ public class Menu {
         d.pop();           // Restore original settings
     }
 
+    @Override
     public void mousePressed(int mouseX, int mouseY) {
         // If play button was pressed, update playButtonPressed
         if (buttonContains(mouseX, mouseY)) {
             playButtonPressed = true;
         }
+    }
+
+    @Override
+    public void keyPressed(char key) {
+        // Do nothing
     }
 
     public boolean playButtonPressed() {
