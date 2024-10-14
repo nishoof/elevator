@@ -37,7 +37,7 @@ public class Main extends PApplet {
         // Screens
         currentScreen = 0;
         menu = new Menu();
-        game = new Game();
+        game = null;
     }
 
     public void draw() {
@@ -48,6 +48,7 @@ public class Main extends PApplet {
 
         // Switch screens if menu's play button was pressed
         if (currentScreen == 0 && menu.playButtonPressed()) {
+            game = new Game();
             currentScreen = 1;
         }
 
