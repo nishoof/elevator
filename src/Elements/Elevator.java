@@ -13,10 +13,10 @@ public class Elevator implements UpgradeEventListener {
 
     private final int maxFloors = 10;
     
-    private final double secPerFloor = 0.6;
-    private final double secDoorsOpen = 1.5;                // how long the door stays open for
-    private final double secDoorsDelay = 0.5;               // the delay between elevator stop -> door open or door open -> elevator move
-    private final double secDoorsToOpen = 0.25;             // the time it takes for the door to open/close (animation time)
+    // private double secPerFloor;
+    // private double secDoorsDelay;
+    // private double secDoorsToOpen;
+    // private double secDoorsOpen;
     
     private final double tickWidthPercent = 0.15;
     private final int shaftButtonMargin = 40;               // margin between right bound of shaft and left bound of left most button
@@ -56,7 +56,6 @@ public class Elevator implements UpgradeEventListener {
      * Constructs a new Elevator
      */
     public Elevator(int x, int y, int width, int height, int numFloors, Game game) {
-        System.out.println("Elevator created" + y);
         this.x = x;
         this.y = y;
         this.shaftWidth = width / 4;
@@ -102,9 +101,10 @@ public class Elevator implements UpgradeEventListener {
 
         this.game = game;
 
-        elevatorCapacity = PlayerStats.getElevatorCapacity();
+        elevatorCapacity = PlayerStats.getCapacity();
 
         PlayerStats.addUpgradeEventListener(this);
+        System.out.println(PlayerStats.getAllUpgradeStats());
     }
 
     public void draw(PApplet d) {
@@ -342,7 +342,7 @@ public class Elevator implements UpgradeEventListener {
         // Animate the floor moving
         while (Math.abs(floorPercent) < 100) {
             try {
-                Thread.sleep((long)(secPerFloor * 1000 / SMOOTHNESS));
+                Thread.sleep((long)(PlayerStats.getSecPerFloor() * 1000 / SMOOTHNESS));
                 floorPercent += 100 / SMOOTHNESS * direction;
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -365,7 +365,7 @@ public class Elevator implements UpgradeEventListener {
         // Delay
         if (delayBeforeOpeningDoors) {
             try {
-                Thread.sleep((long)(secDoorsDelay * 1000));
+                Thread.sleep((long)(PlayerStats.getSecDoorsDelay() * 1000));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -375,7 +375,7 @@ public class Elevator implements UpgradeEventListener {
         doorsOpenPercent = 0;
         while (doorsOpenPercent < 100) {
             try {
-                Thread.sleep((long)(secDoorsToOpen * 1000 / SMOOTHNESS));
+                Thread.sleep((long)(PlayerStats.getSecDoorsToOpen() * 1000 / SMOOTHNESS));
                 doorsOpenPercent += 100 / SMOOTHNESS;
                 // System.out.println(doorsOpenPercent);
             } catch (InterruptedException e) {
@@ -412,7 +412,7 @@ public class Elevator implements UpgradeEventListener {
 
         // Hold doors open
         try {
-            Thread.sleep((long)(secDoorsOpen * 1000));
+            Thread.sleep((long)(PlayerStats.getSecDoorsOpen() * 1000));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -420,7 +420,7 @@ public class Elevator implements UpgradeEventListener {
         // Close doors
         while (doorsOpenPercent > 0) {
             try {
-                Thread.sleep((long)(secDoorsToOpen * 1000 / SMOOTHNESS));
+                Thread.sleep((long)(PlayerStats.getSecDoorsToOpen() * 1000 / SMOOTHNESS));
                 doorsOpenPercent -= 100 / SMOOTHNESS;
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -429,7 +429,7 @@ public class Elevator implements UpgradeEventListener {
 
         // Delay
         try {
-            Thread.sleep((long)(secDoorsDelay * 1000));
+            Thread.sleep((long)(PlayerStats.getSecDoorsDelay() * 1000));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -477,7 +477,8 @@ public class Elevator implements UpgradeEventListener {
 
     @Override
     public void onUpgrade() {
-        elevatorCapacity = PlayerStats.getElevatorCapacity();
+        elevatorCapacity = PlayerStats.getCapacity();
+        System.out.println(PlayerStats.getAllUpgradeStats());
     }
 
 }
