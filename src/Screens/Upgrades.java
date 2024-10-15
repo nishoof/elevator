@@ -1,29 +1,24 @@
 package Screens;
 
-import java.awt.Point;
+// import java.awt.Point;
 
 import Main.FontHolder;
 import Main.Main;
+import Main.PlayerStats;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
 public class Upgrades implements Screen {
 
-    private final int CAPACITY_UPGRADE_COST = 10;
+    // private boolean elevatorFloorsUpgradeHovered;
 
-    private Game game;
-
-    private boolean elevatorFloorsUpgradeHovered;
-
-    public Upgrades(Game game) {
-        this.game = game;
-    }
+    public Upgrades() {}
 
     @Override
     public void draw(PApplet d) {
         // Check if the mouse is hovering over anything
-        Point mouse = Main.getScaledMouse(d);
-        elevatorFloorsUpgradeHovered = mouse.x > 15 && mouse.x < 315 && mouse.y > 75 && mouse.y < 203;
+        // Point mouse = Main.getScaledMouse(d);
+        // elevatorFloorsUpgradeHovered = mouse.x > 15 && mouse.x < 315 && mouse.y > 75 && mouse.y < 203;
 
         d.push();          // Save original settings
 
@@ -48,19 +43,54 @@ public class Upgrades implements Screen {
         d.textAlign(PConstants.RIGHT, PConstants.BOTTOM);
         d.textSize(24);
         d.fill(0);
-        d.text("Credits: " + game.getCredits(), 940, 520);
+        d.text("Credits: " + PlayerStats.getCredits(), 940, 520);
         
         // Draw the elevator capacity upgrade
-        d.fill(elevatorFloorsUpgradeHovered ? 225 : 240);
+        // d.fill(elevatorFloorsUpgradeHovered ? 225 : 240);
+        d.fill(240);
         d.rect(15, 75, 300, 128);
         d.fill(0);
         d.textSize(24);
         d.textAlign(PConstants.LEFT, PConstants.TOP);
-        d.text("Elevator capacity", 22, 85);
+        d.text("Capacity", 22, 85);
         d.textSize(20);
-        d.text("Current: " + game.getNumFloors(), 22, 117);
-        d.text("Upgrade to: " + (game.getNumFloors() + 1), 22, 145);
-        d.text("Cost: " + CAPACITY_UPGRADE_COST, 22, 173);
+        d.text("Current: " + PlayerStats.getCapacity(), 22, 117);
+        d.text("Upgrade to: " + (PlayerStats.getCapacity() + 1), 22, 145);
+        d.text("Cost: " + PlayerStats.CAPACITY_UPGRADE_COST, 22, 173);
+
+        // Draw the elevator movement speed upgrade
+        d.fill(240);
+        d.rect(335, 75, 300, 128);
+        d.fill(0);
+        d.textSize(24);
+        d.text("Movement speed", 342, 85);
+        d.textSize(20);
+        d.text("Current: " + PlayerStats.getMovementSpeed(), 342, 117);
+        d.text("Upgrade to: " + (PlayerStats.getMovementSpeed() + 1), 342, 145);
+        d.text("Cost: " + PlayerStats.MOVEMENT_SPEED_UPGRADE_COST, 342, 173);
+
+        // Draw the elevator movement speed upgrade
+        d.fill(240);
+        d.rect(655, 75, 300, 128);
+        d.fill(0);
+        d.textSize(24);
+        d.text("Door speed", 662, 85);
+        d.textSize(20);
+        d.text("Current: " + PlayerStats.getDoorSpeed(), 662, 117);
+        d.text("Upgrade to: " + (PlayerStats.getDoorSpeed() + 1), 662, 145);
+        d.text("Cost: " + PlayerStats.DOOR_SPEED_UPGRADE_COST, 662, 173);
+
+        // Draw the people speed upgrade
+        d.fill(240);
+        d.rect(15, 225, 300, 128);
+        d.fill(0);
+        d.textSize(24);
+        d.textAlign(PConstants.LEFT, PConstants.TOP);
+        d.text("People speed", 22, 235);
+        d.textSize(20);
+        d.text("Current: " + PlayerStats.getPeopleSpeed(), 22, 267);
+        d.text("Upgrade to: " + (PlayerStats.getPeopleSpeed() + 1), 22, 295);
+        d.text("Cost: " + PlayerStats.PEOPLE_SPEED_UPGRADE_COST, 22, 323);
         
         d.pop();           // Restore original settings
     }
@@ -73,14 +103,24 @@ public class Upgrades implements Screen {
             return;
         }
 
-        // Elevator floors upgrade
+        // Elevator capacity upgrade
         if (mouseX > 15 && mouseX < 315 && mouseY > 75 && mouseY < 203) {
-            if (game.getCredits() < CAPACITY_UPGRADE_COST) {
-                System.out.println("Not enough credits.");
-            } else {
-                game.spendCredits(CAPACITY_UPGRADE_COST);
-                game.increaseFloorCount();
-            }
+            PlayerStats.upgradeCapacity();
+        }
+
+        // Elevator movement speed upgrade
+        if (mouseX > 335 && mouseX < 635 && mouseY > 75 && mouseY < 203) {
+            PlayerStats.upgradeMovementSpeed();
+        }
+
+        // Elevator door speed upgrade
+        if (mouseX > 655 && mouseX < 955 && mouseY > 75 && mouseY < 203) {
+            PlayerStats.upgradeDoorSpeed();
+        }
+
+        // People speed upgrade
+        if (mouseX > 15 && mouseX < 315 && mouseY > 225 && mouseY < 353) {
+            PlayerStats.upgradePeopleSpeed();
         }
     }
 

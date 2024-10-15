@@ -8,8 +8,9 @@ import Elements.Hint;
 import Elements.Person;
 import Main.FontHolder;
 import Main.Main;
-import processing.core.PApplet;
+import Main.PlayerStats;
 
+import processing.core.PApplet;
 import processing.core.PConstants;
 
 public class Game implements Screen {
@@ -24,8 +25,6 @@ public class Game implements Screen {
     private HashMap<Character, Elevator> charToElevatorMap;
     
     private ArrayList<Person> peopleInLine;
-    private int points;
-    private int credits;
     private long startTime;
 
     private Hint hint;
@@ -42,11 +41,9 @@ public class Game implements Screen {
 
         // People
         peopleInLine = new ArrayList<>();
-        loopSpawnNewPeople(3000, 5000);
+        loopSpawnNewPeople(2000, 3500);
 
-        // Points
-        points = 0;
-        credits = 0;
+        // Time
         startTime = System.currentTimeMillis();
 
         // Hints
@@ -75,14 +72,8 @@ public class Game implements Screen {
         d.textFont(FontHolder.getRegular());
         d.textSize(19);
         int numPeopleInLine = peopleInLine.size();
-        int numPeopleToDisplay, numPeopleNotDisplayed;
-        if (numPeopleInLine > MAX_QUEUE_DISPLAYED) {
-            numPeopleToDisplay = MAX_QUEUE_DISPLAYED;
-            numPeopleNotDisplayed = numPeopleInLine - MAX_QUEUE_DISPLAYED;
-        } else {
-            numPeopleToDisplay = numPeopleInLine;
-            numPeopleNotDisplayed = 0;
-        }
+        int numPeopleToDisplay = Math.min(numPeopleInLine, MAX_QUEUE_DISPLAYED);
+        int numPeopleNotDisplayed = numPeopleInLine - numPeopleToDisplay;
         for (int i = 0; i < numPeopleToDisplay; i++) {
             d.text(peopleInLine.get(i).toString(), 20, 130 + i * 24);
         }
@@ -91,9 +82,9 @@ public class Game implements Screen {
         // Points
         d.textAlign(PConstants.LEFT, PConstants.CENTER);
         d.textSize(20);
-        d.text("Credits: " + credits, 20, 420);
+        d.text("Credits: " + PlayerStats.getCredits(), 20, 420);
         d.textSize(40);
-        d.text("Points: " + points, 20, 460);
+        d.text("Points: " + PlayerStats.getPoints(), 20, 460);
 
         // Stopwatch
         long elapsedTime = System.currentTimeMillis() - startTime;
@@ -167,10 +158,9 @@ public class Game implements Screen {
     }
 
     public void rewardPoints() {
-        credits++;
-        points++;
+        PlayerStats.addCreditsAndPoints();
 
-        if (!buyMenuHintShown && credits >= 10) {
+        if (!buyMenuHintShown && PlayerStats.getCredits() >= 10) {
             hint = new Hint(500, Main.WINDOW_HEIGHT + 50, Main.WINDOW_HEIGHT - 90, "Press 'b' to open the upgrades menu");
             buyMenuHintShown = true;
         }
@@ -231,14 +221,6 @@ public class Game implements Screen {
 
     public int getNumFloors() {
         return currentNumFloors;
-    }
-
-    public int getCredits() {
-        return credits;
-    }
-
-    public void spendCredits(int amount) {
-        credits -= amount;
     }
 
     public void startTime() {
