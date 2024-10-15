@@ -9,7 +9,7 @@ import processing.core.PConstants;
 
 public class Upgrades implements Screen {
 
-    private final int CAPACITY_UPGRADE_COST = 10;
+    private static final int CAPACITY_UPGRADE_COST = 10;
 
     private Game game;
 
@@ -79,7 +79,7 @@ public class Upgrades implements Screen {
                 System.out.println("Not enough credits.");
             } else {
                 game.spendCredits(CAPACITY_UPGRADE_COST);
-                game.increaseFloorCount();
+                game.upgradeCapacity();
             }
         }
     }
