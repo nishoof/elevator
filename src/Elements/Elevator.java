@@ -3,11 +3,13 @@ package Elements;
 import java.util.ArrayList;
 
 import Main.FontHolder;
+import Main.PlayerStats;
+import Main.UpgradeEventListener;
 import Screens.Game;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public class Elevator {
+public class Elevator implements UpgradeEventListener {
 
     private final int maxFloors = 10;
     
@@ -100,7 +102,9 @@ public class Elevator {
 
         this.game = game;
 
-        elevatorCapacity = 3;
+        elevatorCapacity = PlayerStats.getElevatorCapacity();
+
+        PlayerStats.addUpgradeEventListener(this);
     }
 
     public void draw(PApplet d) {
@@ -471,12 +475,9 @@ public class Elevator {
         buttons.add(button);
     }
 
-    public int getCapacity() {
-        return elevatorCapacity;
-    }
-
-    public void upgradeCapacity() {
-        elevatorCapacity++;
+    @Override
+    public void onUpgrade() {
+        elevatorCapacity = PlayerStats.getElevatorCapacity();
     }
 
 }

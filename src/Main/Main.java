@@ -63,7 +63,7 @@ public class Main extends PApplet {
         screens = new ArrayList<>();
         screens.add(new Menu());
         screens.add(new Game());
-        screens.add(new Upgrades((Game)(screens.get(GAME))));
+        screens.add(new Upgrades());
     }
 
     @Override
@@ -101,7 +101,6 @@ public class Main extends PApplet {
     }
 
     public void switchScreen(int screen) {
-        System.out.println("Switching to screen " + screen);
         currentScreen = screen;
     }
 

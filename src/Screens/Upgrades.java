@@ -10,15 +10,9 @@ import processing.core.PConstants;
 
 public class Upgrades implements Screen {
 
-    private static final int CAPACITY_UPGRADE_COST = 10;
-
-    private Game game;
-
     private boolean elevatorFloorsUpgradeHovered;
 
-    public Upgrades(Game game) {
-        this.game = game;
-    }
+    public Upgrades() {}
 
     @Override
     public void draw(PApplet d) {
@@ -59,9 +53,9 @@ public class Upgrades implements Screen {
         d.textAlign(PConstants.LEFT, PConstants.TOP);
         d.text("Elevator capacity", 22, 85);
         d.textSize(20);
-        d.text("Current: " + game.getNumFloors(), 22, 117);
-        d.text("Upgrade to: " + (game.getNumFloors() + 1), 22, 145);
-        d.text("Cost: " + CAPACITY_UPGRADE_COST, 22, 173);
+        d.text("Current: " + PlayerStats.getElevatorCapacity(), 22, 117);
+        d.text("Upgrade to: " + (PlayerStats.getElevatorCapacity() + 1), 22, 145);
+        d.text("Cost: " + PlayerStats.ELEVATOR_CAPACITY_UPGRADE_COST, 22, 173);
         
         d.pop();           // Restore original settings
     }
@@ -74,14 +68,9 @@ public class Upgrades implements Screen {
             return;
         }
 
-        // Elevator floors upgrade
+        // Elevator capacity upgrade
         if (mouseX > 15 && mouseX < 315 && mouseY > 75 && mouseY < 203) {
-            if (PlayerStats.getCredits() < CAPACITY_UPGRADE_COST) {
-                System.out.println("Not enough credits.");
-            } else {
-                PlayerStats.spendCredits(CAPACITY_UPGRADE_COST);
-                game.upgradeCapacity();
-            }
+            PlayerStats.upgradeCapacity();
         }
     }
 

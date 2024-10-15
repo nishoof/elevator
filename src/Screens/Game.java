@@ -219,12 +219,6 @@ public class Game implements Screen {
         currentNumFloors++;
     }
 
-    public void upgradeCapacity() {
-        for (Elevator elevator : elevators) {
-            elevator.upgradeCapacity();
-        }
-    }
-
     public int getNumFloors() {
         return currentNumFloors;
     }
