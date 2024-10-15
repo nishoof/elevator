@@ -100,7 +100,7 @@ public class Elevator {
 
         this.game = game;
 
-        elevatorCapacity = 5;
+        elevatorCapacity = 3;
     }
 
     public void draw(PApplet d) {

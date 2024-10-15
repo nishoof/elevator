@@ -4,6 +4,7 @@ import java.awt.Point;
 
 import Main.FontHolder;
 import Main.Main;
+import Main.PlayerStats;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -48,7 +49,7 @@ public class Upgrades implements Screen {
         d.textAlign(PConstants.RIGHT, PConstants.BOTTOM);
         d.textSize(24);
         d.fill(0);
-        d.text("Credits: " + game.getCredits(), 940, 520);
+        d.text("Credits: " + PlayerStats.getCredits(), 940, 520);
         
         // Draw the elevator capacity upgrade
         d.fill(elevatorFloorsUpgradeHovered ? 225 : 240);
@@ -75,10 +76,10 @@ public class Upgrades implements Screen {
 
         // Elevator floors upgrade
         if (mouseX > 15 && mouseX < 315 && mouseY > 75 && mouseY < 203) {
-            if (game.getCredits() < CAPACITY_UPGRADE_COST) {
+            if (PlayerStats.getCredits() < CAPACITY_UPGRADE_COST) {
                 System.out.println("Not enough credits.");
             } else {
-                game.spendCredits(CAPACITY_UPGRADE_COST);
+                PlayerStats.spendCredits(CAPACITY_UPGRADE_COST);
                 game.upgradeCapacity();
             }
         }
