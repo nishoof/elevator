@@ -88,9 +88,9 @@ public class Upgrades implements Screen {
         d.textAlign(PConstants.LEFT, PConstants.TOP);
         d.text("People speed", 22, 235);
         d.textSize(20);
-        d.text("Current: " + PlayerStats.getCapacity(), 22, 267);
-        d.text("Upgrade to: " + (PlayerStats.getCapacity() + 1), 22, 295);
-        d.text("Cost: " + PlayerStats.CAPACITY_UPGRADE_COST, 22, 323);
+        d.text("Current: " + PlayerStats.getPeopleSpeed(), 22, 267);
+        d.text("Upgrade to: " + (PlayerStats.getPeopleSpeed() + 1), 22, 295);
+        d.text("Cost: " + PlayerStats.PEOPLE_SPEED_UPGRADE_COST, 22, 323);
         
         d.pop();           // Restore original settings
     }
