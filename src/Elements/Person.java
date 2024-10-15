@@ -1,16 +1,14 @@
+package Elements;
+
 public class Person {
 
     private int currentFloor;
     private int desiredFloor;
-   
-   
-   
+
     public Person(int currentFloor, int desiredFloor) {
         this.currentFloor = currentFloor;
         this.desiredFloor = desiredFloor;
     }
-
-
 
     public int getCurrentFloor() {
         return currentFloor;

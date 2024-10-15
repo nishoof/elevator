@@ -1,6 +1,13 @@
+package Screens;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import Elements.Elevator;
+import Elements.Hint;
+import Elements.Person;
+import Main.FontHolder;
+import Main.Main;
 import processing.core.PApplet;
 
 import processing.core.PConstants;
@@ -17,7 +24,6 @@ public class Game implements Screen {
     private HashMap<Character, Elevator> charToElevatorMap;
     
     private ArrayList<Person> peopleInLine;
-    private Upgrades upgrades;
     private int points;
     private int credits;
     private long startTime;
@@ -38,10 +44,9 @@ public class Game implements Screen {
         peopleInLine = new ArrayList<>();
         loopSpawnNewPeople(3000, 5000);
 
-        // Points / Upgrades
+        // Points
         points = 0;
         credits = 0;
-        upgrades = new Upgrades(this);
         startTime = System.currentTimeMillis();
 
         // Hints
@@ -103,9 +108,6 @@ public class Game implements Screen {
             elevator.draw(d);
         }
 
-        // Upgrades Menu
-        upgrades.draw(d);
-
         // Hints
         if (hint != null) {
             hint.draw(d);
@@ -122,8 +124,6 @@ public class Game implements Screen {
         for (Elevator elevator : elevators) {
             elevator.mousePressed(mouseX, mouseY);
         }
-
-        upgrades.mousePressed(mouseX, mouseY);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class Game implements Screen {
         key = Character.toLowerCase(key);
 
         if (key == 'b') {
-            upgrades.toggleMenuDisplay();
+            Main.getInstance().switchScreen(Main.UPGRADES);
         } else if (key >= 'a' && key <= 'z') {                   // keyIsALetter
             // Figure out what elevator is paired to the key that was pressed
             Elevator elevator = charToElevatorMap.get(key);
@@ -239,6 +239,10 @@ public class Game implements Screen {
 
     public void spendCredits(int amount) {
         credits -= amount;
+    }
+
+    public void startTime() {
+        startTime = System.currentTimeMillis();
     }
 
 }

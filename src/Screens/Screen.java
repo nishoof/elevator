@@ -1,3 +1,5 @@
+package Screens;
+
 import processing.core.PApplet;
 
 public interface Screen {

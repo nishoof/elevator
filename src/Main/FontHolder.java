@@ -1,6 +1,8 @@
+package Main;
+
 import processing.core.PFont;
 
-public class FontHolder extends Main {
+public class FontHolder {
 
     private static PFont regular;
     private static PFont medium;

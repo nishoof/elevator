@@ -1,3 +1,6 @@
+package Elements;
+
+import Main.FontHolder;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PFont;
