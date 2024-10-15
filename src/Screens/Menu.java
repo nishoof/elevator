@@ -1,5 +1,9 @@
+package Screens;
+
 import java.awt.Point;
 
+import Main.FontHolder;
+import Main.Main;
 import processing.core.PApplet;
 import processing.core.PConstants;
 

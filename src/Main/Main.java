@@ -1,7 +1,13 @@
+package Main;
+
 import java.awt.Point;
 
 import java.util.ArrayList;
 
+import Screens.Game;
+import Screens.Menu;
+import Screens.Screen;
+import Screens.Upgrades;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -32,7 +38,7 @@ public class Main extends PApplet {
     }
 
     public static void main(String[] args) {
-        PApplet.main("Main");
+        PApplet.main("Main.Main");
     }
 
     @Override

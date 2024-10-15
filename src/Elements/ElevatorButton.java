@@ -1,5 +1,8 @@
+package Elements;
+
 import java.awt.Point;
 
+import Main.Main;
 import processing.core.PApplet;
 import processing.core.PConstants;
 

@@ -1,5 +1,9 @@
+package Elements;
+
 import java.util.ArrayList;
 
+import Main.FontHolder;
+import Screens.Game;
 import processing.core.PApplet;
 import processing.core.PConstants;
 

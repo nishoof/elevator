@@ -1,6 +1,13 @@
+package Screens;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import Elements.Elevator;
+import Elements.Hint;
+import Elements.Person;
+import Main.FontHolder;
+import Main.Main;
 import processing.core.PApplet;
 
 import processing.core.PConstants;
