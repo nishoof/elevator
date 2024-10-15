@@ -125,7 +125,7 @@ public class Game implements Screen {
         key = Character.toLowerCase(key);
 
         if (key == 'b') {
-            Main.getInstance().switchScreen(2);
+            Main.getInstance().switchScreen(Main.UPGRADES);
         } else if (key >= 'a' && key <= 'z') {                   // keyIsALetter
             // Figure out what elevator is paired to the key that was pressed
             Elevator elevator = charToElevatorMap.get(key);

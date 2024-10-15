@@ -7,20 +7,24 @@ import processing.core.PConstants;
 
 public class Main extends PApplet {
     
+    // Window Constants
     public static final int X_RATIO = 16;
     public static final int Y_RATIO = 9;
     public static final int WINDOW_SIZE = 60;
     public static final int WINDOW_WIDTH = WINDOW_SIZE * X_RATIO;
     public static final int WINDOW_HEIGHT = WINDOW_SIZE * Y_RATIO;
 
+    // Screen IDs
+    public static final int MENU = 0;
+    public static final int GAME = 1;
+    public static final int UPGRADES = 2;
+
+    // Instance of main
     private static Main instance;
 
+    // Screen
     private int currentScreen;
     private ArrayList<Screen> screens;
-    /*
-     * 0: Menu
-     * 1: Game
-     */
 
     public Main() {
         if (instance != null) throw new IllegalStateException("There can only be one instance of Main");
@@ -49,11 +53,11 @@ public class Main extends PApplet {
         textMode(PConstants.MODEL);
         
         // Screens
-        currentScreen = 0;
+        currentScreen = MENU;
         screens = new ArrayList<>();
         screens.add(new Menu());
         screens.add(new Game());
-        screens.add(new Upgrades((Game)(screens.get(1))));
+        screens.add(new Upgrades((Game)(screens.get(GAME))));
     }
 
     @Override
@@ -64,10 +68,10 @@ public class Main extends PApplet {
         background(255);
 
         // Switch screens if menu's play button was pressed
-        Menu menu = (Menu)(screens.get(0));
-        if (currentScreen == 0 && menu.playButtonPressed()) {
-            ((Game)(screens.get(1))).startTime();
-            currentScreen = 1;
+        Menu menu = (Menu)(screens.get(MENU));
+        if (currentScreen == MENU && menu.playButtonPressed()) {
+            ((Game)(screens.get(GAME))).startTime();
+            currentScreen = GAME;
         }
 
         // Draw current screen

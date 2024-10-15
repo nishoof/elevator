@@ -65,7 +65,7 @@ public class Upgrades implements Screen {
     public void mousePressed(int mouseX, int mouseY) {
         // Close button
         if (mouseX >= 910 && mouseX <= 945 && mouseY >= 15 && mouseY <= 50) {
-            Main.getInstance().switchScreen(1);
+            Main.getInstance().switchScreen(Main.GAME);
             return;
         }
 
