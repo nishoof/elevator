@@ -47,13 +47,14 @@ public class Elevator {
     
     private ArrayList<Person> peopleInElevator;
     
-    private int elevatorCapacity = 5;
+    private int elevatorCapacity;
     
 
     /**
      * Constructs a new Elevator
      */
     public Elevator(int x, int y, int width, int height, int numFloors, Game game) {
+        System.out.println("Elevator created" + y);
         this.x = x;
         this.y = y;
         this.shaftWidth = width / 4;
@@ -98,6 +99,8 @@ public class Elevator {
         peopleInElevator = new ArrayList<>();
 
         this.game = game;
+
+        elevatorCapacity = 5;
     }
 
     public void draw(PApplet d) {
@@ -176,15 +179,26 @@ public class Elevator {
             if (i != peopleInElevator.size() - 1) peopleInElevatorStr.append(", ");
         }
         d.textAlign(PConstants.LEFT, PConstants.BOTTOM);
-        d.fill(0);
         d.textSize(20);
         String peopleInElevatorDisplayStr = null;
+        boolean elevatorFull = peopleInElevator.size() == elevatorCapacity;
+        int textBoxX = x + shaftWidth + shaftButtonMargin;              // left
+        int textBoxY = y + 100;                                         // top
+        int textBoxWidth = shaftWidth * 3 - shaftButtonMargin;
+        int textBoxHeight = boundaryHeight - 105;
+        if (elevatorFull) {
+            d.fill(d.color(255, 0, 0));
+            d.text("MAX CAPACITY", textBoxX, textBoxY, textBoxWidth, textBoxHeight);
+            textBoxY -= 25;
+            textBoxWidth -= 25;
+        }
         if (peopleInElevator.size() == 0) {
             peopleInElevatorDisplayStr = "Elevator is empty";
         } else {
             peopleInElevatorDisplayStr = peopleInElevatorStr.toString();
         }
-        d.text(peopleInElevatorDisplayStr, x + shaftWidth + shaftButtonMargin, y - 5, shaftWidth * 3 - shaftButtonMargin, shaftHeight);
+        d.fill(0);
+        d.text(peopleInElevatorDisplayStr, textBoxX, textBoxY, textBoxWidth, textBoxHeight);
         
         // Testing Purposes, show queue
         // d.textAlign(PConstants.LEFT, PConstants.TOP);
@@ -219,6 +233,7 @@ public class Elevator {
                 // If the elevator isn't moving and doors are closed, then simply open the doors without delay
                 if (status == 0 && doorsOpenPercent == 0) {
                     reachedFloor(false);
+                    return;
                 }
             }
 
@@ -403,7 +418,6 @@ public class Elevator {
             try {
                 Thread.sleep((long)(secDoorsToOpen * 1000 / SMOOTHNESS));
                 doorsOpenPercent -= 100 / SMOOTHNESS;
-                // System.out.println(doorsOpenPercent);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -446,7 +460,7 @@ public class Elevator {
         int row = numFloors / (numButtonsPerRow + 1);
         int col = numFloors - (row * numButtonsPerRow) - 1;
 
-        int size = ((shaftWidth * 3) - shaftButtonMargin - (4 * buttonButtonMargin)) / 10;
+        int size = ((shaftWidth * 3) - shaftButtonMargin - (4 * buttonButtonMargin)) / 10;      // half the width/height of the button
         int leftMostButtonCenter = x + shaftWidth + shaftButtonMargin + size;
         int topMostButtonCenter = y + size;
 
