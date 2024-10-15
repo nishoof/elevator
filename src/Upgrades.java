@@ -3,25 +3,20 @@ import java.awt.Point;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public class Upgrades {
+public class Upgrades implements Screen {
 
     private final int CAPACITY_UPGRADE_COST = 10;
 
     private Game game;
 
-    private boolean menuOpen;
-
     private boolean elevatorFloorsUpgradeHovered;
 
     public Upgrades(Game game) {
         this.game = game;
-        this.menuOpen = false;
     }
 
+    @Override
     public void draw(PApplet d) {
-        // If the menu is not open, don't draw anything
-        if (!menuOpen) return;
-
         // Check if the mouse is hovering over anything
         Point mouse = Main.getScaledMouse(d);
         elevatorFloorsUpgradeHovered = mouse.x > 15 && mouse.x < 315 && mouse.y > 75 && mouse.y < 203;
@@ -41,6 +36,7 @@ public class Upgrades {
         // Draw the "Close" button
         d.fill(255, 0, 0);
         d.noStroke();
+        d.rectMode(PConstants.CORNER);
         d.rect(910, 15, 35, 35);
 
         // Show the current credits
@@ -65,12 +61,12 @@ public class Upgrades {
         d.pop();           // Restore original settings
     }
 
+    @Override
     public void mousePressed(int mouseX, int mouseY) {
-        if (!menuOpen) return;
-
         // Close button
-        if (mouseX > Main.WINDOW_WIDTH - 50 && mouseX < Main.WINDOW_WIDTH - 35 && mouseY > 15 && mouseY < 85) {
-            closeMenu();
+        if (mouseX >= 910 && mouseX <= 945 && mouseY >= 15 && mouseY <= 50) {
+            Main.getInstance().switchScreen(1);
+            return;
         }
 
         // Elevator floors upgrade
@@ -84,16 +80,9 @@ public class Upgrades {
         }
     }
 
-    public void toggleMenuDisplay() {
-        menuOpen = !menuOpen;
-    }
-
-    public void openMenu() {
-        menuOpen = true;
-    }
-
-    public void closeMenu() {
-        menuOpen = false;
+    @Override
+    public void keyPressed(char key) {
+        // Do nothing
     }
 
 }
