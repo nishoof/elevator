@@ -2,6 +2,9 @@ package Elements;
 
 import java.util.ArrayList;
 
+import Elements.Button.Button;
+import Elements.Button.ButtonListener;
+import Elements.Button.ElevatorButton;
 import Main.FontHolder;
 import Main.PlayerStats;
 import Main.UpgradeEventListener;
@@ -9,7 +12,7 @@ import Screens.Game;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public class Elevator implements UpgradeEventListener {
+public class Elevator implements UpgradeEventListener, ButtonListener {
 
     private final int maxFloors = 10;
     
@@ -92,6 +95,7 @@ public class Elevator implements UpgradeEventListener {
 
                 ElevatorButton button = new ElevatorButton(buttonX, buttonY, i*5 + j + 1, size, 10);
                 buttons.add(button);
+                button.addListener(this);
 
                 numButtonsCreated++;
             }
@@ -216,9 +220,7 @@ public class Elevator implements UpgradeEventListener {
     public void mousePressed(int mouseX, int mouseY) {
         // System.out.println(mouseX + "\t" + mouseY);
         for (ElevatorButton button : buttons) {
-            if (button.contains(mouseX, mouseY)) {
-                this.addFloorToQueue(button.getFloorNum());
-            }
+            button.mousePressed(mouseX, mouseY);
         }
     }
 
@@ -481,4 +483,8 @@ public class Elevator implements UpgradeEventListener {
         System.out.println(PlayerStats.getAllUpgradeStats());
     }
 
+    @Override
+    public void onClick(Button button) {
+        this.addFloorToQueue(((ElevatorButton)(button)).getFloorNum());
+    }
 }

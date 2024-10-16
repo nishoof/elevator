@@ -4,8 +4,8 @@ import java.awt.Point;
 
 import java.util.ArrayList;
 
-import Elements.Button;
-import Elements.ButtonListener;
+import Elements.Button.Button;
+import Elements.Button.ButtonListener;
 import Screens.Game;
 import Screens.Menu;
 import Screens.Screen;
@@ -89,9 +89,9 @@ public class Main extends PApplet implements ButtonListener {
         }
 
         // Draw current screen
-        // screens.get(currentScreen).draw(this);
+        screens.get(currentScreen).draw(this);
 
-        button.draw(this);
+        // button.draw(this);
     }
 
     @Override

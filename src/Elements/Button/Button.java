@@ -1,7 +1,8 @@
-package Elements;
+package Elements.Button;
 
 import java.awt.Point;
 import java.util.ArrayList;
+
 import processing.core.PApplet;
 import Main.Main;
 
@@ -13,6 +14,7 @@ public class Button {
     private int height;
     private int cornerRounding;
     private int strokeWeight;
+    private int stroke;
     private int fillColor;
     private int hoveredColor;
 
@@ -32,6 +34,7 @@ public class Button {
         this.height = height;
         this.cornerRounding = 8;
         this.strokeWeight = 3;
+        this.stroke = 0;
         this.fillColor = 240;
         this.hoveredColor = 235;
 
@@ -49,6 +52,7 @@ public class Button {
         d.fill(hovered ? hoveredColor : fillColor);
         d.rectMode(PApplet.CORNER);
         d.strokeWeight(strokeWeight);
+        d.stroke(stroke);
         d.rect(x, y, width, height, cornerRounding);
         
         d.pop();           // Restore original settings
@@ -60,17 +64,33 @@ public class Button {
         }
     }
 
-    public void addListener(ButtonListener listener) {
-        listeners.add(listener);
-    }
+    public int getX() {
+		return x;
+	}
 
-    public void setCornerRounding(int cornerRounding) {
+	public int getY() {
+		return y;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setCornerRounding(int cornerRounding) {
 		this.cornerRounding = cornerRounding;
 	}
 
 	public void setStrokeWeight(int strokeWeight) {
 		this.strokeWeight = strokeWeight;
 	}
+
+    public void setStroke(int stroke) {
+        this.stroke = stroke;
+    }
 
 	public void setFillColor(int fillColor) {
 		this.fillColor = fillColor;
@@ -79,6 +99,10 @@ public class Button {
 	public void setHoveredColor(int hoveredColor) {
 		this.hoveredColor = hoveredColor;
 	}
+
+    public void addListener(ButtonListener listener) {
+        listeners.add(listener);
+    }
 
 	private boolean contains(int x, int y) {
         if (x < this.x) return false;
