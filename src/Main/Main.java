@@ -34,15 +34,12 @@ public class Main extends PApplet implements ButtonListener {
     private int currentScreen;
     private ArrayList<Screen> screens;
 
-    // TODO: remove this once done with button testing
-    private Button button;
+    // Menu Play Button
+    private Button menuPlayButton;
 
     public Main() {
         if (instance != null) throw new IllegalStateException("There can only be one instance of Main");
         instance = this;
-
-        button = new Button(100, 100, 100, 100);
-        button.addListener(this);
     }
 
     public static void main(String[] args) {
@@ -72,39 +69,47 @@ public class Main extends PApplet implements ButtonListener {
         screens.add(new Menu());
         screens.add(new Game());
         screens.add(new Upgrades());
+
+        // Menu Play Button
+        menuPlayButton = ((Menu)(screens.get(MENU))).getPlayButton();
+        menuPlayButton.addListener(this);
     }
 
     @Override
     public void draw() {
         windowRatio(WINDOW_WIDTH, WINDOW_HEIGHT);
 
+        // Point mouse = getScaledMouse(this);
+        // System.out.println(mouse);
+
         // Background (clears screen too)
         background(255);
 
-        // Switch screens if menu's play button was pressed
-        Menu menu = (Menu)(screens.get(MENU));
-        if (currentScreen == MENU && menu.playButtonPressed()) {
-            ((Game)(screens.get(GAME))).startTime();
-            currentScreen = GAME;
-        }
-
         // Draw current screen
         screens.get(currentScreen).draw(this);
-
-        // button.draw(this);
     }
 
     @Override
     public void mousePressed() {
         Point mouse = getScaledMouse(this);
+        System.out.println(mouse);
 
         screens.get(currentScreen).mousePressed(mouse.x, mouse.y);
-        button.mousePressed(mouse.x, mouse.y);
     }
 
     @Override
     public void keyPressed() {
         screens.get(currentScreen).keyPressed(key);
+    }
+
+    @Override
+    // Implementing ButtonListener method
+    public void onClick(Button button) {
+        // If play button was pressed, switch to game screen
+        if (button.equals(menuPlayButton)) {
+            ((Game)(screens.get(GAME))).startTime();
+            currentScreen = GAME;
+        }
     }
 
     public static Main getInstance() {
@@ -120,10 +125,6 @@ public class Main extends PApplet implements ButtonListener {
         int scaledMouseY = (int)(1.0 * d.mouseY / d.height * WINDOW_HEIGHT);
         
         return new Point(scaledMouseX, scaledMouseY);
-    }
-
-    public void onClick(Button button) {
-        System.out.println("Button " + button + " clicked");
     }
 
 }

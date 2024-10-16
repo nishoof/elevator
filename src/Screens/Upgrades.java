@@ -1,7 +1,6 @@
 package Screens;
 
-// import java.awt.Point;
-
+import Elements.Button.Button;
 import Main.FontHolder;
 import Main.Main;
 import Main.PlayerStats;
@@ -10,9 +9,16 @@ import processing.core.PConstants;
 
 public class Upgrades implements Screen {
 
-    // private boolean elevatorFloorsUpgradeHovered;
+    private Button closeButton;
 
-    public Upgrades() {}
+    public Upgrades() {
+        closeButton = new Button(910, 30, 26, 26);
+        closeButton.setStroke(0);
+        closeButton.setFillColor(255, 0, 0);
+        closeButton.setHoveredColor(204, 0, 0);
+        closeButton.setStrokeWeight(0);
+        closeButton.setCornerRounding(0);
+    }
 
     @Override
     public void draw(PApplet d) {
@@ -33,10 +39,11 @@ public class Upgrades implements Screen {
         d.text("Upgrades", Main.WINDOW_WIDTH / 2, 30);
         
         // Draw the "Close" button
-        d.fill(255, 0, 0);
-        d.noStroke();
-        d.rectMode(PConstants.CORNER);
-        d.rect(910, 15, 35, 35);
+        // d.fill(255, 0, 0);
+        // d.noStroke();
+        // d.rectMode(PConstants.CORNER);
+        // d.rect(910, 15, 35, 35);
+        closeButton.draw(d);
 
         // Show the current credits
         d.textFont(FontHolder.getRegular());
