@@ -4,6 +4,7 @@ import java.awt.Point;
 
 import java.util.ArrayList;
 
+import Elements.Button;
 import Screens.Game;
 import Screens.Menu;
 import Screens.Screen;
@@ -81,7 +82,10 @@ public class Main extends PApplet {
         }
 
         // Draw current screen
-        screens.get(currentScreen).draw(this);
+        // screens.get(currentScreen).draw(this);
+
+        Button button = new Button(100, 100, 100, 100);
+        button.draw(this);
     }
 
     @Override
