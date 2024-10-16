@@ -19,7 +19,7 @@ public class ElevatorButton extends Button {
      * @param size the size of the UI element (half the width / height of the square)
      */
     public ElevatorButton(int x, int y, int floorNum, int size, int cornerRounding) {
-        super(x, y, size * 2, size * 2);
+        super(x, y, size, size);
         this.floorNum = floorNum;
         this.text = String.valueOf(floorNum);
         this.size = size;
@@ -35,7 +35,7 @@ public class ElevatorButton extends Button {
         
         // Text
         d.textAlign(PConstants.CENTER, PConstants.CENTER);
-        d.textSize(size * 7 / 6);
+        d.textSize(size * 7 / 12);
         d.fill(0);
         d.text(text, getX(), getY(), getWidth(), getHeight());
         

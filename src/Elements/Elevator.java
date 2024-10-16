@@ -12,6 +12,9 @@ import Screens.Game;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
+/*
+ * UI: https://docs.google.com/presentation/d/1Z7IxnXjn10wdQa6dUZjd6oq4cgHQKn3Y8ivBzz7xpRs/edit?usp=sharing
+ */
 public class Elevator implements UpgradeEventListener, ButtonListener {
 
     private final int maxFloors = 10;
@@ -23,7 +26,6 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
     
     private final double tickWidthPercent = 0.15;
     private final int shaftButtonMargin = 40;               // margin between right bound of shaft and left bound of left most button
-    private final int buttonButtonMargin = 10;              // margin between right bound of a button and left bound of the button to the right
     private final int maxfloorNumberTextSize = 25;
     
     private final Game game;
@@ -41,10 +43,18 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
     
     private int x;
     private int y;
+    private int boundaryWidth;
     private int boundaryHeight;
     private int shaftWidth;
     private int shaftHeight;
     private int cabinHeight;
+
+    private int numButtonsPerRow;
+    private int buttonCornerRounding;
+    private int buttonPanelWidth;
+    private int buttonPanelX;
+    private int buttonWidth;
+    private int buttonButtonMargin;     // margin between right bound of a button and left bound of the button to the right
     
     private boolean highlighted;
     
@@ -61,6 +71,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
     public Elevator(int x, int y, int width, int height, int numFloors, Game game) {
         this.x = x;
         this.y = y;
+        this.boundaryWidth = width;
         this.shaftWidth = width / 4;
         this.boundaryHeight = height;
         this.shaftHeight = boundaryHeight - (boundaryHeight % numFloors);
@@ -76,39 +87,40 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         this.doorsOpenPercent = 0;
         this.doorsInAnimation = false;
         
+        // Buttons
         buttons = new ArrayList<>();
-
-        int size = ((shaftWidth * 3) - shaftButtonMargin - (4 * buttonButtonMargin)) / 10;
-        int numButtonsPerRow = 5;
-        int leftMostButtonCenter = x + shaftWidth + shaftButtonMargin + size;
-        int topMostButtonCenter = y + size;
+        numButtonsPerRow = 5;
+        buttonCornerRounding = 10;
+        buttonPanelWidth = (int) (boundaryWidth * 0.65);
+        buttonPanelX = x + shaftWidth + shaftButtonMargin;
+        buttonWidth = (int) (buttonPanelWidth * 0.17);
+        buttonButtonMargin = (int) (buttonPanelWidth * 0.0385);
         int numButtonsCreated = 0;
-
-        highlighted = false;
-
-        for (int i = 0; i <= numFloors / numButtonsPerRow; i++) {
-            for (int j = 0; j < 5; j++) {
+        for (int row = 0; row <= numFloors / numButtonsPerRow; row++) {
+            for (int col = 0; col < numButtonsPerRow; col++) {
                 if (numButtonsCreated == queuedFloors.length) break;
-
-                int buttonX = leftMostButtonCenter + (j * (buttonButtonMargin + size * 2));
-                int buttonY = topMostButtonCenter + (i * (buttonButtonMargin + size * 2));
-
-                ElevatorButton button = new ElevatorButton(buttonX, buttonY, i*5 + j + 1, size, 10);
+                
+                int buttonX = buttonPanelX + (col * (buttonButtonMargin + buttonWidth));
+                int buttonY = y + (row * (buttonButtonMargin + buttonWidth));
+                int floorNum = row*numButtonsPerRow + col + 1;
+                
+                ElevatorButton button = new ElevatorButton(buttonX, buttonY, floorNum, buttonWidth, buttonCornerRounding);
                 buttons.add(button);
                 button.addListener(this);
-
+                
                 numButtonsCreated++;
             }
         }
-
+        
         peopleInElevator = new ArrayList<>();
+        
+        highlighted = false;
 
         this.game = game;
 
         elevatorCapacity = PlayerStats.getCapacity();
 
         PlayerStats.addUpgradeEventListener(this);
-        System.out.println(PlayerStats.getAllUpgradeStats());
     }
 
     public void draw(PApplet d) {
@@ -190,13 +202,12 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         d.textSize(20);
         String peopleInElevatorDisplayStr = null;
         boolean elevatorFull = peopleInElevator.size() == elevatorCapacity;
-        int textBoxX = x + shaftWidth + shaftButtonMargin;              // left
         int textBoxY = y + 100;                                         // top
         int textBoxWidth = shaftWidth * 3 - shaftButtonMargin;
         int textBoxHeight = boundaryHeight - 105;
         if (elevatorFull) {
             d.fill(d.color(255, 0, 0));
-            d.text("MAX CAPACITY", textBoxX, textBoxY, textBoxWidth, textBoxHeight);
+            d.text("MAX CAPACITY", buttonPanelX, textBoxY, textBoxWidth, textBoxHeight);
             textBoxY -= 25;
             textBoxWidth -= 25;
         }
@@ -206,7 +217,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
             peopleInElevatorDisplayStr = peopleInElevatorStr.toString();
         }
         d.fill(0);
-        d.text(peopleInElevatorDisplayStr, textBoxX, textBoxY, textBoxWidth, textBoxHeight);
+        d.text(peopleInElevatorDisplayStr, buttonPanelX, textBoxY, textBoxWidth, textBoxHeight);
         
         // Testing Purposes, show queue
         // d.textAlign(PConstants.LEFT, PConstants.TOP);
@@ -462,25 +473,42 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         this.cabinHeight = shaftHeight / numFloors;
 
         // Add a button
-        int numButtonsPerRow = 5;
+        // buttonCornerRounding = 10;
+        // buttonPanelWidth = (int) (boundaryWidth * 0.65);
+        // buttonPanelX = x + shaftWidth + shaftButtonMargin;
+        // buttonWidth = (int) (buttonPanelWidth * 0.17);
+        // buttonButtonMargin = (int) (buttonPanelWidth * 0.0385);
+        // int numButtonsCreated = 0;
+
+        // for (int row = 0; row <= numFloors / numButtonsPerRow; row++) {
+        //     for (int col = 0; col < numButtonsPerRow; col++) {
+        //         if (numButtonsCreated == queuedFloors.length) break;
+                
+        //         int buttonX = buttonPanelX + (col * (buttonButtonMargin + buttonWidth));
+        //         int buttonY = y + (row * (buttonButtonMargin + buttonWidth));
+        //         int floorNum = row*numButtonsPerRow + col + 1;
+                
+        //         ElevatorButton button = new ElevatorButton(buttonX, buttonY, floorNum, buttonWidth, buttonCornerRounding);
+        //         buttons.add(button);
+        //         button.addListener(this);
+                
+        //         numButtonsCreated++;
+        //     }
+        // }
         int row = numFloors / (numButtonsPerRow + 1);
         int col = numFloors - (row * numButtonsPerRow) - 1;
 
-        int size = ((shaftWidth * 3) - shaftButtonMargin - (4 * buttonButtonMargin)) / 10;      // half the width/height of the button
-        int leftMostButtonCenter = x + shaftWidth + shaftButtonMargin + size;
-        int topMostButtonCenter = y + size;
+        int buttonX = buttonPanelX + (col * (buttonButtonMargin + buttonWidth));
+        int buttonY = y + (row * (buttonButtonMargin + buttonWidth));
 
-        int buttonX = leftMostButtonCenter + (col * (buttonButtonMargin + size * 2));
-        int buttonY = topMostButtonCenter + (row * (buttonButtonMargin + size * 2));
-
-        ElevatorButton button = new ElevatorButton(buttonX, buttonY, highestFloor, size, 10);
+        ElevatorButton button = new ElevatorButton(buttonX, buttonY, highestFloor, buttonWidth, buttonCornerRounding);
         buttons.add(button);
     }
 
     @Override
     public void onUpgrade() {
         elevatorCapacity = PlayerStats.getCapacity();
-        System.out.println(PlayerStats.getAllUpgradeStats());
+        // System.out.println(PlayerStats.getAllUpgradeStats());
     }
 
     @Override
