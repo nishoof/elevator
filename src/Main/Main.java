@@ -5,6 +5,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 import Elements.Button;
+import Elements.ButtonListener;
 import Screens.Game;
 import Screens.Menu;
 import Screens.Screen;
@@ -12,7 +13,7 @@ import Screens.Upgrades;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public class Main extends PApplet {
+public class Main extends PApplet implements ButtonListener {
     
     // Window Constants
     public static final int X_RATIO = 16;
@@ -33,9 +34,15 @@ public class Main extends PApplet {
     private int currentScreen;
     private ArrayList<Screen> screens;
 
+    // TODO: remove this once done with button testing
+    private Button button;
+
     public Main() {
         if (instance != null) throw new IllegalStateException("There can only be one instance of Main");
         instance = this;
+
+        button = new Button(100, 100, 100, 100);
+        button.addListener(this);
     }
 
     public static void main(String[] args) {
@@ -84,7 +91,6 @@ public class Main extends PApplet {
         // Draw current screen
         // screens.get(currentScreen).draw(this);
 
-        Button button = new Button(100, 100, 100, 100);
         button.draw(this);
     }
 
@@ -93,6 +99,7 @@ public class Main extends PApplet {
         Point mouse = getScaledMouse(this);
 
         screens.get(currentScreen).mousePressed(mouse.x, mouse.y);
+        button.mousePressed(mouse.x, mouse.y);
     }
 
     @Override
@@ -113,6 +120,10 @@ public class Main extends PApplet {
         int scaledMouseY = (int)(1.0 * d.mouseY / d.height * WINDOW_HEIGHT);
         
         return new Point(scaledMouseX, scaledMouseY);
+    }
+
+    public void onClick(Button button) {
+        System.out.println("Button " + button + " clicked");
     }
 
 }

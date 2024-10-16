@@ -1,6 +1,7 @@
 package Elements;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import processing.core.PApplet;
 import Main.Main;
 
@@ -14,6 +15,8 @@ public class Button {
     private int strokeWeight;
     private int fillColor;
     private int hoveredColor;
+
+    private ArrayList<ButtonListener> listeners;
 
     /**
      * Constructs a new Button
@@ -31,6 +34,8 @@ public class Button {
         this.strokeWeight = 3;
         this.fillColor = 240;
         this.hoveredColor = 235;
+
+        listeners = new ArrayList<>();
     }
 
     public void draw(PApplet d) {
@@ -40,7 +45,7 @@ public class Button {
         Point mouse = Main.getScaledMouse(d);
         boolean hovered = contains(mouse.x, mouse.y);
 
-        // Square representing the button
+        // Rect representing the button
         d.fill(hovered ? hoveredColor : fillColor);
         d.rectMode(PApplet.CORNER);
         d.strokeWeight(strokeWeight);
@@ -49,13 +54,45 @@ public class Button {
         d.pop();           // Restore original settings
     }
 
-    public boolean contains(int x, int y) {
+    public void mousePressed(int x, int y) {
+        if (contains(x, y)) {
+            notifyListeners();
+        }
+    }
+
+    public void addListener(ButtonListener listener) {
+        listeners.add(listener);
+    }
+
+    public void setCornerRounding(int cornerRounding) {
+		this.cornerRounding = cornerRounding;
+	}
+
+	public void setStrokeWeight(int strokeWeight) {
+		this.strokeWeight = strokeWeight;
+	}
+
+	public void setFillColor(int fillColor) {
+		this.fillColor = fillColor;
+	}
+
+	public void setHoveredColor(int hoveredColor) {
+		this.hoveredColor = hoveredColor;
+	}
+
+	private boolean contains(int x, int y) {
         if (x < this.x) return false;
         if (x > this.x + width) return false;
         if (y < this.y) return false;
         if (y > this.y + height) return false;
         
         return true;
+    }
+
+    private void notifyListeners() {
+        for (ButtonListener listener : listeners) {
+            listener.onClick(this);
+        }
     }
 
 }
