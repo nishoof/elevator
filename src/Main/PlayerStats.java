@@ -34,11 +34,11 @@ public class PlayerStats {
     public static int getMovementSpeed() {
         return movementSpeed;
     }
-    
+
     public static double getSecPerFloor() {
         return 1.0 / (movementSpeed * 0.1 + 1.5);
     }
-    
+
     /**
      * Returns the time in seconds for the delay between elevator stop -> door open or door open -> elevator move
      */
@@ -67,7 +67,7 @@ public class PlayerStats {
     public static double getSecDoorsOpen() {
         return 1.5 * (1.0 / peopleSpeed);
     }
-    
+
 	public static void addCreditsAndPoints() {
         credits++;
         points++;
@@ -135,4 +135,5 @@ public class PlayerStats {
                 + "\n  " + "People speed: " + getPeopleSpeed()
                 + "\n  " + "Sec doors open: " + getSecDoorsOpen();
     }
+
 }

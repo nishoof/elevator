@@ -1,7 +1,7 @@
 package Screens;
 
-// import java.awt.Point;
-
+import Elements.Button.Button;
+import Elements.Button.UpgradeButton;
 import Main.FontHolder;
 import Main.Main;
 import Main.PlayerStats;
@@ -10,9 +10,20 @@ import processing.core.PConstants;
 
 public class Upgrades implements Screen {
 
-    // private boolean elevatorFloorsUpgradeHovered;
+    private Button closeButton;
 
-    public Upgrades() {}
+    private UpgradeButton testUpgrade;
+
+    public Upgrades() {
+        closeButton = new Button(910, 30, 26, 26);
+        closeButton.setStroke(0);
+        closeButton.setFillColor(255, 0, 0);
+        closeButton.setHoveredColor(204, 0, 0);
+        closeButton.setStrokeWeight(0);
+        closeButton.setCornerRounding(0);
+
+        testUpgrade = new UpgradeButton(15, 225, 300, 128, "Test Upgrade", PlayerStats::getCapacity, PlayerStats.CAPACITY_UPGRADE_COST);
+    }
 
     @Override
     public void draw(PApplet d) {
@@ -33,10 +44,11 @@ public class Upgrades implements Screen {
         d.text("Upgrades", Main.WINDOW_WIDTH / 2, 30);
         
         // Draw the "Close" button
-        d.fill(255, 0, 0);
-        d.noStroke();
-        d.rectMode(PConstants.CORNER);
-        d.rect(910, 15, 35, 35);
+        // d.fill(255, 0, 0);
+        // d.noStroke();
+        // d.rectMode(PConstants.CORNER);
+        // d.rect(910, 15, 35, 35);
+        closeButton.draw(d);
 
         // Show the current credits
         d.textFont(FontHolder.getRegular());
@@ -81,16 +93,19 @@ public class Upgrades implements Screen {
         d.text("Cost: " + PlayerStats.DOOR_SPEED_UPGRADE_COST, 662, 173);
 
         // Draw the people speed upgrade
-        d.fill(240);
-        d.rect(15, 225, 300, 128);
-        d.fill(0);
-        d.textSize(24);
-        d.textAlign(PConstants.LEFT, PConstants.TOP);
-        d.text("People speed", 22, 235);
-        d.textSize(20);
-        d.text("Current: " + PlayerStats.getPeopleSpeed(), 22, 267);
-        d.text("Upgrade to: " + (PlayerStats.getPeopleSpeed() + 1), 22, 295);
-        d.text("Cost: " + PlayerStats.PEOPLE_SPEED_UPGRADE_COST, 22, 323);
+        // d.fill(240);
+        // d.rect(15, 225, 300, 128);
+        // d.fill(0);
+        // d.textSize(24);
+        // d.textAlign(PConstants.LEFT, PConstants.TOP);
+        // d.text("People speed", 22, 235);
+        // d.textSize(20);
+        // d.text("Current: " + PlayerStats.getPeopleSpeed(), 22, 267);
+        // d.text("Upgrade to: " + (PlayerStats.getPeopleSpeed() + 1), 22, 295);
+        // d.text("Cost: " + PlayerStats.PEOPLE_SPEED_UPGRADE_COST, 22, 323);
+
+        // Draw the test upgrade button
+        testUpgrade.draw(d);
         
         d.pop();           // Restore original settings
     }
@@ -119,9 +134,11 @@ public class Upgrades implements Screen {
         }
 
         // People speed upgrade
-        if (mouseX > 15 && mouseX < 315 && mouseY > 225 && mouseY < 353) {
-            PlayerStats.upgradePeopleSpeed();
-        }
+        // if (mouseX > 15 && mouseX < 315 && mouseY > 225 && mouseY < 353) {
+        //     PlayerStats.upgradePeopleSpeed();
+        // }
+
+        testUpgrade.mousePressed(mouseX, mouseY);
     }
 
     @Override
