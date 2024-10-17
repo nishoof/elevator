@@ -18,29 +18,24 @@ import processing.core.PConstants;
 public class Elevator implements UpgradeEventListener, ButtonListener {
 
     private final int maxFloors = 10;
-    
-    // private double secPerFloor;
-    // private double secDoorsDelay;
-    // private double secDoorsToOpen;
-    // private double secDoorsOpen;
-    
+
     private final double tickWidthPercent = 0.15;
     private final int shaftButtonMargin = 40;               // margin between right bound of shaft and left bound of left most button
     private final int maxfloorNumberTextSize = 25;
-    
+
     private final Game game;
-    
+
     private int currentFloor;
     private int highestFloor;
     private int lowestFloor;
     private int floorPercent;                               // used for animation
-    
+
     private int floorsInQueue;
     private boolean[] queuedFloors;
     private int status;
     private int doorsOpenPercent;                           // used for animation
     private boolean doorsInAnimation;                       // used for animation. If the doors are in the process of opening/closing (including the delay before & after), this is true
-    
+
     private int x;
     private int y;
     private int boundaryWidth;
@@ -55,15 +50,14 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
     private int buttonPanelX;
     private int buttonWidth;
     private int buttonButtonMargin;     // margin between right bound of a button and left bound of the button to the right
-    
+
     private boolean highlighted;
-    
+
     private ArrayList<ElevatorButton> buttons;
-    
+
     private ArrayList<Person> peopleInElevator;
-    
+
     private int elevatorCapacity;
-    
 
     /**
      * Constructs a new Elevator
@@ -119,7 +113,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         this.game = game;
 
         elevatorCapacity = PlayerStats.getCapacity();
-
+        
         PlayerStats.addUpgradeEventListener(this);
     }
 

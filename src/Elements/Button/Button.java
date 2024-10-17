@@ -47,8 +47,8 @@ public class Button {
 
     public void draw(PApplet d) {
         d.push();          // Save original settings
-        
-        // Update button
+
+        // Update button hovered
         Point mouse = Main.getScaledMouse(d);
         boolean hovered = contains(mouse.x, mouse.y);
 
@@ -140,7 +140,7 @@ public class Button {
         listeners.add(listener);
     }
 
-	private boolean contains(int x, int y) {
+	protected boolean contains(int x, int y) {
         if (x < this.x) return false;
         if (x > this.x + width) return false;
         if (y < this.y) return false;
@@ -149,7 +149,7 @@ public class Button {
         return true;
     }
 
-    private void notifyListeners() {
+    protected void notifyListeners() {
         for (ButtonListener listener : listeners) {
             listener.onClick(this);
         }
