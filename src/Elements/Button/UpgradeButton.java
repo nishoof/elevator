@@ -6,9 +6,15 @@ import processing.core.PConstants;
 public class UpgradeButton extends Button {
 
     // Interface for getting a player stat
-    // Used in the UpgradeButton class for a lambda expression
+    // Used for a lambda expression
     public interface StatGetter {
         int getStat();
+    }
+    
+    // Interface for getting a player stat
+    // Used for a lambda expression
+    public interface StatUpgrader {
+        boolean upgradeStat();
     }
 
     private final int LEFT_MARGIN = 7;
@@ -16,24 +22,27 @@ public class UpgradeButton extends Button {
 
     private String upgradeName;
     private StatGetter statGetter;
+    private StatUpgrader statUpgrader;
     private int upgradeCost;
 
     /**
      * Constructs a new UpgradeButton. This button is used to display an upgrade and its cost.
-     * Example usage: new UpgradeButton(15, 225, 300, 128, "Test Upgrade", PlayerStats::getCapacity);
-     *                new UpgradeButton(15, 225, 300, 128, "Test Upgrade", () -> PlayerStats.getCapacity());
+     * Example usage: new UpgradeButton(15, 75, 300, 128, "Capacity", PlayerStats::getCapacity, PlayerStats::upgradeCapacity, PlayerStats.CAPACITY_UPGRADE_COST);
      * @param x x-coordinate of the top-left corner of this Button
      * @param y y-coordinate of the top-left corner of this Button
      * @param width width of this Button
      * @param height height of this Button
      * @param upgradeName the name of the upgrade (displayed on the button)
      * @param statGetter a lambda expression that returns the player stat that this upgrade affects. Must be a method that returns an int.
+     * @param statUpgrader a lambda expression that upgrades the player stat that this upgrade affects (if the player has enough credits). Must be a method that returns a boolean (if the upgrade went through).
+     * @param upgradeCost the cost of the upgrade
      */
-	public UpgradeButton(int x, int y, int width, int height, String upgradeName, StatGetter statGetter, int upgradeCost) {
+	public UpgradeButton(int x, int y, int width, int height, String upgradeName, StatGetter statGetter, StatUpgrader statUpgrader, int upgradeCost) {
 		super(x, y, width, height);
 
         this.upgradeName = upgradeName;
         this.statGetter = statGetter;
+        this.statUpgrader = statUpgrader;
         this.upgradeCost = upgradeCost;
 
         setCornerRounding(0);
@@ -76,7 +85,13 @@ public class UpgradeButton extends Button {
     @Override
     public void mousePressed(int x, int y) {
         if (contains(x, y)) {
-            System.out.println(statGetter.getStat());
+            // System.out.println(statGetter.getStat());
+            System.out.println(upgradeName);
+            if (statUpgrader.upgradeStat()) {
+                System.out.println("Upgraded!");
+            } else {
+                System.out.println("Not enough credits!");
+            }
         }
     }
 
