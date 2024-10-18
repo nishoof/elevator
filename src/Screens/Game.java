@@ -41,10 +41,9 @@ public class Game implements Screen {
 
         // People
         peopleInLine = new ArrayList<>();
-        loopSpawnNewPeople(2000, 3500);
 
         // Time
-        startTime = System.currentTimeMillis();
+        startTime = 0;
 
         // Hints
         hint = null;
@@ -53,6 +52,8 @@ public class Game implements Screen {
 
     @Override
     public void draw(PApplet d) {
+        if (startTime == 0) throw new IllegalStateException("Tried to draw the game screen before starting the game");
+
         // Game Title
         d.strokeWeight(0);
         d.textFont(FontHolder.getRegular());
@@ -122,9 +123,7 @@ public class Game implements Screen {
         // Make the key lowercase to make it work even if the user did a capital for some reason
         key = Character.toLowerCase(key);
 
-        if (key == 'b') {
-            Main.getInstance().switchScreen(Main.UPGRADES);
-        } else if (key >= 'a' && key <= 'z') {                   // keyIsALetter
+        if (key >= 'a' && key <= 'z') {                   // keyIsALetter
             // Figure out what elevator is paired to the key that was pressed
             Elevator elevator = charToElevatorMap.get(key);
 
@@ -226,6 +225,7 @@ public class Game implements Screen {
 
     public void startTime() {
         startTime = System.currentTimeMillis();
+        loopSpawnNewPeople(2000, 3500);
     }
 
 }

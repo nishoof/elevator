@@ -19,9 +19,11 @@ public class Upgrades implements Screen {
     private UpgradeButton doorSpeedUpgradeButton;
     private UpgradeButton peopleSpeedUpgradeButton;
 
+    private final int MARGIN = 30;
+
     public Upgrades() {
         // Close button
-        closeButton = new Button(910, 30, 26, 26);
+        closeButton = new Button(Main.WINDOW_WIDTH-MARGIN-26, 30, 26, 26);
         closeButton.setStroke(0);
         closeButton.setFillColor(255, 0, 0);
         closeButton.setHoveredColor(204, 0, 0);
@@ -29,11 +31,12 @@ public class Upgrades implements Screen {
         closeButton.setCornerRounding(0);
 
         // Upgrade buttons
+        int buttonWidth = (int)((Main.WINDOW_WIDTH - MARGIN*4)/3.0);
         upgradeButtons = new ArrayList<>();
-        capacityUpgradeButton = new UpgradeButton(15, 75, 300, 128, "Capacity", PlayerStats::getCapacity, PlayerStats::upgradeCapacity, PlayerStats.CAPACITY_UPGRADE_COST);
-        movementSpeedUpgradeButton = new UpgradeButton(335, 75, 300, 128, "Movement Speed", PlayerStats::getMovementSpeed, PlayerStats::upgradeMovementSpeed, PlayerStats.MOVEMENT_SPEED_UPGRADE_COST);
-        doorSpeedUpgradeButton = new UpgradeButton(655, 75, 300, 128, "Door Speed", PlayerStats::getDoorSpeed, PlayerStats::upgradeDoorSpeed, PlayerStats.DOOR_SPEED_UPGRADE_COST);
-        peopleSpeedUpgradeButton = new UpgradeButton(15, 225, 300, 128, "People Speed", PlayerStats::getPeopleSpeed, PlayerStats::upgradePeopleSpeed, PlayerStats.PEOPLE_SPEED_UPGRADE_COST);
+        capacityUpgradeButton = new UpgradeButton(MARGIN, 75, buttonWidth, 128, "Capacity", PlayerStats::getCapacity, PlayerStats::upgradeCapacity, PlayerStats.CAPACITY_UPGRADE_COST);
+        movementSpeedUpgradeButton = new UpgradeButton(MARGIN*2 + buttonWidth, 75, buttonWidth, 128, "Movement Speed", PlayerStats::getMovementSpeed, PlayerStats::upgradeMovementSpeed, PlayerStats.MOVEMENT_SPEED_UPGRADE_COST);
+        doorSpeedUpgradeButton = new UpgradeButton(MARGIN*3 + buttonWidth*2, 75, buttonWidth, 128, "Door Speed", PlayerStats::getDoorSpeed, PlayerStats::upgradeDoorSpeed, PlayerStats.DOOR_SPEED_UPGRADE_COST);
+        peopleSpeedUpgradeButton = new UpgradeButton(MARGIN, 225, buttonWidth, 128, "People Speed", PlayerStats::getPeopleSpeed, PlayerStats::upgradePeopleSpeed, PlayerStats.PEOPLE_SPEED_UPGRADE_COST);
         upgradeButtons.add(capacityUpgradeButton);
         upgradeButtons.add(movementSpeedUpgradeButton);
         upgradeButtons.add(doorSpeedUpgradeButton);
@@ -42,10 +45,6 @@ public class Upgrades implements Screen {
 
     @Override
     public void draw(PApplet d) {
-        // Check if the mouse is hovering over anything
-        // Point mouse = Main.getScaledMouse(d);
-        // elevatorFloorsUpgradeHovered = mouse.x > 15 && mouse.x < 315 && mouse.y > 75 && mouse.y < 203;
-
         d.push();          // Save original settings
 
         // Draw a rectangle that covers the screen

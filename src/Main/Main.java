@@ -79,9 +79,6 @@ public class Main extends PApplet implements ButtonListener {
     public void draw() {
         windowRatio(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-        // Point mouse = getScaledMouse(this);
-        // System.out.println(mouse);
-
         // Background (clears screen too)
         background(255);
 
@@ -92,13 +89,17 @@ public class Main extends PApplet implements ButtonListener {
     @Override
     public void mousePressed() {
         Point mouse = getScaledMouse(this);
-        System.out.println(mouse);
 
         screens.get(currentScreen).mousePressed(mouse.x, mouse.y);
     }
 
     @Override
     public void keyPressed() {
+        if (key == 'b') {               // toggle upgrades screen
+            if (currentScreen == UPGRADES) switchScreen(GAME);
+            else if (currentScreen == GAME) switchScreen(UPGRADES);
+        }
+
         screens.get(currentScreen).keyPressed(key);
     }
 
