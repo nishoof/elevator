@@ -1,31 +1,23 @@
 package Screens;
 
-import java.awt.Point;
-
+import Elements.Button.Button;
 import Main.FontHolder;
-import Main.Main;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
 public class Menu implements Screen {
 
-    private boolean playButtonPressed;
-
-    private final int playButtonX = 380;
-    private final int playButtonY = 430;
-    private final int playButtonWidth = 200;
-    private final int playButtonHeight = 80;
+    private Button playButton;
 
     public Menu() {
-        playButtonPressed = false;
+        playButton = new Button(380, 430, 200, 80);
+        playButton.setTextSize(32);
+        playButton.setText("Play!");
     }
 
     @Override
     public void draw(PApplet d) {
         d.push();          // Save original settings
-
-        Point mouse = Main.getScaledMouse(d);
-        boolean playButtonIsHovered = buttonContains(mouse.x, mouse.y);
 
         // Game Title
         d.strokeWeight(0);
@@ -60,12 +52,8 @@ public class Menu implements Screen {
         d.text("Have fun!",                                         480, 155 + s1*9 + s2*4);
 
         // Play button
-        d.fill(playButtonIsHovered ? 235 : 250);
-        d.strokeWeight(3);
-        d.rectMode(PConstants.CORNER);
-        d.rect(playButtonX, playButtonY, playButtonWidth, playButtonHeight, 8);      // outer black rect
-        d.fill(0);
         d.textFont(FontHolder.getMedium());
+        playButton.draw(d);
         d.textSize(32);
         d.text("Play!", 480, 470);
 
@@ -74,10 +62,7 @@ public class Menu implements Screen {
 
     @Override
     public void mousePressed(int mouseX, int mouseY) {
-        // If play button was pressed, update playButtonPressed
-        if (buttonContains(mouseX, mouseY)) {
-            playButtonPressed = true;
-        }
+        playButton.mousePressed(mouseX, mouseY);
     }
 
     @Override
@@ -85,16 +70,8 @@ public class Menu implements Screen {
         // Do nothing
     }
 
-    public boolean playButtonPressed() {
-        return playButtonPressed;
-    }
-
-    private boolean buttonContains(int x, int y) {
-        if (x < playButtonX) return false;
-        if (y < playButtonY) return false;
-        if (x > playButtonX + playButtonWidth) return false;
-        if (y > playButtonY + playButtonHeight) return false;
-        return true;
+    public Button getPlayButton() {
+        return playButton;
     }
 
 }

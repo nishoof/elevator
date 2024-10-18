@@ -4,6 +4,8 @@ import java.awt.Point;
 
 import java.util.ArrayList;
 
+import Elements.Button.Button;
+import Elements.Button.ButtonListener;
 import Screens.Game;
 import Screens.Menu;
 import Screens.Screen;
@@ -11,7 +13,7 @@ import Screens.Upgrades;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public class Main extends PApplet {
+public class Main extends PApplet implements ButtonListener {
     
     // Window Constants
     public static final int X_RATIO = 16;
@@ -31,6 +33,9 @@ public class Main extends PApplet {
     // Screen
     private int currentScreen;
     private ArrayList<Screen> screens;
+
+    // Menu Play Button
+    private Button menuPlayButton;
 
     public Main() {
         if (instance != null) throw new IllegalStateException("There can only be one instance of Main");
@@ -64,21 +69,21 @@ public class Main extends PApplet {
         screens.add(new Menu());
         screens.add(new Game());
         screens.add(new Upgrades());
+
+        // Menu Play Button
+        menuPlayButton = ((Menu)(screens.get(MENU))).getPlayButton();
+        menuPlayButton.addListener(this);
     }
 
     @Override
     public void draw() {
         windowRatio(WINDOW_WIDTH, WINDOW_HEIGHT);
 
+        // Point mouse = getScaledMouse(this);
+        // System.out.println(mouse);
+
         // Background (clears screen too)
         background(255);
-
-        // Switch screens if menu's play button was pressed
-        Menu menu = (Menu)(screens.get(MENU));
-        if (currentScreen == MENU && menu.playButtonPressed()) {
-            ((Game)(screens.get(GAME))).startTime();
-            currentScreen = GAME;
-        }
 
         // Draw current screen
         screens.get(currentScreen).draw(this);
@@ -87,6 +92,7 @@ public class Main extends PApplet {
     @Override
     public void mousePressed() {
         Point mouse = getScaledMouse(this);
+        System.out.println(mouse);
 
         screens.get(currentScreen).mousePressed(mouse.x, mouse.y);
     }
@@ -94,6 +100,16 @@ public class Main extends PApplet {
     @Override
     public void keyPressed() {
         screens.get(currentScreen).keyPressed(key);
+    }
+
+    @Override
+    // Implementing ButtonListener method
+    public void onClick(Button button) {
+        // If play button was pressed, switch to game screen
+        if (button.equals(menuPlayButton)) {
+            ((Game)(screens.get(GAME))).startTime();
+            currentScreen = GAME;
+        }
     }
 
     public static Main getInstance() {

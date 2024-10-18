@@ -1,7 +1,8 @@
 package Screens;
 
-// import java.awt.Point;
-
+import java.util.ArrayList;
+import Elements.Button.Button;
+import Elements.Button.UpgradeButton;
 import Main.FontHolder;
 import Main.Main;
 import Main.PlayerStats;
@@ -10,9 +11,34 @@ import processing.core.PConstants;
 
 public class Upgrades implements Screen {
 
-    // private boolean elevatorFloorsUpgradeHovered;
+    private Button closeButton;
 
-    public Upgrades() {}
+    private ArrayList<UpgradeButton> upgradeButtons;
+    private UpgradeButton capacityUpgradeButton;
+    private UpgradeButton movementSpeedUpgradeButton;
+    private UpgradeButton doorSpeedUpgradeButton;
+    private UpgradeButton peopleSpeedUpgradeButton;
+
+    public Upgrades() {
+        // Close button
+        closeButton = new Button(910, 30, 26, 26);
+        closeButton.setStroke(0);
+        closeButton.setFillColor(255, 0, 0);
+        closeButton.setHoveredColor(204, 0, 0);
+        closeButton.setStrokeWeight(0);
+        closeButton.setCornerRounding(0);
+
+        // Upgrade buttons
+        upgradeButtons = new ArrayList<>();
+        capacityUpgradeButton = new UpgradeButton(15, 75, 300, 128, "Capacity", PlayerStats::getCapacity, PlayerStats::upgradeCapacity, PlayerStats.CAPACITY_UPGRADE_COST);
+        movementSpeedUpgradeButton = new UpgradeButton(335, 75, 300, 128, "Movement Speed", PlayerStats::getMovementSpeed, PlayerStats::upgradeMovementSpeed, PlayerStats.MOVEMENT_SPEED_UPGRADE_COST);
+        doorSpeedUpgradeButton = new UpgradeButton(655, 75, 300, 128, "Door Speed", PlayerStats::getDoorSpeed, PlayerStats::upgradeDoorSpeed, PlayerStats.DOOR_SPEED_UPGRADE_COST);
+        peopleSpeedUpgradeButton = new UpgradeButton(15, 225, 300, 128, "People Speed", PlayerStats::getPeopleSpeed, PlayerStats::upgradePeopleSpeed, PlayerStats.PEOPLE_SPEED_UPGRADE_COST);
+        upgradeButtons.add(capacityUpgradeButton);
+        upgradeButtons.add(movementSpeedUpgradeButton);
+        upgradeButtons.add(doorSpeedUpgradeButton);
+        upgradeButtons.add(peopleSpeedUpgradeButton);
+    }
 
     @Override
     public void draw(PApplet d) {
@@ -33,10 +59,12 @@ public class Upgrades implements Screen {
         d.text("Upgrades", Main.WINDOW_WIDTH / 2, 30);
         
         // Draw the "Close" button
-        d.fill(255, 0, 0);
-        d.noStroke();
-        d.rectMode(PConstants.CORNER);
-        d.rect(910, 15, 35, 35);
+        closeButton.draw(d);
+
+        // Draw the upgrade buttons
+        for (UpgradeButton upgradeButton : upgradeButtons) {
+            upgradeButton.draw(d);
+        }
 
         // Show the current credits
         d.textFont(FontHolder.getRegular());
@@ -44,54 +72,7 @@ public class Upgrades implements Screen {
         d.textSize(24);
         d.fill(0);
         d.text("Credits: " + PlayerStats.getCredits(), 940, 520);
-        
-        // Draw the elevator capacity upgrade
-        // d.fill(elevatorFloorsUpgradeHovered ? 225 : 240);
-        d.fill(240);
-        d.rect(15, 75, 300, 128);
-        d.fill(0);
-        d.textSize(24);
-        d.textAlign(PConstants.LEFT, PConstants.TOP);
-        d.text("Capacity", 22, 85);
-        d.textSize(20);
-        d.text("Current: " + PlayerStats.getCapacity(), 22, 117);
-        d.text("Upgrade to: " + (PlayerStats.getCapacity() + 1), 22, 145);
-        d.text("Cost: " + PlayerStats.CAPACITY_UPGRADE_COST, 22, 173);
 
-        // Draw the elevator movement speed upgrade
-        d.fill(240);
-        d.rect(335, 75, 300, 128);
-        d.fill(0);
-        d.textSize(24);
-        d.text("Movement speed", 342, 85);
-        d.textSize(20);
-        d.text("Current: " + PlayerStats.getMovementSpeed(), 342, 117);
-        d.text("Upgrade to: " + (PlayerStats.getMovementSpeed() + 1), 342, 145);
-        d.text("Cost: " + PlayerStats.MOVEMENT_SPEED_UPGRADE_COST, 342, 173);
-
-        // Draw the elevator movement speed upgrade
-        d.fill(240);
-        d.rect(655, 75, 300, 128);
-        d.fill(0);
-        d.textSize(24);
-        d.text("Door speed", 662, 85);
-        d.textSize(20);
-        d.text("Current: " + PlayerStats.getDoorSpeed(), 662, 117);
-        d.text("Upgrade to: " + (PlayerStats.getDoorSpeed() + 1), 662, 145);
-        d.text("Cost: " + PlayerStats.DOOR_SPEED_UPGRADE_COST, 662, 173);
-
-        // Draw the people speed upgrade
-        d.fill(240);
-        d.rect(15, 225, 300, 128);
-        d.fill(0);
-        d.textSize(24);
-        d.textAlign(PConstants.LEFT, PConstants.TOP);
-        d.text("People speed", 22, 235);
-        d.textSize(20);
-        d.text("Current: " + PlayerStats.getPeopleSpeed(), 22, 267);
-        d.text("Upgrade to: " + (PlayerStats.getPeopleSpeed() + 1), 22, 295);
-        d.text("Cost: " + PlayerStats.PEOPLE_SPEED_UPGRADE_COST, 22, 323);
-        
         d.pop();           // Restore original settings
     }
 
@@ -103,24 +84,9 @@ public class Upgrades implements Screen {
             return;
         }
 
-        // Elevator capacity upgrade
-        if (mouseX > 15 && mouseX < 315 && mouseY > 75 && mouseY < 203) {
-            PlayerStats.upgradeCapacity();
-        }
-
-        // Elevator movement speed upgrade
-        if (mouseX > 335 && mouseX < 635 && mouseY > 75 && mouseY < 203) {
-            PlayerStats.upgradeMovementSpeed();
-        }
-
-        // Elevator door speed upgrade
-        if (mouseX > 655 && mouseX < 955 && mouseY > 75 && mouseY < 203) {
-            PlayerStats.upgradeDoorSpeed();
-        }
-
-        // People speed upgrade
-        if (mouseX > 15 && mouseX < 315 && mouseY > 225 && mouseY < 353) {
-            PlayerStats.upgradePeopleSpeed();
+        // Upgrade buttons
+        for (UpgradeButton upgradeButton : upgradeButtons) {
+            upgradeButton.mousePressed(mouseX, mouseY);
         }
     }
 
