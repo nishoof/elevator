@@ -2,6 +2,7 @@ package Screens;
 
 import Elements.Button.Button;
 import Main.FontHolder;
+import Main.Main;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -20,15 +21,7 @@ public class Menu implements Screen {
         d.push();          // Save original settings
 
         // Game Title
-        d.strokeWeight(0);
-        d.textFont(FontHolder.getRegular());
-        d.fill(0);
-        d.rect(280, 25, 400, 50);      // outer black rect
-        d.textSize(32);
-        d.fill(255);
-        d.textAlign(PConstants.LEFT, PConstants.CENTER);
-        d.text("Elevator Simulator", 285, 50);
-        d.rect(645, 35, 20, 30);      // small white rectangle symbol
+        Main.drawGameTitle(d);
 
         // Instructions
         d.fill(0);
