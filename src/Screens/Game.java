@@ -15,7 +15,7 @@ import processing.core.PConstants;
 
 public class Game implements Screen {
 
-    private final char[] ELEVATOR_KEYS = {'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'};
+    private final char[] ELEVATOR_KEYS = {'q', 'w'};
     private final int MAX_ELEVATORS = ELEVATOR_KEYS.length;
     private final int MAX_QUEUE_DISPLAYED = 10;
 
@@ -25,22 +25,40 @@ public class Game implements Screen {
     private HashMap<Character, Elevator> charToElevatorMap;
     
     private ArrayList<Person> peopleInLine;
+    private int minSpawnDelay;
+    private int maxSpawnDelay;
     private long startTime;
 
     private Hint hint;
     private boolean buyMenuHintShown;
 
-    public Game() {
+    /**
+     * Constructs a new Game
+     * @param numElevators the number of elevators in the game
+     * @param startingNumFloors the number of floors per elevator the game starts with
+     * @param minSpawnDelay the minimum delay between spawning new people, in miliseconds
+     * @param maxSpawnDelay the maximum delay between spawning new people, in miliseconds
+     */
+    public Game(int numElevators, int startingNumFloors, int minSpawnDelay, int maxSpawnDelay) {
+
+        if (numElevators < 1) throw new IllegalArgumentException("Must have at least 1 elevator");
+        if (numElevators > ELEVATOR_KEYS.length) throw new IllegalArgumentException("Cannot have more than " + ELEVATOR_KEYS.length + " elevators");
+
         // Elevators
-        currentNumFloors = 3;
+        currentNumFloors = startingNumFloors;
         selectedElevator = null;
         elevators = new ArrayList<>();
         charToElevatorMap = new HashMap<>();
-        addElevator(500, 50, 400, 200);
-        // addElevator(500, 300, 400, 200);
+        int elevatorY = 50;
+        for (int i = 0; i < numElevators; i++) {
+            addElevator(500, elevatorY, 400, 200);
+            elevatorY += 250;
+        }
 
         // People
         peopleInLine = new ArrayList<>();
+        this.minSpawnDelay = minSpawnDelay;
+        this.maxSpawnDelay = maxSpawnDelay;
 
         // Time
         startTime = 0;
@@ -225,7 +243,8 @@ public class Game implements Screen {
 
     public void startTime() {
         startTime = System.currentTimeMillis();
-        loopSpawnNewPeople(2000, 3500);
+        loopSpawnNewPeople(minSpawnDelay, maxSpawnDelay);
+        // loopSpawnNewPeople(2000, 3500);
     }
 
 }
