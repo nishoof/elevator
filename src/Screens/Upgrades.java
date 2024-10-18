@@ -32,11 +32,13 @@ public class Upgrades implements Screen {
 
         // Upgrade buttons
         int buttonWidth = (int)((Main.WINDOW_WIDTH - MARGIN*4)/3.0);
-        upgradeButtons = new ArrayList<>();
+        
         capacityUpgradeButton = new UpgradeButton(MARGIN, 75, buttonWidth, 128, "Capacity", PlayerStats::getCapacity, PlayerStats::upgradeCapacity, PlayerStats.CAPACITY_UPGRADE_COST);
         movementSpeedUpgradeButton = new UpgradeButton(MARGIN*2 + buttonWidth, 75, buttonWidth, 128, "Movement Speed", PlayerStats::getMovementSpeed, PlayerStats::upgradeMovementSpeed, PlayerStats.MOVEMENT_SPEED_UPGRADE_COST);
         doorSpeedUpgradeButton = new UpgradeButton(MARGIN*3 + buttonWidth*2, 75, buttonWidth, 128, "Door Speed", PlayerStats::getDoorSpeed, PlayerStats::upgradeDoorSpeed, PlayerStats.DOOR_SPEED_UPGRADE_COST);
         peopleSpeedUpgradeButton = new UpgradeButton(MARGIN, 225, buttonWidth, 128, "People Speed", PlayerStats::getPeopleSpeed, PlayerStats::upgradePeopleSpeed, PlayerStats.PEOPLE_SPEED_UPGRADE_COST);
+        
+        upgradeButtons = new ArrayList<>();
         upgradeButtons.add(capacityUpgradeButton);
         upgradeButtons.add(movementSpeedUpgradeButton);
         upgradeButtons.add(doorSpeedUpgradeButton);
@@ -79,7 +81,7 @@ public class Upgrades implements Screen {
     public void mousePressed(int mouseX, int mouseY) {
         // Close button
         if (mouseX >= 910 && mouseX <= 945 && mouseY >= 15 && mouseY <= 50) {
-            Main.getInstance().switchScreen(Main.GAME);
+            Main.getInstance().toggleUpgradesScreen();
             return;
         }
 
