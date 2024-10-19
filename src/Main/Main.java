@@ -67,15 +67,18 @@ public class Main extends PApplet implements ButtonListener {
         FontHolder.setRegular(createFont("GeistMono-Regular.otf", 128));
         FontHolder.setMedium(createFont("GeistMono-Medium.otf", 128));
         textMode(PConstants.MODEL);
-        
+
         // Screens
         currentScreen = MENU;
         screens = new ArrayList<>();
         screens.add(new Menu());
         screens.add(new LevelSelect());
-        screens.add(new Game(1, 3, new int[][] {{3, 3000, 3000}, {5, 2500, 2500}, {10, 750, 1250}}));
-        screens.add(new Game(1, 7, new int[][] {{3, 3000, 3000}, {5, 2500, 2500}, {10, 750, 1250}}));
-        screens.add(new Game(2, 10, new int[][] {{3, 3000, 3000}, {5, 2500, 2500}, {10, 750, 1250}}));
+
+        int[][] waves = new int[][] {{3, 3000, 3000}, {5, 2500, 2500}, {10, 750, 1250}};
+        screens.add(new Game(1, 3, waves));
+        screens.add(new Game(1, 7, waves));
+        screens.add(new Game(2, 10, waves));
+
         screens.add(new Upgrades());
         currGame = null;
 

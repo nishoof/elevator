@@ -230,22 +230,18 @@ public class Game implements Screen {
             desiredFloor = (int)(Math.random() * (maxFloor - minFloor + 1) + minFloor);
         } while (desiredFloor == currentFloor);
 
-        Person person = new Person(currentFloor, desiredFloor);
+        Person person = new Person(currentFloor, desiredFloor, 10000, this::removePerson);
         
         peopleInLine.add(person);
     }
 
+    private void removePerson(Person person) {
+        System.out.println("Person " + person + " waited too long");
+        peopleInLine.remove(person);
+    }
+
     private void loopSpawnNewPeople() {
         new Thread(() -> {
-            // while (true) {
-            //     newPerson(1, currentNumFloors);
-            //     try {
-            //         Thread.sleep((long)(Math.random() * (maxDelay - minDelay) + minDelay));
-            //     } catch (InterruptedException e) {
-            //         e.printStackTrace();
-            //     }
-            // }
-
             for (int[] wave : waves) {
                 new Wave(wave[0], wave[1], wave[2]).start();
             }
