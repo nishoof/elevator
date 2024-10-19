@@ -15,6 +15,44 @@ import processing.core.PConstants;
 
 public class Game implements Screen {
 
+    private class Wave {
+    
+        private int numPeople;
+        private int minDelay;
+        private int maxDelay;
+    
+        /**
+         * Constructs a new Wave. A wave will spawn a numPeople amount of people with a delay in the range of [avgDelay - delayRange/2, avgDelay + delayRange/2)
+         * @param numPeople the number of people in this wave
+         * @param minDelay the minimum delay between spawning people, in miliseconds
+         * @param maxDelay the maximum delay between spawning people, in miliseconds
+         */
+        private Wave(int numPeople, int minDelay, int maxDelay) {
+            if (numPeople < 1) throw new IllegalArgumentException("Must have at least 1 person in the wave");
+            if (minDelay < 0 || maxDelay < 0) throw new IllegalArgumentException("Delay cannot be negative");
+            if (maxDelay < minDelay) throw new IllegalArgumentException("Max delay cannot be less than min delay");
+
+            this.numPeople = numPeople;
+            this.minDelay = minDelay;
+            this.maxDelay = maxDelay;
+        }
+
+        private void start() {
+            for (int i = 0; i < numPeople; i++) {
+                // Spawn the person
+                newPerson();
+
+                // Delay
+                try {
+                    Thread.sleep((long)(Math.random() * (maxDelay - minDelay) + minDelay));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    
+    }
+
     private final char[] ELEVATOR_KEYS = {'q', 'w'};
     private final int MAX_ELEVATORS = ELEVATOR_KEYS.length;
     private final int MAX_QUEUE_DISPLAYED = 10;
@@ -23,10 +61,9 @@ public class Game implements Screen {
     private Elevator selectedElevator;
     private ArrayList<Elevator> elevators;
     private HashMap<Character, Elevator> charToElevatorMap;
-    
+
     private ArrayList<Person> peopleInLine;
-    private int minSpawnDelay;
-    private int maxSpawnDelay;
+    private int[][] waves;
     private long startTime;
 
     private Hint hint;
@@ -36,19 +73,18 @@ public class Game implements Screen {
      * Constructs a new Game
      * @param numElevators the number of elevators in the game
      * @param startingNumFloors the number of floors per elevator the game starts with
-     * @param minSpawnDelay the minimum delay between spawning new people, in miliseconds
-     * @param maxSpawnDelay the maximum delay between spawning new people, in miliseconds
+     * @param waves the waves of people to spawn. Each wave is an array of 3 integers: [numPeople, minDelay, maxDelay]. numPeople is the number of people in this wave. The people will be spawned with a delay between minDelay (inclusive) and maxDelay (exclusive).
      */
-    public Game(int numElevators, int startingNumFloors, int minSpawnDelay, int maxSpawnDelay) {
+    public Game(int numElevators, int startingNumFloors, int[][] waves) {
 
         if (numElevators < 1) throw new IllegalArgumentException("Must have at least 1 elevator");
         if (numElevators > ELEVATOR_KEYS.length) throw new IllegalArgumentException("Cannot have more than " + ELEVATOR_KEYS.length + " elevators");
 
         // Elevators
-        currentNumFloors = startingNumFloors;
-        selectedElevator = null;
-        elevators = new ArrayList<>();
-        charToElevatorMap = new HashMap<>();
+        this.currentNumFloors = startingNumFloors;
+        this.selectedElevator = null;
+        this.elevators = new ArrayList<>();
+        this.charToElevatorMap = new HashMap<>();
         int elevatorY = 50;
         for (int i = 0; i < numElevators; i++) {
             addElevator(500, elevatorY, 400, 200);
@@ -56,9 +92,8 @@ public class Game implements Screen {
         }
 
         // People
-        peopleInLine = new ArrayList<>();
-        this.minSpawnDelay = minSpawnDelay;
-        this.maxSpawnDelay = maxSpawnDelay;
+        this.peopleInLine = new ArrayList<>();
+        this.waves = waves;
 
         // Time
         startTime = 0;
@@ -164,7 +199,7 @@ public class Game implements Screen {
             // Otherwise, tell the elevator to go to this floor
             selectedElevator.addFloorToQueue(key - '0');
         } else if (key == '`') {
-            newPerson(1, currentNumFloors);
+            newPerson();
         } else if (key == '+') {
             increaseFloorCount();
         }
@@ -183,7 +218,10 @@ public class Game implements Screen {
         }
     }
 
-    private void newPerson(int minFloor, int maxFloor) {
+    private void newPerson() {
+        int minFloor = 1;
+        int maxFloor = currentNumFloors;
+
         int currentFloor, desiredFloor;
         
         currentFloor = (int)(Math.random() * (maxFloor - minFloor + 1) + minFloor);
@@ -197,15 +235,19 @@ public class Game implements Screen {
         peopleInLine.add(person);
     }
 
-    private void loopSpawnNewPeople(int minDelay, int maxDelay) {
+    private void loopSpawnNewPeople() {
         new Thread(() -> {
-            while (true) {
-                newPerson(1, currentNumFloors);
-                try {
-                    Thread.sleep((long)(Math.random() * (maxDelay - minDelay) + minDelay));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            // while (true) {
+            //     newPerson(1, currentNumFloors);
+            //     try {
+            //         Thread.sleep((long)(Math.random() * (maxDelay - minDelay) + minDelay));
+            //     } catch (InterruptedException e) {
+            //         e.printStackTrace();
+            //     }
+            // }
+
+            for (int[] wave : waves) {
+                new Wave(wave[0], wave[1], wave[2]).start();
             }
         }).start();
     }
@@ -243,7 +285,7 @@ public class Game implements Screen {
 
     public void startTime() {
         startTime = System.currentTimeMillis();
-        loopSpawnNewPeople(minSpawnDelay, maxSpawnDelay);
+        loopSpawnNewPeople();
         // loopSpawnNewPeople(2000, 3500);
     }
 
