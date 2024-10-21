@@ -49,7 +49,6 @@ public class Upgrades implements Screen {
     public void draw(PApplet d) {
         d.push();          // Save original settings
 
-        // Draw a rectangle that covers the screen
         d.background(255);
         
         // Draw the "Upgrades" title

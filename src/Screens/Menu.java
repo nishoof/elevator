@@ -20,6 +20,8 @@ public class Menu implements Screen {
     public void draw(PApplet d) {
         d.push();          // Save original settings
 
+        d.background(255);
+
         // Game Title
         Main.drawGameTitle(d);
 

@@ -39,8 +39,9 @@ public class Main extends PApplet implements ButtonListener {
     private ArrayList<Screen> screens;
     private Game currGame;
 
-    // Menu Play Button
+    // Screen Switching Buttons
     private Button menuPlayButton;
+    private Button returnToMenuButton;
 
     public Main() {
         if (instance != null) throw new IllegalStateException("There can only be one instance of Main");
@@ -66,6 +67,12 @@ public class Main extends PApplet implements ButtonListener {
         // Load all resources (images and fonts)
         DataHolder.init(this);
 
+        // Return to Menu Button
+        returnToMenuButton = new Button(307, 255, 346, 70);
+        returnToMenuButton.setTextSize(28);
+        returnToMenuButton.setText("Return to Menu!");
+        returnToMenuButton.addListener(this);
+
         // Screens
         currentScreen = MENU;
         screens = new ArrayList<>();
@@ -73,9 +80,12 @@ public class Main extends PApplet implements ButtonListener {
         screens.add(new LevelSelect());
 
         int[][] waves = new int[][] {{3, 3000, 3000}, {5, 2500, 2500}, {10, 750, 1250}};
-        screens.add(new Game(1, 3, waves));
-        screens.add(new Game(1, 7, waves));
-        screens.add(new Game(2, 10, waves));
+        screens.add(null);
+        screens.add(null);
+        screens.add(null);
+        // screens.add(new Game(1, 3, waves));
+        // screens.add(new Game(1, 7, waves));
+        // screens.add(new Game(2, 10, waves));
 
         screens.add(new Upgrades());
         currGame = null;
@@ -89,9 +99,6 @@ public class Main extends PApplet implements ButtonListener {
     public void draw() {
         windowRatio(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-        // Background (clears screen too)
-        background(255);
-
         // Draw current screen
         screens.get(currentScreen).draw(this);
     }
@@ -99,14 +106,26 @@ public class Main extends PApplet implements ButtonListener {
     @Override
     public void mousePressed() {
         Point mouse = getScaledMouse(this);
+
         System.out.println(mouse);
+
         screens.get(currentScreen).mousePressed(mouse.x, mouse.y);
     }
 
     @Override
     public void keyPressed() {
         if (key == 'b') {               // toggle upgrades screen
-            if (currentScreen > LEVEL_SELECT) toggleUpgradesScreen();
+            if (currentScreen == UPGRADES) {
+                toggleUpgradesScreen();
+                return;
+            }
+
+            Screen screen = screens.get(currentScreen);
+            if (!(screen instanceof Game)) return;
+            if (((Game)screen).getGameOver()) return;
+
+            toggleUpgradesScreen();
+            return;
         }
 
         screens.get(currentScreen).keyPressed(key);
@@ -115,9 +134,12 @@ public class Main extends PApplet implements ButtonListener {
     @Override
     // Implementing ButtonListener method
     public void onClick(Button button) {
-        // If play button was pressed, switch to game screen
-        if (button.equals(menuPlayButton)) {
+        if (button == menuPlayButton) {
             currentScreen = LEVEL_SELECT;
+        } else if (button == returnToMenuButton) {
+            currentScreen = MENU;
+        } else {
+            throw new IllegalArgumentException("Button not recognized");
         }
     }
 
@@ -131,8 +153,25 @@ public class Main extends PApplet implements ButtonListener {
 
     public void startLevel(int level) {
         // Figure out which screen corresponds to the level we want
-        int screen = LEVEL_SELECT + level;
-        Game game = (Game)(screens.get(screen));
+        int screenIndex = LEVEL_SELECT + level;
+
+        // Make the new game
+        int[][] waves = new int[][] {{3, 3000, 3000}, {5, 2500, 2500}, {10, 750, 1250}};
+        Game game;
+        switch (level) {
+            case 1:
+                game = new Game(1, 3, waves);
+                break;
+            case 2:
+                game = new Game(1, 7, waves);
+                break;
+            case 3:
+                game = new Game(2, 10, waves);
+                break;
+            default:
+                throw new IllegalArgumentException("Level must be between 1 and 3");
+        }
+        screens.set(screenIndex, game);
         
         // Start the game for the level
         game.startTime();
@@ -141,7 +180,7 @@ public class Main extends PApplet implements ButtonListener {
         currGame = game;
         
         // Switch to the screen
-        switchScreen(screen);
+        switchScreen(screenIndex);
     }
 
     public void toggleUpgradesScreen() {
@@ -149,6 +188,10 @@ public class Main extends PApplet implements ButtonListener {
 
         if (currentScreen == UPGRADES) switchScreen(currGame);
         else switchScreen(UPGRADES);
+    }
+
+    public Button getReturnToMenuButton() {
+        return returnToMenuButton;
     }
 
     public static Main getInstance() {

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import Elements.Elevator;
 import Elements.Hint;
 import Elements.Person;
+import Elements.Button.Button;
 import Main.DataHolder;
 import Main.Main;
 import Main.PlayerStats;
@@ -72,6 +73,9 @@ public class Game implements Screen {
 
     private PImage heartImg;
     private int lives;
+    private boolean gameOver;
+    private boolean lastGameFrameDrawn;         // we draw one last frame after the game is over
+    private Button returnToMenuButton;
 
     /**
      * Constructs a new Game
@@ -109,11 +113,32 @@ public class Game implements Screen {
         // Lives
         heartImg = DataHolder.getHeartImg();
         lives = 3;
+        gameOver = false;
+        lastGameFrameDrawn = false;
+        returnToMenuButton = Main.getInstance().getReturnToMenuButton();
     }
 
     @Override
     public void draw(PApplet d) {
         if (startTime == 0) throw new IllegalStateException("Tried to draw the game screen before starting the game");
+
+        
+        if (gameOver) {
+            d.textFont(DataHolder.getRegularFont());
+            d.textSize(64);
+            d.fill(255, 0, 0);
+            d.textAlign(PConstants.CENTER, PConstants.CENTER);
+            System.out.println(d.textWidth("Game Over"));
+            d.text("Game Over", Main.WINDOW_WIDTH/2, Main.WINDOW_HEIGHT/2 - 60);
+
+            returnToMenuButton.draw(d);
+        }
+
+        if (lastGameFrameDrawn) {
+            return;
+        }
+
+        d.background(255);
 
         // Game Title
         d.strokeWeight(0);
@@ -171,10 +196,24 @@ public class Game implements Screen {
         for (int i = 0; i < lives; i++) {
             d.image(heartImg, Main.WINDOW_WIDTH - 80 - i*60, Main.WINDOW_HEIGHT - 80);
         }
+
+        // Last Game Frame Drawn
+        // Basically, once the game is over, we draw one last frame of the game, then draw the game over screen
+        // This is so that the player can see the last state of the game before it ends (with 0 hearts and the person leaving the queue)
+        if (gameOver) {
+            lastGameFrameDrawn = true;
+            d.rectMode(PConstants.CORNER);
+            d.fill(255, 150);
+            d.rect(0, 0, Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT);
+        }
     }
 
     @Override
     public void mousePressed(int mouseX, int mouseY) {
+        returnToMenuButton.mousePressed(mouseX, mouseY);
+
+        if (gameOver) return;
+
         // If hint was clicked on, remove it
         if (hint != null && hint.contains(mouseX, mouseY)) {
             hint = null;
@@ -187,6 +226,8 @@ public class Game implements Screen {
 
     @Override
     public void keyPressed(char key) {
+        if (gameOver) return;
+
         // Make the key lowercase to make it work even if the user did a capital for some reason
         key = Character.toLowerCase(key);
 
@@ -224,6 +265,8 @@ public class Game implements Screen {
     }
 
     public void rewardPoints() {
+        if (gameOver) return;
+
         PlayerStats.addCreditsAndPoints();
 
         if (!buyMenuHintShown && PlayerStats.getCredits() >= 10) {
@@ -251,12 +294,24 @@ public class Game implements Screen {
 
     // Called when a person has waited too long. Removes the person from the queue and decrements the player's lives
     private void onPersonTimeOver(Person person) {
+        if (gameOver) return;
+
         System.out.println("Person " + person + " waited too long");
         peopleInLine.remove(person);
         lives--;
         if (lives <= 0) {
-            System.out.println("Game over");
+            gameOver();
         }
+    }
+
+    // Called when all the lives are lost. Ends the game.
+    private void gameOver() {
+        System.out.println("Game Over");
+        gameOver = true;
+    }
+
+    public boolean getGameOver() {
+        return gameOver;
     }
 
     private void loopSpawnNewPeople() {
