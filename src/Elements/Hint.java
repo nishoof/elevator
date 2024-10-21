@@ -1,6 +1,6 @@
 package Elements;
 
-import Main.FontHolder;
+import Main.DataHolder;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PFont;
@@ -27,7 +27,7 @@ public class Hint {
         this.y = y;
 
         // Text
-        this.font = FontHolder.getRegular();
+        this.font = DataHolder.getRegularFont();
         if (text.length() <= MAX_CHARS) {
             this.text = text;
         } else {

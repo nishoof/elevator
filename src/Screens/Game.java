@@ -6,12 +6,13 @@ import java.util.HashMap;
 import Elements.Elevator;
 import Elements.Hint;
 import Elements.Person;
-import Main.FontHolder;
+import Main.DataHolder;
 import Main.Main;
 import Main.PlayerStats;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
+import processing.core.PImage;
 
 public class Game implements Screen {
 
@@ -69,6 +70,9 @@ public class Game implements Screen {
     private Hint hint;
     private boolean buyMenuHintShown;
 
+    private PImage heartImg;
+    private int lives;
+
     /**
      * Constructs a new Game
      * @param numElevators the number of elevators in the game
@@ -101,6 +105,10 @@ public class Game implements Screen {
         // Hints
         hint = null;
         buyMenuHintShown = false;
+
+        // Lives
+        heartImg = DataHolder.getHeartImg();
+        lives = 3;
     }
 
     @Override
@@ -109,7 +117,7 @@ public class Game implements Screen {
 
         // Game Title
         d.strokeWeight(0);
-        d.textFont(FontHolder.getRegular());
+        d.textFont(DataHolder.getRegularFont());
         d.fill(0);
         d.rect(15, 15, 400, 50);      // outer black rect
         d.textSize(32);
@@ -120,11 +128,11 @@ public class Game implements Screen {
         
         // Queue
         d.fill(0);
-        d.textFont(FontHolder.getMedium());
+        d.textFont(DataHolder.getMediumFont());
         d.textSize(24);
         d.textAlign(PConstants.LEFT, PConstants.CENTER);
         d.text("Queue", 20, 100);
-        d.textFont(FontHolder.getRegular());
+        d.textFont(DataHolder.getRegularFont());
         d.textSize(19);
         int numPeopleInLine = peopleInLine.size();
         int numPeopleToDisplay = Math.min(numPeopleInLine, MAX_QUEUE_DISPLAYED);
@@ -149,7 +157,7 @@ public class Game implements Screen {
         d.text(String.format("Time: %02d:%02d", minutes, seconds), 20, 500);
         
         // Draw Elevators
-        d.textFont(FontHolder.getMedium());
+        d.textFont(DataHolder.getMediumFont());
         for (Elevator elevator : elevators) {
             elevator.draw(d);
         }
@@ -157,6 +165,11 @@ public class Game implements Screen {
         // Hints
         if (hint != null) {
             hint.draw(d);
+        }
+
+        // Lives
+        for (int i = 0; i < lives; i++) {
+            d.image(heartImg, Main.WINDOW_WIDTH - 80 - i*60, Main.WINDOW_HEIGHT - 80);
         }
     }
 
@@ -231,14 +244,19 @@ public class Game implements Screen {
             desiredFloor = (int)(Math.random() * (maxFloor - minFloor + 1) + minFloor);
         } while (desiredFloor == currentFloor);
 
-        Person person = new Person(currentFloor, desiredFloor, 10000, this::removePerson);
+        Person person = new Person(currentFloor, desiredFloor, 10000, this::onPersonTimeOver);
 
         peopleInLine.add(person);
     }
 
-    private void removePerson(Person person) {
+    // Called when a person has waited too long. Removes the person from the queue and decrements the player's lives
+    private void onPersonTimeOver(Person person) {
         System.out.println("Person " + person + " waited too long");
         peopleInLine.remove(person);
+        lives--;
+        if (lives <= 0) {
+            System.out.println("Game over");
+        }
     }
 
     private void loopSpawnNewPeople() {

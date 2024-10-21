@@ -3,7 +3,7 @@ package Screens;
 import java.util.ArrayList;
 import Elements.Button.Button;
 import Elements.Button.UpgradeButton;
-import Main.FontHolder;
+import Main.DataHolder;
 import Main.Main;
 import Main.PlayerStats;
 import processing.core.PApplet;
@@ -53,7 +53,7 @@ public class Upgrades implements Screen {
         d.background(255);
         
         // Draw the "Upgrades" title
-        d.textFont(FontHolder.getMedium());
+        d.textFont(DataHolder.getMediumFont());
         d.fill(0);
         d.textSize(32);
         d.textAlign(PConstants.CENTER, PConstants.TOP);
@@ -68,7 +68,7 @@ public class Upgrades implements Screen {
         }
 
         // Show the current credits
-        d.textFont(FontHolder.getRegular());
+        d.textFont(DataHolder.getRegularFont());
         d.textAlign(PConstants.RIGHT, PConstants.BOTTOM);
         d.textSize(24);
         d.fill(0);

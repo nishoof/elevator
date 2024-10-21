@@ -63,10 +63,8 @@ public class Main extends PApplet implements ButtonListener {
         windowResizable(true);
         windowTitle("Elevator Simulator");
 
-        // Fonts
-        FontHolder.setRegular(createFont("GeistMono-Regular.otf", 128));
-        FontHolder.setMedium(createFont("GeistMono-Medium.otf", 128));
-        textMode(PConstants.MODEL);
+        // Load all resources (images and fonts)
+        DataHolder.init(this);
 
         // Screens
         currentScreen = MENU;
@@ -101,7 +99,7 @@ public class Main extends PApplet implements ButtonListener {
     @Override
     public void mousePressed() {
         Point mouse = getScaledMouse(this);
-
+        System.out.println(mouse);
         screens.get(currentScreen).mousePressed(mouse.x, mouse.y);
     }
 
@@ -168,7 +166,7 @@ public class Main extends PApplet implements ButtonListener {
         d.push();          // Save original settings        
 
         d.strokeWeight(0);
-        d.textFont(FontHolder.getRegular());
+        d.textFont(DataHolder.getRegularFont());
         d.fill(0);
         d.rect(280, 25, 400, 50);      // outer black rect
         d.textSize(32);
