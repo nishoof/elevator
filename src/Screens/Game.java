@@ -117,11 +117,12 @@ public class Game implements Screen {
         d.textAlign(PConstants.LEFT, PConstants.CENTER);
         d.text("Elevator Simulator", 20, 40);
         d.rect(380, 25, 20, 30);      // small white rectangle symbol
-
+        
         // Queue
         d.fill(0);
         d.textFont(FontHolder.getMedium());
         d.textSize(24);
+        d.textAlign(PConstants.LEFT, PConstants.CENTER);
         d.text("Queue", 20, 100);
         d.textFont(FontHolder.getRegular());
         d.textSize(19);
@@ -129,7 +130,7 @@ public class Game implements Screen {
         int numPeopleToDisplay = Math.min(numPeopleInLine, MAX_QUEUE_DISPLAYED);
         int numPeopleNotDisplayed = numPeopleInLine - numPeopleToDisplay;
         for (int i = 0; i < numPeopleToDisplay; i++) {
-            d.text(peopleInLine.get(i).toString(), 20, 130 + i * 24);
+            peopleInLine.get(i).draw(d, 20, 130 + i * 24);
         }
         if (numPeopleNotDisplayed > 0) d.text(numPeopleNotDisplayed + " more...", 20, 130 + numPeopleToDisplay * 24);
 
@@ -223,15 +224,15 @@ public class Game implements Screen {
         int maxFloor = currentNumFloors;
 
         int currentFloor, desiredFloor;
-        
+
         currentFloor = (int)(Math.random() * (maxFloor - minFloor + 1) + minFloor);
-        
+
         do {
             desiredFloor = (int)(Math.random() * (maxFloor - minFloor + 1) + minFloor);
         } while (desiredFloor == currentFloor);
 
         Person person = new Person(currentFloor, desiredFloor, 10000, this::removePerson);
-        
+
         peopleInLine.add(person);
     }
 

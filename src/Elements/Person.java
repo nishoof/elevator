@@ -1,5 +1,8 @@
 package Elements;
 
+import processing.core.PApplet;
+import processing.core.PConstants;
+
 public class Person {
 
     private int currentFloor;
@@ -8,6 +11,9 @@ public class Person {
     private long endTime;
     private boolean timerRunning;           // the timer runs while the person is waiting for the elevator
     private RemovePersonMethod removePersonMethod;
+
+    private static final int TEXT_SIZE = 19;
+    private static final float TEXT_ASCENT = 13.5078125F;
 
     public interface RemovePersonMethod {
         void removePerson(Person person);
@@ -30,6 +36,16 @@ public class Person {
         this.endTime = startTime + duration;
         this.removePersonMethod = removePersonMethod;
         new Thread(this::startTimer).start();
+    }
+
+    public void draw(PApplet d, int x, int y) {
+        d.textSize(TEXT_SIZE);
+        d.textAlign(PConstants.LEFT, PConstants.CENTER);
+        d.text(this.toString(), x, y);
+
+        float percentTimeRemaining = (float)(System.currentTimeMillis() - startTime)/(endTime - startTime);
+        d.ellipseMode(PConstants.CENTER);
+        d.arc(x + 95, y, TEXT_ASCENT-2, TEXT_ASCENT-2, -PConstants.PI/2 + (percentTimeRemaining * 2 * PConstants.PI), 3*PConstants.PI/2, PConstants.PIE);
     }
 
     public int getCurrentFloor() {
