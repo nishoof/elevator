@@ -79,13 +79,9 @@ public class Main extends PApplet implements ButtonListener {
         screens.add(new Menu());
         screens.add(new LevelSelect());
 
-        int[][] waves = new int[][] {{3, 3000, 3000}, {5, 2500, 2500}, {10, 750, 1250}};
         screens.add(null);
         screens.add(null);
         screens.add(null);
-        // screens.add(new Game(1, 3, waves));
-        // screens.add(new Game(1, 7, waves));
-        // screens.add(new Game(2, 10, waves));
 
         screens.add(new Upgrades());
         currGame = null;

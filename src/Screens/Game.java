@@ -287,7 +287,7 @@ public class Game implements Screen {
             desiredFloor = (int)(Math.random() * (maxFloor - minFloor + 1) + minFloor);
         } while (desiredFloor == currentFloor);
 
-        Person person = new Person(currentFloor, desiredFloor, 10000, this::onPersonTimeOver);
+        Person person = new Person(currentFloor, desiredFloor, 20000, this::onPersonTimeOver);
 
         peopleInLine.add(person);
     }

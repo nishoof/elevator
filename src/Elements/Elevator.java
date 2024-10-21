@@ -412,6 +412,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
             Person person = peopleInLine.get(i - n2);
             if (person.getCurrentFloor() != this.getCurrentFloor()) continue;
             n2++;
+            person.cancelTimer();
             peopleInLine.remove(person);
             peopleInElevator.add(person);
             System.out.println("Person from floor " + person.getCurrentFloor() + " added to elevator");

@@ -68,6 +68,10 @@ public class Person {
         return currentFloor + " -> " + desiredFloor;
     }
 
+    public void cancelTimer() {
+        timerRunning = false;
+    }
+    
     private void startTimer() {
         final int BUSY_WAIT = 1000;
         timerRunning = true;
