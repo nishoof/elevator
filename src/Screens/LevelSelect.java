@@ -5,7 +5,7 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 import Elements.Button.Button;
 import Elements.Button.ButtonListener;
-import Main.FontHolder;
+import Main.DataHolder;
 import Main.Main;
 
 public class LevelSelect implements Screen, ButtonListener {
@@ -46,13 +46,15 @@ public class LevelSelect implements Screen, ButtonListener {
     public void draw(PApplet d) {
         d.push();           // Save original settings
 
+        d.background(255);
+
         // Game Title
         Main.drawGameTitle(d);
 
         // Select Difficulty Text
         d.fill(0);
         d.textAlign(PConstants.CENTER, PConstants.CENTER);
-        d.textFont(FontHolder.getMedium());
+        d.textFont(DataHolder.getMediumFont());
         d.textSize(24);
         d.text("Select Difficulty!", 480, 120);
 

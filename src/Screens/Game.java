@@ -6,12 +6,14 @@ import java.util.HashMap;
 import Elements.Elevator;
 import Elements.Hint;
 import Elements.Person;
-import Main.FontHolder;
+import Elements.Button.Button;
+import Main.DataHolder;
 import Main.Main;
 import Main.PlayerStats;
 
 import processing.core.PApplet;
 import processing.core.PConstants;
+import processing.core.PImage;
 
 public class Game implements Screen {
 
@@ -69,6 +71,12 @@ public class Game implements Screen {
     private Hint hint;
     private boolean buyMenuHintShown;
 
+    private PImage heartImg;
+    private int lives;
+    private boolean gameOver;
+    private boolean lastGameFrameDrawn;         // we draw one last frame after the game is over
+    private Button returnToMenuButton;
+
     /**
      * Constructs a new Game
      * @param numElevators the number of elevators in the game
@@ -101,15 +109,40 @@ public class Game implements Screen {
         // Hints
         hint = null;
         buyMenuHintShown = false;
+
+        // Lives
+        heartImg = DataHolder.getHeartImg();
+        lives = 3;
+        gameOver = false;
+        lastGameFrameDrawn = false;
+        returnToMenuButton = Main.getInstance().getReturnToMenuButton();
     }
 
     @Override
     public void draw(PApplet d) {
         if (startTime == 0) throw new IllegalStateException("Tried to draw the game screen before starting the game");
 
+        
+        if (gameOver) {
+            d.textFont(DataHolder.getRegularFont());
+            d.textSize(64);
+            d.fill(255, 0, 0);
+            d.textAlign(PConstants.CENTER, PConstants.CENTER);
+            System.out.println(d.textWidth("Game Over"));
+            d.text("Game Over", Main.WINDOW_WIDTH/2, Main.WINDOW_HEIGHT/2 - 60);
+
+            returnToMenuButton.draw(d);
+        }
+
+        if (lastGameFrameDrawn) {
+            return;
+        }
+
+        d.background(255);
+
         // Game Title
         d.strokeWeight(0);
-        d.textFont(FontHolder.getRegular());
+        d.textFont(DataHolder.getRegularFont());
         d.fill(0);
         d.rect(15, 15, 400, 50);      // outer black rect
         d.textSize(32);
@@ -117,19 +150,20 @@ public class Game implements Screen {
         d.textAlign(PConstants.LEFT, PConstants.CENTER);
         d.text("Elevator Simulator", 20, 40);
         d.rect(380, 25, 20, 30);      // small white rectangle symbol
-
+        
         // Queue
         d.fill(0);
-        d.textFont(FontHolder.getMedium());
+        d.textFont(DataHolder.getMediumFont());
         d.textSize(24);
+        d.textAlign(PConstants.LEFT, PConstants.CENTER);
         d.text("Queue", 20, 100);
-        d.textFont(FontHolder.getRegular());
+        d.textFont(DataHolder.getRegularFont());
         d.textSize(19);
         int numPeopleInLine = peopleInLine.size();
         int numPeopleToDisplay = Math.min(numPeopleInLine, MAX_QUEUE_DISPLAYED);
         int numPeopleNotDisplayed = numPeopleInLine - numPeopleToDisplay;
         for (int i = 0; i < numPeopleToDisplay; i++) {
-            d.text(peopleInLine.get(i).toString(), 20, 130 + i * 24);
+            peopleInLine.get(i).draw(d, 20, 130 + i * 24);
         }
         if (numPeopleNotDisplayed > 0) d.text(numPeopleNotDisplayed + " more...", 20, 130 + numPeopleToDisplay * 24);
 
@@ -148,7 +182,7 @@ public class Game implements Screen {
         d.text(String.format("Time: %02d:%02d", minutes, seconds), 20, 500);
         
         // Draw Elevators
-        d.textFont(FontHolder.getMedium());
+        d.textFont(DataHolder.getMediumFont());
         for (Elevator elevator : elevators) {
             elevator.draw(d);
         }
@@ -157,10 +191,29 @@ public class Game implements Screen {
         if (hint != null) {
             hint.draw(d);
         }
+
+        // Lives
+        for (int i = 0; i < lives; i++) {
+            d.image(heartImg, Main.WINDOW_WIDTH - 80 - i*60, Main.WINDOW_HEIGHT - 80);
+        }
+
+        // Last Game Frame Drawn
+        // Basically, once the game is over, we draw one last frame of the game, then draw the game over screen
+        // This is so that the player can see the last state of the game before it ends (with 0 hearts and the person leaving the queue)
+        if (gameOver) {
+            lastGameFrameDrawn = true;
+            d.rectMode(PConstants.CORNER);
+            d.fill(255, 150);
+            d.rect(0, 0, Main.WINDOW_WIDTH, Main.WINDOW_HEIGHT);
+        }
     }
 
     @Override
     public void mousePressed(int mouseX, int mouseY) {
+        returnToMenuButton.mousePressed(mouseX, mouseY);
+
+        if (gameOver) return;
+
         // If hint was clicked on, remove it
         if (hint != null && hint.contains(mouseX, mouseY)) {
             hint = null;
@@ -173,6 +226,8 @@ public class Game implements Screen {
 
     @Override
     public void keyPressed(char key) {
+        if (gameOver) return;
+
         // Make the key lowercase to make it work even if the user did a capital for some reason
         key = Character.toLowerCase(key);
 
@@ -210,6 +265,8 @@ public class Game implements Screen {
     }
 
     public void rewardPoints() {
+        if (gameOver) return;
+
         PlayerStats.addCreditsAndPoints();
 
         if (!buyMenuHintShown && PlayerStats.getCredits() >= 10) {
@@ -223,29 +280,42 @@ public class Game implements Screen {
         int maxFloor = currentNumFloors;
 
         int currentFloor, desiredFloor;
-        
+
         currentFloor = (int)(Math.random() * (maxFloor - minFloor + 1) + minFloor);
-        
+
         do {
             desiredFloor = (int)(Math.random() * (maxFloor - minFloor + 1) + minFloor);
         } while (desiredFloor == currentFloor);
 
-        Person person = new Person(currentFloor, desiredFloor);
-        
+        Person person = new Person(currentFloor, desiredFloor, 20000, this::onPersonTimeOver);
+
         peopleInLine.add(person);
+    }
+
+    // Called when a person has waited too long. Removes the person from the queue and decrements the player's lives
+    private void onPersonTimeOver(Person person) {
+        if (gameOver) return;
+
+        System.out.println("Person " + person + " waited too long");
+        peopleInLine.remove(person);
+        lives--;
+        if (lives <= 0) {
+            gameOver();
+        }
+    }
+
+    // Called when all the lives are lost. Ends the game.
+    private void gameOver() {
+        System.out.println("Game Over");
+        gameOver = true;
+    }
+
+    public boolean getGameOver() {
+        return gameOver;
     }
 
     private void loopSpawnNewPeople() {
         new Thread(() -> {
-            // while (true) {
-            //     newPerson(1, currentNumFloors);
-            //     try {
-            //         Thread.sleep((long)(Math.random() * (maxDelay - minDelay) + minDelay));
-            //     } catch (InterruptedException e) {
-            //         e.printStackTrace();
-            //     }
-            // }
-
             for (int[] wave : waves) {
                 new Wave(wave[0], wave[1], wave[2]).start();
             }

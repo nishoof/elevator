@@ -1,7 +1,7 @@
 package Screens;
 
 import Elements.Button.Button;
-import Main.FontHolder;
+import Main.DataHolder;
 import Main.Main;
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -20,16 +20,18 @@ public class Menu implements Screen {
     public void draw(PApplet d) {
         d.push();          // Save original settings
 
+        d.background(255);
+
         // Game Title
         Main.drawGameTitle(d);
 
         // Instructions
         d.fill(0);
         d.textAlign(PConstants.CENTER, PConstants.CENTER);
-        d.textFont(FontHolder.getMedium());
+        d.textFont(DataHolder.getMediumFont());
         d.textSize(24);
         d.text("How to play!", 480, 120);
-        d.textFont(FontHolder.getRegular());
+        d.textFont(DataHolder.getRegularFont());
         d.textSize(18);
         int s1 = 23;            // spacing between every line
         int s2 = 5;             // spacing between every different sentence
@@ -45,7 +47,7 @@ public class Menu implements Screen {
         d.text("Have fun!",                                         480, 155 + s1*9 + s2*4);
 
         // Play button
-        d.textFont(FontHolder.getMedium());
+        d.textFont(DataHolder.getMediumFont());
         playButton.draw(d);
         d.textSize(32);
         d.text("Play!", 480, 470);

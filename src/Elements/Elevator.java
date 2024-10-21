@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import Elements.Button.Button;
 import Elements.Button.ButtonListener;
 import Elements.Button.ElevatorButton;
-import Main.FontHolder;
+import Main.DataHolder;
 import Main.PlayerStats;
 import Main.UpgradeEventListener;
 import Screens.Game;
@@ -150,7 +150,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         // Elevator Floor Numbers
         int floorHeight = shaftHeight / (highestFloor - lowestFloor + 1) - 6;
         int floorNumberTextSize = (floorHeight > maxfloorNumberTextSize) ? maxfloorNumberTextSize : floorHeight;
-        d.textFont(FontHolder.getRegular());
+        d.textFont(DataHolder.getRegularFont());
         d.textAlign(PConstants.CENTER, PConstants.CENTER);
         d.fill(grey);
         d.textSize(floorNumberTextSize);
@@ -412,6 +412,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
             Person person = peopleInLine.get(i - n2);
             if (person.getCurrentFloor() != this.getCurrentFloor()) continue;
             n2++;
+            person.cancelTimer();
             peopleInLine.remove(person);
             peopleInElevator.add(person);
             System.out.println("Person from floor " + person.getCurrentFloor() + " added to elevator");
