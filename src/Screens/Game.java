@@ -65,7 +65,7 @@ public class Game implements Screen {
     private HashMap<Character, Elevator> charToElevatorMap;
 
     private ArrayList<Person> peopleInLine;
-    public boolean lineEditable;                                   // if the line (peopleInLine) can be edited. This is used to prevent editing the line while its being drawn
+    private boolean lineEditable;                                   // if the line (peopleInLine) can be edited. This is used to prevent editing the line while its being drawn
     private int[][] waves;
     private long startTime;
 
@@ -115,7 +115,7 @@ public class Game implements Screen {
 
         // Lives
         heartImg = DataHolder.getHeartImg();
-        lives = 3;
+        lives = 300;
         gameOver = false;
         lastGameFrameDrawn = false;
         returnToMenuButton = Main.getInstance().getReturnToMenuButton();
@@ -164,6 +164,7 @@ public class Game implements Screen {
         int numPeopleInLine = peopleInLine.size();
         int numPeopleToDisplay = Math.min(numPeopleInLine, MAX_QUEUE_DISPLAYED);
         int numPeopleNotDisplayed = numPeopleInLine - numPeopleToDisplay;
+        waitForLineEditable();
         lineEditable = false;
         for (int i = 0; i < numPeopleToDisplay; i++) {
             peopleInLine.get(i).draw(d, 20, 130 + i * 24);
@@ -293,7 +294,7 @@ public class Game implements Screen {
 
         Person person = new Person(currentFloor, desiredFloor, 20000, this::onPersonTimeOver);
 
-        while (!lineEditable) {};                   // wait until the line is editable
+        waitForLineEditable();
         peopleInLine.add(person);
     }
 
@@ -302,7 +303,7 @@ public class Game implements Screen {
         if (gameOver) return;
 
         System.out.println("Person " + person + " waited too long");
-        while (!lineEditable) {};                   // wait until the line is not editable
+        waitForLineEditable();
         peopleInLine.remove(person);
 
         lives--;
@@ -363,7 +364,10 @@ public class Game implements Screen {
     public void startTime() {
         startTime = System.currentTimeMillis();
         loopSpawnNewPeople();
-        // loopSpawnNewPeople(2000, 3500);
+    }
+
+    private void waitForLineEditable() {
+        while (!lineEditable) {};                   // wait until the line is editable
     }
 
 }
