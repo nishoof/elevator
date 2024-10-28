@@ -389,7 +389,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
                 e.printStackTrace();
             }
         }
-        
+
         // Take the people out the elevator if they at the right floor and give points
         int n1 = 0;      // number of people removed from the elevator
         for (int i = 0; i < peopleInElevator.size() + n1; i++) {
@@ -402,21 +402,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         }
 
         // Bring people into the elevator
-        int n2 = 0;      // number of people removed from the line
-        ArrayList<Person> peopleInLine = game.getPeopleInLine();
-        for (int i = 0; i < peopleInLine.size() + n2; i++) {
-            if (peopleInElevator.size() == elevatorCapacity) {
-                System.out.println("Elevator is full");
-                break;
-            }
-            Person person = peopleInLine.get(i - n2);
-            if (person.getCurrentFloor() != this.getCurrentFloor()) continue;
-            n2++;
-            person.cancelTimer();
-            peopleInLine.remove(person);
-            peopleInElevator.add(person);
-            System.out.println("Person from floor " + person.getCurrentFloor() + " added to elevator");
-        }
+        game.transferPeopleFromLine(peopleInElevator, this.getCurrentFloor());
 
         // Hold doors open
         try {
@@ -424,7 +410,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        
+
         // Close doors
         while (doorsOpenPercent > 0) {
             try {
@@ -510,4 +496,5 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
     public void onClick(Button button) {
         this.addFloorToQueue(((ElevatorButton)(button)).getFloorNum());
     }
+
 }

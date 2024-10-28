@@ -1,5 +1,6 @@
 package Screens;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -368,6 +369,24 @@ public class Game implements Screen {
 
     private void waitForLineEditable() {
         while (!lineEditable) {};                   // wait until the line is editable
+    }
+
+    // Transfers people from the line to the provided list if they are on the provided floor
+    public void transferPeopleFromLine(List<Person> list, int floor) {
+        waitForLineEditable();
+        lineEditable = false;
+
+        for (int i = 0; i < peopleInLine.size(); i++) {
+            Person person = peopleInLine.get(i);
+
+            if (person.getCurrentFloor() != floor) continue;
+
+            person.cancelTimer();
+            peopleInLine.remove(i);
+            list.add(person);
+        }
+
+        lineEditable = true;
     }
 
 }
