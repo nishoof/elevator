@@ -339,8 +339,7 @@ public class Game implements Screen {
         if (numElevators >= MAX_ELEVATORS) throw new IllegalStateException("Cannot add more elevators");
 
         // Create the elevator and add it to the list of elevators and the map
-        Elevator elevator = new Elevator(x, y, width, height, currentNumFloors, this);       // TODO: Uncomment this line
-        // Elevator elevator = new Elevator(x, y, width, height, 10, this);
+        Elevator elevator = new Elevator(x, y, width, height, currentNumFloors, this);
         elevators.add(elevator);
         charToElevatorMap.put(ELEVATOR_KEYS[numElevators], elevator);
     }
@@ -373,6 +372,8 @@ public class Game implements Screen {
 
     // Transfers people from the line to the provided list if they are on the provided floor
     public void transferPeopleFromLine(List<Person> list, int floor) {
+        if (list == null) throw new IllegalArgumentException("List cannot be null");
+
         waitForLineEditable();
         lineEditable = false;
 

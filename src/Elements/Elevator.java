@@ -241,11 +241,12 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
             
             // If we are already at the floor, just open the doors and return
             if (this.currentFloor == newFloor) {
+                System.out.println("alr at new floor");
                 // If the elevator isn't moving and doors are closed, then simply open the doors without delay
                 if (status == 0 && doorsOpenPercent == 0) {
                     reachedFloor(false);
-                    return;
                 }
+                return;
             }
 
             // If the floor we wanted to go to is already in the queue, then there's nothing to do

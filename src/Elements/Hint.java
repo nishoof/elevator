@@ -8,7 +8,7 @@ import processing.core.PFont;
 public class Hint {
 
     private final int GREATEST_WIDTH = 350;
-    private final int MAX_CHARS = 108;          // TODO: make this not hard-coded
+    private final int MAX_CHARS = 108;
     
     private int textSize;
     private PFont font;
