@@ -1,5 +1,6 @@
 package Screens;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -65,6 +66,7 @@ public class Game implements Screen {
     private HashMap<Character, Elevator> charToElevatorMap;
 
     private ArrayList<Person> peopleInLine;
+    private boolean lineEditable;                                   // if the line (peopleInLine) can be edited. This is used to prevent editing the line while its being drawn
     private int[][] waves;
     private long startTime;
 
@@ -76,6 +78,7 @@ public class Game implements Screen {
     private boolean gameOver;
     private boolean lastGameFrameDrawn;         // we draw one last frame after the game is over
     private Button returnToMenuButton;
+
 
     /**
      * Constructs a new Game
@@ -101,6 +104,7 @@ public class Game implements Screen {
 
         // People
         this.peopleInLine = new ArrayList<>();
+        this.lineEditable = true;
         this.waves = waves;
 
         // Time
@@ -112,7 +116,7 @@ public class Game implements Screen {
 
         // Lives
         heartImg = DataHolder.getHeartImg();
-        lives = 3;
+        lives = 300;
         gameOver = false;
         lastGameFrameDrawn = false;
         returnToMenuButton = Main.getInstance().getReturnToMenuButton();
@@ -122,7 +126,6 @@ public class Game implements Screen {
     public void draw(PApplet d) {
         if (startTime == 0) throw new IllegalStateException("Tried to draw the game screen before starting the game");
 
-        
         if (gameOver) {
             d.textFont(DataHolder.getRegularFont());
             d.textSize(64);
@@ -162,9 +165,12 @@ public class Game implements Screen {
         int numPeopleInLine = peopleInLine.size();
         int numPeopleToDisplay = Math.min(numPeopleInLine, MAX_QUEUE_DISPLAYED);
         int numPeopleNotDisplayed = numPeopleInLine - numPeopleToDisplay;
+        waitForLineEditable();
+        lineEditable = false;
         for (int i = 0; i < numPeopleToDisplay; i++) {
             peopleInLine.get(i).draw(d, 20, 130 + i * 24);
         }
+        lineEditable = true;
         if (numPeopleNotDisplayed > 0) d.text(numPeopleNotDisplayed + " more...", 20, 130 + numPeopleToDisplay * 24);
 
         // Points
@@ -289,6 +295,7 @@ public class Game implements Screen {
 
         Person person = new Person(currentFloor, desiredFloor, 20000, this::onPersonTimeOver);
 
+        waitForLineEditable();
         peopleInLine.add(person);
     }
 
@@ -297,7 +304,9 @@ public class Game implements Screen {
         if (gameOver) return;
 
         System.out.println("Person " + person + " waited too long");
+        waitForLineEditable();
         peopleInLine.remove(person);
+
         lives--;
         if (lives <= 0) {
             gameOver();
@@ -356,7 +365,28 @@ public class Game implements Screen {
     public void startTime() {
         startTime = System.currentTimeMillis();
         loopSpawnNewPeople();
-        // loopSpawnNewPeople(2000, 3500);
+    }
+
+    private void waitForLineEditable() {
+        while (!lineEditable) {};                   // wait until the line is editable
+    }
+
+    // Transfers people from the line to the provided list if they are on the provided floor
+    public void transferPeopleFromLine(List<Person> list, int floor) {
+        waitForLineEditable();
+        lineEditable = false;
+
+        for (int i = 0; i < peopleInLine.size(); i++) {
+            Person person = peopleInLine.get(i);
+
+            if (person.getCurrentFloor() != floor) continue;
+
+            person.cancelTimer();
+            peopleInLine.remove(i);
+            list.add(person);
+        }
+
+        lineEditable = true;
     }
 
 }
