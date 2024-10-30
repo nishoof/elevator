@@ -310,10 +310,6 @@ public class Game implements Screen {
         }
     }
 
-    public ArrayList<Person> getPeopleInLine() {
-        return peopleInLine;
-    }
-
     public void rewardPoints() {
         if (gameOver) return;
 
@@ -417,21 +413,39 @@ public class Game implements Screen {
         while (!lineEditable) {};                   // wait until the line is editable
     }
 
-    // Transfers people from the line to the provided list if they are on the provided floor
-    public void transferPeopleFromLine(List<Person> list, int floor) {
+    /**
+     * Transfers people from the line to the provided list if they are on the provided floor
+     * @param list the list to transfer the people to
+     * @param floor the floor to check for
+     * @param maxPeople the maximum number of people to transfer
+     */
+    public void transferPeopleFromLine(List<Person> list, int floor, int maxPeople) {
         if (list == null) throw new IllegalArgumentException("List cannot be null");
+        if (maxPeople < 0) throw new IllegalArgumentException("Max people cannot be negative");
+
+        if (maxPeople == 0) return;
 
         waitForLineEditable();
         lineEditable = false;
 
+        int n = 0;          // number of people transferred
+
         for (int i = 0; i < peopleInLine.size(); i++) {
             Person person = peopleInLine.get(i);
+            System.out.println(person);
 
             if (person.getCurrentFloor() != floor) continue;
+
+            System.out.println("^ removing person");
 
             person.cancelTimer();
             peopleInLine.remove(i);
             list.add(person);
+
+            i--;
+            n++;
+
+            if (n == maxPeople) break;
         }
 
         lineEditable = true;

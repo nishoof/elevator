@@ -403,7 +403,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         }
 
         // Bring people into the elevator
-        game.transferPeopleFromLine(peopleInElevator, this.getCurrentFloor());
+        game.transferPeopleFromLine(peopleInElevator, this.getCurrentFloor(), PlayerStats.getCapacity() - peopleInElevator.size());
 
         // Hold doors open
         try {
@@ -455,34 +455,10 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         this.cabinHeight = shaftHeight / numFloors;
 
         // Add a button
-        // buttonCornerRounding = 10;
-        // buttonPanelWidth = (int) (boundaryWidth * 0.65);
-        // buttonPanelX = x + shaftWidth + shaftButtonMargin;
-        // buttonWidth = (int) (buttonPanelWidth * 0.17);
-        // buttonButtonMargin = (int) (buttonPanelWidth * 0.0385);
-        // int numButtonsCreated = 0;
-
-        // for (int row = 0; row <= numFloors / numButtonsPerRow; row++) {
-        //     for (int col = 0; col < numButtonsPerRow; col++) {
-        //         if (numButtonsCreated == queuedFloors.length) break;
-                
-        //         int buttonX = buttonPanelX + (col * (buttonButtonMargin + buttonWidth));
-        //         int buttonY = y + (row * (buttonButtonMargin + buttonWidth));
-        //         int floorNum = row*numButtonsPerRow + col + 1;
-                
-        //         ElevatorButton button = new ElevatorButton(buttonX, buttonY, floorNum, buttonWidth, buttonCornerRounding);
-        //         buttons.add(button);
-        //         button.addListener(this);
-                
-        //         numButtonsCreated++;
-        //     }
-        // }
         int row = numFloors / (numButtonsPerRow + 1);
         int col = numFloors - (row * numButtonsPerRow) - 1;
-
         int buttonX = buttonPanelX + (col * (buttonButtonMargin + buttonWidth));
         int buttonY = y + (row * (buttonButtonMargin + buttonWidth));
-
         ElevatorButton button = new ElevatorButton(buttonX, buttonY, highestFloor, buttonWidth, buttonCornerRounding);
         buttons.add(button);
     }
