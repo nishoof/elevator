@@ -39,13 +39,14 @@ public class Game implements Screen {
             this.minDelay = minDelay;
             this.maxDelay = maxDelay;
         }
-
+    
         private void start() {
             for (int i = 0; i < numPeople; i++) {
                 // Spawn the person
                 newPerson();
 
                 // Delay
+                if (i == numPeople - 1) continue;           // don't delay on last person
                 try {
                     Thread.sleep((long)(Math.random() * (maxDelay - minDelay) + minDelay));
                 } catch (InterruptedException e) {
@@ -69,6 +70,8 @@ public class Game implements Screen {
     private boolean lineEditable;                                   // if the line (peopleInLine) can be edited. This is used to prevent editing the line while its being drawn
     private int[][] waves;
     private long startTime;
+    private long endTime;
+    private boolean doneSpawningPeople;
 
     private Hint hint;
     private boolean buyMenuHintShown;
@@ -76,6 +79,7 @@ public class Game implements Screen {
     private PImage heartImg;
     private int lives;
     private boolean gameOver;
+    private boolean won;
     private boolean lastGameFrameDrawn;         // we draw one last frame after the game is over
     private Button returnToMenuButton;
 
@@ -106,6 +110,7 @@ public class Game implements Screen {
         this.peopleInLine = new ArrayList<>();
         this.lineEditable = true;
         this.waves = waves;
+        doneSpawningPeople = false;
 
         // Time
         startTime = 0;
@@ -116,8 +121,9 @@ public class Game implements Screen {
 
         // Lives
         heartImg = DataHolder.getHeartImg();
-        lives = 300;
+        lives = 3;
         gameOver = false;
+        won = false;
         lastGameFrameDrawn = false;
         returnToMenuButton = Main.getInstance().getReturnToMenuButton();
     }
@@ -126,19 +132,23 @@ public class Game implements Screen {
     public void draw(PApplet d) {
         if (startTime == 0) throw new IllegalStateException("Tried to draw the game screen before starting the game");
 
+        // Draw game over screen
         if (gameOver) {
-            d.textFont(DataHolder.getRegularFont());
-            d.textSize(64);
-            d.fill(255, 0, 0);
-            d.textAlign(PConstants.CENTER, PConstants.CENTER);
-            System.out.println(d.textWidth("Game Over"));
-            d.text("Game Over", Main.WINDOW_WIDTH/2, Main.WINDOW_HEIGHT/2 - 60);
-
-            returnToMenuButton.draw(d);
+            drawGameOverScreen(d);
         }
 
+        // If the game is over, don't draw any new things in the background
         if (lastGameFrameDrawn) {
             return;
+        }
+
+        // Check if the game was won
+        if (doneSpawningPeople && peopleInLine.size() == 0) {
+            boolean elevatorsEmpty = true;
+            for (Elevator elevator : elevators) {
+                if (elevator.getPeopleInElevator().size() != 0) elevatorsEmpty = false;
+            }
+            if (elevatorsEmpty) gameOver(true);
         }
 
         d.background(255);
@@ -153,7 +163,7 @@ public class Game implements Screen {
         d.textAlign(PConstants.LEFT, PConstants.CENTER);
         d.text("Elevator Simulator", 20, 40);
         d.rect(380, 25, 20, 30);      // small white rectangle symbol
-        
+
         // Queue
         d.fill(0);
         d.textFont(DataHolder.getMediumFont());
@@ -182,10 +192,9 @@ public class Game implements Screen {
 
         // Stopwatch
         long elapsedTime = System.currentTimeMillis() - startTime;
-        long seconds = (elapsedTime / 1000) % 60;
-        long minutes = elapsedTime / (1000 * 60);
+        String time = getTimeStr(elapsedTime, false);
         d.textSize(20);
-        d.text(String.format("Time: %02d:%02d", minutes, seconds), 20, 500);
+        d.text(time, 20, 500);
         
         // Draw Elevators
         d.textFont(DataHolder.getMediumFont());
@@ -214,11 +223,46 @@ public class Game implements Screen {
         }
     }
 
-    @Override
-    public void mousePressed(int mouseX, int mouseY) {
-        returnToMenuButton.mousePressed(mouseX, mouseY);
+    public void drawGameOverScreen(PApplet d) {
+        d.textFont(DataHolder.getRegularFont());
+        d.textSize(64);
+        d.textAlign(PConstants.CENTER, PConstants.CENTER);
 
-        if (gameOver) return;
+        if (won) {
+            d.fill(0, 255, 0);
+            d.text("Level Complete!", Main.WINDOW_WIDTH/2, Main.WINDOW_HEIGHT/2 - 70);
+        } else {
+            d.fill(255, 0, 0);
+            d.text("Game Over", Main.WINDOW_WIDTH/2, Main.WINDOW_HEIGHT/2 - 70);
+        }
+
+        String time = getTimeStr(endTime, true);
+        d.fill(0);
+        d.textSize(30);
+        d.text(time, Main.WINDOW_WIDTH/2, Main.WINDOW_HEIGHT/2 - 20);
+
+        returnToMenuButton.draw(d);
+    }
+
+    private String getTimeStr(long elapsedTime, boolean displayMilliseconds) {
+        long seconds = (elapsedTime / 1000) % 60;
+        long minutes = elapsedTime / (1000 * 60);
+
+        String str = String.format("Time: %02d:%02d", minutes, seconds);
+
+        if (displayMilliseconds) {
+            str += String.format(".%03d", elapsedTime % 1000);
+        }
+
+        return str;
+    }
+
+    @Override
+    public void mousePressed(int mouseX, int mouseY) {        
+        if (gameOver) {
+            returnToMenuButton.mousePressed(mouseX, mouseY);
+            return;
+        }
 
         // If hint was clicked on, remove it
         if (hint != null && hint.contains(mouseX, mouseY)) {
@@ -233,7 +277,7 @@ public class Game implements Screen {
     @Override
     public void keyPressed(char key) {
         if (gameOver) return;
-
+        
         // Make the key lowercase to make it work even if the user did a capital for some reason
         key = Character.toLowerCase(key);
 
@@ -293,7 +337,7 @@ public class Game implements Screen {
             desiredFloor = (int)(Math.random() * (maxFloor - minFloor + 1) + minFloor);
         } while (desiredFloor == currentFloor);
 
-        Person person = new Person(currentFloor, desiredFloor, 20000, this::onPersonTimeOver);
+        Person person = new Person(currentFloor, desiredFloor, 20_000, this::onPersonTimeOver);
 
         waitForLineEditable();
         peopleInLine.add(person);
@@ -309,13 +353,15 @@ public class Game implements Screen {
 
         lives--;
         if (lives <= 0) {
-            gameOver();
+            gameOver(false);
         }
     }
 
-    // Called when all the lives are lost. Ends the game.
-    private void gameOver() {
+    // Ends the game. Called when the player wins or loses.
+    private void gameOver(boolean won) {
         System.out.println("Game Over");
+        endTime = System.currentTimeMillis() - startTime;
+        this.won = won;
         gameOver = true;
     }
 
@@ -328,6 +374,7 @@ public class Game implements Screen {
             for (int[] wave : waves) {
                 new Wave(wave[0], wave[1], wave[2]).start();
             }
+            doneSpawningPeople = true;
         }).start();
     }
 

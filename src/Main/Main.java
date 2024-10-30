@@ -68,7 +68,7 @@ public class Main extends PApplet implements ButtonListener {
         DataHolder.init(this);
 
         // Return to Menu Button
-        returnToMenuButton = new Button(307, 255, 346, 70);
+        returnToMenuButton = new Button(307, 275, 346, 70);
         returnToMenuButton.setTextSize(28);
         returnToMenuButton.setText("Return to Menu!");
         returnToMenuButton.addListener(this);
