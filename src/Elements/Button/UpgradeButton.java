@@ -58,7 +58,7 @@ public class UpgradeButton extends Button {
         int headerSize = getHeight() / 5;
         int normalTextSize = getHeight() / 6;
         int currStat = statGetter.getStat();
-        
+
         int currY = getY() + TOP_MARGIN;
 
         // Upgrade Name
@@ -67,16 +67,16 @@ public class UpgradeButton extends Button {
         d.textAlign(PConstants.LEFT, PConstants.TOP);
         d.text(upgradeName, getX() + LEFT_MARGIN, currY);
         currY += headerSize + 8;
-        
+
         // Current
         d.textSize(normalTextSize);
-        d.text("Current: " + currStat, getX() + LEFT_MARGIN, currY);
-        currY += normalTextSize + 5;
-        
+        // d.text("Current: " + currStat, getX() + LEFT_MARGIN, currY);
+        // currY += normalTextSize + 5;
+
         // Upgrade To
         d.text("Upgrade To: " + (currStat+1), getX() + LEFT_MARGIN, currY);
         currY += normalTextSize + 5;
-        
+
         // Cost
         d.text("Cost: " + upgradeCost, getX() + LEFT_MARGIN, currY);
 

@@ -115,7 +115,8 @@ public class Game implements Screen {
         // Time
         startTime = 0;
 
-        upgradePanel = new UpgradePanel();
+        // Upgrade Panel
+        upgradePanel = new UpgradePanel(620, 40, 300, 460);
 
         // Hints
         hint = null;
@@ -276,6 +277,8 @@ public class Game implements Screen {
         for (Elevator elevator : elevators) {
             elevator.mousePressed(mouseX, mouseY);
         }
+
+        upgradePanel.mousePressed(mouseX, mouseY);
     }
 
     @Override
