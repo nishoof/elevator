@@ -15,8 +15,8 @@ import processing.core.PApplet;
 import processing.core.PConstants;
 
 public class Main extends PApplet implements ButtonListener {
-    
-    // Window Constants
+
+    // Window Constants (just for reference, don't change)
     public static final int X_RATIO = 16;
     public static final int Y_RATIO = 9;
     public static final int WINDOW_SIZE = 60;

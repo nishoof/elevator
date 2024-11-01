@@ -9,6 +9,7 @@ import Elements.Elevator;
 import Elements.Hint;
 import Elements.Person;
 import Elements.Button.Button;
+import Elements.UpgradePanel;
 import Main.DataHolder;
 import Main.Main;
 import Main.PlayerStats;
@@ -73,6 +74,8 @@ public class Game implements Screen {
     private long endTime;
     private boolean doneSpawningPeople;
 
+    private UpgradePanel upgradePanel;
+
     private Hint hint;
     private boolean buyMenuHintShown;
 
@@ -83,7 +86,6 @@ public class Game implements Screen {
     private boolean lastGameFrameDrawn;         // we draw one last frame after the game is over
     private Button returnToMenuButton;
 
-
     /**
      * Constructs a new Game
      * @param numElevators the number of elevators in the game
@@ -91,7 +93,6 @@ public class Game implements Screen {
      * @param waves the waves of people to spawn. Each wave is an array of 3 integers: [numPeople, minDelay, maxDelay]. numPeople is the number of people in this wave. The people will be spawned with a delay between minDelay (inclusive) and maxDelay (exclusive).
      */
     public Game(int numElevators, int startingNumFloors, int[][] waves) {
-
         if (numElevators < 1) throw new IllegalArgumentException("Must have at least 1 elevator");
         if (numElevators > ELEVATOR_KEYS.length) throw new IllegalArgumentException("Cannot have more than " + ELEVATOR_KEYS.length + " elevators");
 
@@ -113,6 +114,8 @@ public class Game implements Screen {
 
         // Time
         startTime = 0;
+
+        upgradePanel = new UpgradePanel();
 
         // Hints
         hint = null;
@@ -210,6 +213,9 @@ public class Game implements Screen {
             d.image(heartImg, Main.WINDOW_WIDTH - 80 - i*60, Main.WINDOW_HEIGHT - 80);
         }
 
+        // Upgrade Panel
+        upgradePanel.draw(d);
+
         // Last Game Frame Drawn
         // Basically, once the game is over, we draw one last frame of the game, then draw the game over screen
         // This is so that the player can see the last state of the game before it ends (with 0 hearts and the person leaving the queue)
@@ -278,6 +284,12 @@ public class Game implements Screen {
         
         // Make the key lowercase to make it work even if the user did a capital for some reason
         key = Character.toLowerCase(key);
+
+        // TODO: remove this, it's just for testing
+        if (key == 'z') {
+            upgradePanel.toggleVisible();
+            return;
+        }
 
         if (key >= 'a' && key <= 'z') {                   // keyIsALetter
             // Figure out what elevator is paired to the key that was pressed
