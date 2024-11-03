@@ -1,6 +1,5 @@
 package Elements.Button;
 
-import Main.PlayerStats;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -11,7 +10,7 @@ public class UpgradeButton extends Button {
     public interface StatGetter {
         int getStat();
     }
-    
+
     // Interface for getting a player stat
     // Used for a lambda expression
     public interface StatUpgrader {
@@ -90,7 +89,6 @@ public class UpgradeButton extends Button {
             System.out.println(upgradeName);
             if (statUpgrader.upgradeStat()) {
                 System.out.println("Upgraded!");
-                System.out.println(PlayerStats.getAllUpgradeStats());
             } else {
                 System.out.println("Not enough credits!");
             }
@@ -106,5 +104,5 @@ public class UpgradeButton extends Button {
     public void setTextSize(int textSize) {
         throw new UnsupportedOperationException("Cannot set textSize on an UpgradeButton");
     }
-    
+
 }

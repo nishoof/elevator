@@ -13,7 +13,6 @@ import Elements.UpgradePanel;
 import Main.DataHolder;
 import Main.Main;
 import Main.PlayerStats;
-
 import processing.core.PApplet;
 import processing.core.PConstants;
 import processing.core.PImage;
@@ -21,11 +20,11 @@ import processing.core.PImage;
 public class Game implements Screen {
 
     private class Wave {
-    
+
         private int numPeople;
         private int minDelay;
         private int maxDelay;
-    
+
         /**
          * Constructs a new Wave. A wave will spawn a numPeople amount of people with a delay in the range of [avgDelay - delayRange/2, avgDelay + delayRange/2)
          * @param numPeople the number of people in this wave
@@ -41,7 +40,7 @@ public class Game implements Screen {
             this.minDelay = minDelay;
             this.maxDelay = maxDelay;
         }
-    
+
         private void start() {
             for (int i = 0; i < numPeople; i++) {
                 // Spawn the person
@@ -56,7 +55,7 @@ public class Game implements Screen {
                 }
             }
         }
-    
+
     }
 
     private final char[] ELEVATOR_KEYS = {'q', 'w'};
@@ -74,6 +73,7 @@ public class Game implements Screen {
     private long endTime;
     private boolean doneSpawningPeople;
 
+    private PlayerStats playerStats;
     private UpgradePanel upgradePanel;
 
     private Hint hint;
@@ -96,6 +96,9 @@ public class Game implements Screen {
         if (numElevators < 1) throw new IllegalArgumentException("Must have at least 1 elevator");
         if (numElevators > ELEVATOR_KEYS.length) throw new IllegalArgumentException("Cannot have more than " + ELEVATOR_KEYS.length + " elevators");
 
+        // Player Stats
+        playerStats = new PlayerStats();
+
         // Elevators
         this.currentNumFloors = startingNumFloors;
         this.selectedElevator = null;
@@ -116,7 +119,7 @@ public class Game implements Screen {
         startTime = 0;
 
         // Upgrade Panel
-        upgradePanel = new UpgradePanel(620, 40, 300, 460);
+        upgradePanel = new UpgradePanel(620, 40, 300, 460, playerStats);
 
         // Hints
         hint = null;
@@ -188,16 +191,16 @@ public class Game implements Screen {
         // Points
         d.textAlign(PConstants.LEFT, PConstants.CENTER);
         d.textSize(20);
-        d.text("Credits: " + PlayerStats.getCredits(), 20, 420);
+        d.text("Credits: " + playerStats.getCredits(), 20, 420);
         d.textSize(40);
-        d.text("Points: " + PlayerStats.getPoints(), 20, 460);
+        d.text("Points: " + playerStats.getPoints(), 20, 460);
 
         // Stopwatch
         long elapsedTime = System.currentTimeMillis() - startTime;
         String time = getTimeStr(elapsedTime, false);
         d.textSize(20);
         d.text(time, 20, 500);
-        
+
         // Draw Elevators
         d.textFont(DataHolder.getMediumFont());
         for (Elevator elevator : elevators) {
@@ -263,7 +266,7 @@ public class Game implements Screen {
     }
 
     @Override
-    public void mousePressed(int mouseX, int mouseY) {        
+    public void mousePressed(int mouseX, int mouseY) {
         if (gameOver) {
             returnToMenuButton.mousePressed(mouseX, mouseY);
             return;
@@ -284,7 +287,7 @@ public class Game implements Screen {
     @Override
     public void keyPressed(char key) {
         if (gameOver) return;
-        
+
         // Make the key lowercase to make it work even if the user did a capital for some reason
         key = Character.toLowerCase(key);
 
@@ -326,9 +329,9 @@ public class Game implements Screen {
     public void rewardPoints() {
         if (gameOver) return;
 
-        PlayerStats.addCreditsAndPoints();
+        playerStats.addCreditsAndPoints();
 
-        if (!buyMenuHintShown && PlayerStats.getCredits() >= 10) {
+        if (!buyMenuHintShown && playerStats.getCredits() >= 10) {
             hint = new Hint(500, Main.WINDOW_HEIGHT + 50, Main.WINDOW_HEIGHT - 90, "Press 'b' to open the upgrades menu");
             buyMenuHintShown = true;
         }
@@ -393,7 +396,7 @@ public class Game implements Screen {
         if (numElevators >= MAX_ELEVATORS) throw new IllegalStateException("Cannot add more elevators");
 
         // Create the elevator and add it to the list of elevators and the map
-        Elevator elevator = new Elevator(x, y, width, height, currentNumFloors, this);
+        Elevator elevator = new Elevator(x, y, width, height, currentNumFloors, this, playerStats);
         elevators.add(elevator);
         charToElevatorMap.put(ELEVATOR_KEYS[numElevators], elevator);
     }

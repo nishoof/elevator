@@ -57,12 +57,17 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
 
     private ArrayList<Person> peopleInElevator;
 
-    private int elevatorCapacity;
+    private PlayerStats playerStats;
+    private int capacity;
+    private double secPerFloor;
+    private double secDoorsDelay;
+    private double secDoorsToOpen;
+    private double secDoorsOpen;
 
     /**
      * Constructs a new Elevator
      */
-    public Elevator(int x, int y, int width, int height, int numFloors, Game game) {
+    public Elevator(int x, int y, int width, int height, int numFloors, Game game, PlayerStats playerStats) {
         this.x = x;
         this.y = y;
         this.boundaryWidth = width;
@@ -76,11 +81,11 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         this.highestFloor = numFloors;
 
         this.queuedFloors = new boolean[numFloors];
-        
+
         this.status = 0;
         this.doorsOpenPercent = 0;
         this.doorsInAnimation = false;
-        
+
         // Buttons
         buttons = new ArrayList<>();
         numButtonsPerRow = 5;
@@ -93,35 +98,37 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         for (int row = 0; row <= numFloors / numButtonsPerRow; row++) {
             for (int col = 0; col < numButtonsPerRow; col++) {
                 if (numButtonsCreated == queuedFloors.length) break;
-                
+
                 int buttonX = buttonPanelX + (col * (buttonButtonMargin + buttonWidth));
                 int buttonY = y + (row * (buttonButtonMargin + buttonWidth));
                 int floorNum = row*numButtonsPerRow + col + 1;
-                
+
                 ElevatorButton button = new ElevatorButton(buttonX, buttonY, floorNum, buttonWidth, buttonCornerRounding);
                 buttons.add(button);
                 button.addListener(this);
-                
+
                 numButtonsCreated++;
             }
         }
-        
+
         peopleInElevator = new ArrayList<>();
-        
+
         highlighted = false;
 
         this.game = game;
 
-        elevatorCapacity = PlayerStats.getCapacity();
-        
-        PlayerStats.addUpgradeEventListener(this);
+        this.playerStats = playerStats;
+        updateStats();
+
+        this.playerStats = playerStats;
+        playerStats.addUpgradeEventListener(this);
     }
 
     public void draw(PApplet d) {
         d.push();          // Save original settings
 
         int strokeWeight = 3;
-        
+
         // Boundary
         // d.rectMode(PConstants.CORNER);
         // d.fill(255);
@@ -134,7 +141,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         d.stroke(highlighted ? -65536 : 0);
         d.strokeWeight(strokeWeight);
         d.rect(x, y, shaftWidth, shaftHeight, 8);
-        
+
         // Elevator Floor Ticks Marks
         d.push();
         int grey = 125;
@@ -146,7 +153,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
             d.stroke(grey);
             d.line(x + strokeWeight/2 + 1, tickY, x + tickWidth, tickY);
         }
-        
+
         // Elevator Floor Numbers
         int floorHeight = shaftHeight / (highestFloor - lowestFloor + 1) - 6;
         int floorNumberTextSize = (floorHeight > maxfloorNumberTextSize) ? maxfloorNumberTextSize : floorHeight;
@@ -156,7 +163,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         d.textSize(floorNumberTextSize);
         d.text(highestFloor, x + shaftWidth / 2, y + strokeWeight/2+1 + floorHeight / 2);
         d.pop();
-        
+
         // Elevator Cabin
         int bottomRectCornerRounding = (currentFloor == lowestFloor && floorPercent == 0) ? 8 : 0;
         int topRectCornerRounding = (currentFloor == highestFloor && floorPercent == 0) ? 8 : 0;
@@ -166,7 +173,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
             d.rect(x, y + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight - (floorPercent * cabinHeight / 100), shaftWidth, cabinHeight, topRectCornerRounding, topRectCornerRounding, bottomRectCornerRounding, bottomRectCornerRounding);
         } else {
             // Otherwise, we need to draw in the inside of the elevator and the doors seperately (3 rects)
-            
+
             // Inside of elevator
             d.fill(220);
             d.rect(x, y + shaftHeight - cabinHeight - (currentFloor - lowestFloor) * cabinHeight, shaftWidth, cabinHeight, topRectCornerRounding, topRectCornerRounding, bottomRectCornerRounding, bottomRectCornerRounding);
@@ -195,7 +202,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         d.textAlign(PConstants.LEFT, PConstants.BOTTOM);
         d.textSize(20);
         String peopleInElevatorDisplayStr = null;
-        boolean elevatorFull = peopleInElevator.size() == elevatorCapacity;
+        boolean elevatorFull = peopleInElevator.size() == capacity;
         int textBoxY = y + 100;                                         // top
         int textBoxWidth = shaftWidth * 3 - shaftButtonMargin;
         int textBoxHeight = boundaryHeight - 105;
@@ -212,13 +219,13 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         }
         d.fill(0);
         d.text(peopleInElevatorDisplayStr, buttonPanelX, textBoxY, textBoxWidth, textBoxHeight);
-        
+
         // Testing Purposes, show queue
         // d.textAlign(PConstants.LEFT, PConstants.TOP);
         // d.textSize(20);
         // d.text("Testing: " + "\n" + Arrays.toString(queuedFloors) + "\n" + "doorsOpenPercent: " + doorsOpenPercent + "\n" + "floorPercent: " + floorPercent + "\n" + "status: " + status,
         //         600, 400);
-        
+
         d.pop();           // Restore original settings
     }
 
@@ -238,7 +245,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         new Thread(() -> {
             // Check the input to make sure it's good before proceeding
             if (newFloor < lowestFloor || newFloor > highestFloor) throw new IllegalArgumentException("Floor " + newFloor + " is out of range");
-            
+
             // If we are already at the floor, just open the doors and return
             if (this.currentFloor == newFloor) {
                 System.out.println("alr at new floor");
@@ -288,14 +295,14 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
     }
 
     /**
-     * Makes the elevator move. Should be called in its own thread. 
+     * Makes the elevator move. Should be called in its own thread.
      * @param direction Either 1 (going up) or -1 (going down)
      */
     private void move(int direction) {
         if (direction != 1 && direction != -1) throw new IllegalArgumentException("Invalid direction \"" + direction + "\", must be -1 or 1");
-        
+
         status = direction;
-        
+
         while (doorsInAnimation) {
             try {
                 Thread.sleep(16);
@@ -303,10 +310,10 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
                 e.printStackTrace();
             }
         }
-        
+
         // If there are floors in the queue, keep the elevator moving until all floors have been reached and removed from queue
         while (floorsInQueue > 0) {
-            
+
             // First, check if we have queued floors in the current direction
 
             boolean floorsInCurrDirection = false;
@@ -344,13 +351,13 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
 
     private void animateMovingOneFloor(int direction) {
         final int SMOOTHNESS = 25;      // 100 must be divisible by this number for proper animation
-        
+
         floorPercent = 0;
 
         // Animate the floor moving
         while (Math.abs(floorPercent) < 100) {
             try {
-                Thread.sleep((long)(PlayerStats.getSecPerFloor() * 1000 / SMOOTHNESS));
+                Thread.sleep((long)(secPerFloor * 1000 / SMOOTHNESS));
                 floorPercent += 100 / SMOOTHNESS * direction;
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -373,7 +380,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         // Delay
         if (delayBeforeOpeningDoors) {
             try {
-                Thread.sleep((long)(PlayerStats.getSecDoorsDelay() * 1000));
+                Thread.sleep((long)(secDoorsDelay * 1000));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -383,7 +390,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         doorsOpenPercent = 0;
         while (doorsOpenPercent < 100) {
             try {
-                Thread.sleep((long)(PlayerStats.getSecDoorsToOpen() * 1000 / SMOOTHNESS));
+                Thread.sleep((long)(secDoorsToOpen * 1000 / SMOOTHNESS));
                 doorsOpenPercent += 100 / SMOOTHNESS;
                 // System.out.println(doorsOpenPercent);
             } catch (InterruptedException e) {
@@ -403,11 +410,11 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         }
 
         // Bring people into the elevator
-        game.transferPeopleFromLine(peopleInElevator, this.getCurrentFloor(), PlayerStats.getCapacity() - peopleInElevator.size());
+        game.transferPeopleFromLine(peopleInElevator, this.getCurrentFloor(), capacity - peopleInElevator.size());
 
         // Hold doors open
         try {
-            Thread.sleep((long)(PlayerStats.getSecDoorsOpen() * 1000));
+            Thread.sleep((long)(secDoorsOpen * 1000));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -415,7 +422,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
         // Close doors
         while (doorsOpenPercent > 0) {
             try {
-                Thread.sleep((long)(PlayerStats.getSecDoorsToOpen() * 1000 / SMOOTHNESS));
+                Thread.sleep((long)(secDoorsToOpen * 1000 / SMOOTHNESS));
                 doorsOpenPercent -= 100 / SMOOTHNESS;
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -424,7 +431,7 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
 
         // Delay
         try {
-            Thread.sleep((long)(PlayerStats.getSecDoorsDelay() * 1000));
+            Thread.sleep((long)(secDoorsDelay * 1000));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -465,13 +472,20 @@ public class Elevator implements UpgradeEventListener, ButtonListener {
 
     @Override
     public void onUpgrade() {
-        elevatorCapacity = PlayerStats.getCapacity();
-        // System.out.println(PlayerStats.getAllUpgradeStats());
+        updateStats();
     }
 
     @Override
     public void onClick(Button button) {
         this.addFloorToQueue(((ElevatorButton)(button)).getFloorNum());
+    }
+
+    private void updateStats() {
+        capacity = playerStats.getCapacity();
+        secPerFloor = playerStats.getSecPerFloor();
+        secDoorsDelay = playerStats.getSecDoorsDelay();
+        secDoorsToOpen = playerStats.getSecDoorsToOpen();
+        secDoorsOpen = playerStats.getSecDoorsOpen();
     }
 
 }

@@ -20,7 +20,7 @@ public class UpgradePanel {
 
     private boolean visible;
 
-    public UpgradePanel(int x, int y, int width, int height) {
+    public UpgradePanel(int x, int y, int width, int height, PlayerStats playerStats) {
         this.x = x;
         this.y = y;
         this.width = width;
@@ -28,14 +28,14 @@ public class UpgradePanel {
 
         int buttonHeight = (height - TITLE_TEXT_HEIGHT - MARGIN*2) / 4 - MARGIN;
         upgradeButtons = new UpgradeButton[4];
-        upgradeButtons[0] = new UpgradeButton(x + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (buttonHeight + MARGIN)*0, width - MARGIN*2, buttonHeight, 
-            "Capacity", PlayerStats::getCapacity, PlayerStats::upgradeCapacity, PlayerStats.CAPACITY_UPGRADE_COST);
-        upgradeButtons[1] = new UpgradeButton(x + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (buttonHeight + MARGIN)*1, width - MARGIN*2, buttonHeight, 
-            "Movement Speed", PlayerStats::getMovementSpeed, PlayerStats::upgradeMovementSpeed, PlayerStats.MOVEMENT_SPEED_UPGRADE_COST);
-        upgradeButtons[2] = new UpgradeButton(x + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (buttonHeight + MARGIN)*2, width - MARGIN*2, buttonHeight, 
-            "Door Speed", PlayerStats::getDoorSpeed, PlayerStats::upgradeDoorSpeed, PlayerStats.DOOR_SPEED_UPGRADE_COST);
-        upgradeButtons[3] = new UpgradeButton(x + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (buttonHeight + MARGIN)*3, width - MARGIN*2, buttonHeight, 
-            "People Speed", PlayerStats::getPeopleSpeed, PlayerStats::upgradePeopleSpeed, PlayerStats.PEOPLE_SPEED_UPGRADE_COST);
+        upgradeButtons[0] = new UpgradeButton(x + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (buttonHeight + MARGIN)*0, width - MARGIN*2, buttonHeight,
+            "Capacity", playerStats::getCapacity, playerStats::upgradeCapacity, playerStats.CAPACITY_UPGRADE_COST);
+        upgradeButtons[1] = new UpgradeButton(x + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (buttonHeight + MARGIN)*1, width - MARGIN*2, buttonHeight,
+            "Movement Speed", playerStats::getMovementSpeed, playerStats::upgradeMovementSpeed, playerStats.MOVEMENT_SPEED_UPGRADE_COST);
+        upgradeButtons[2] = new UpgradeButton(x + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (buttonHeight + MARGIN)*2, width - MARGIN*2, buttonHeight,
+            "Door Speed", playerStats::getDoorSpeed, playerStats::upgradeDoorSpeed, playerStats.DOOR_SPEED_UPGRADE_COST);
+        upgradeButtons[3] = new UpgradeButton(x + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (buttonHeight + MARGIN)*3, width - MARGIN*2, buttonHeight,
+            "People Speed", playerStats::getPeopleSpeed, playerStats::upgradePeopleSpeed, playerStats.PEOPLE_SPEED_UPGRADE_COST);
     }
 
     public void draw(PApplet d) {
