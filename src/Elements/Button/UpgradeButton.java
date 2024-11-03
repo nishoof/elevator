@@ -21,9 +21,9 @@ public class UpgradeButton extends Button {
     private final int TOP_MARGIN = 10;
 
     private String upgradeName;
+    private int upgradeCost;
     private StatGetter statGetter;
     private StatUpgrader statUpgrader;
-    private int upgradeCost;
 
     /**
      * Constructs a new UpgradeButton. This button is used to display an upgrade and its cost.

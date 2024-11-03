@@ -291,27 +291,11 @@ public class Game implements Screen {
         // Make the key lowercase to make it work even if the user did a capital for some reason
         key = Character.toLowerCase(key);
 
-        // TODO: remove this, it's just for testing
-        if (key == 'z') {
-            upgradePanel.toggleVisible();
-            return;
-        }
-
         if (key >= 'a' && key <= 'z') {                   // keyIsALetter
-            // Figure out what elevator is paired to the key that was pressed
-            Elevator elevator = charToElevatorMap.get(key);
-
-            // Ignore keys that aren't paired to an elevator
-            if (elevator == null) return;
-
-            // Select the elevator
-            if (selectedElevator == elevator) {
-                selectedElevator.setHighlighted(false);
-                selectedElevator = null;
+            if (key == 'b') {
+                upgradePanel.toggleVisible();
             } else {
-                if (selectedElevator != null) selectedElevator.setHighlighted(false);
-                selectedElevator = elevator;
-                selectedElevator.setHighlighted(true);
+                selectElevator(key);
             }
         } else if (key >= '1' && key <= '9') {            // keyIsANumber
             // If there is no elevator selected already, then there's nothing we can do
@@ -323,6 +307,24 @@ public class Game implements Screen {
             newPerson();
         } else if (key == '+') {
             increaseFloorCount();
+        }
+    }
+
+    private void selectElevator(char key) {
+        // Figure out what elevator is paired to the key that was pressed
+        Elevator elevator = charToElevatorMap.get(key);
+
+        // Ignore keys that aren't paired to an elevator
+        if (elevator == null) return;
+
+        // Select the elevator
+        if (selectedElevator == elevator) {
+            selectedElevator.setHighlighted(false);
+            selectedElevator = null;
+        } else {
+            if (selectedElevator != null) selectedElevator.setHighlighted(false);
+            selectedElevator = elevator;
+            selectedElevator.setHighlighted(true);
         }
     }
 
