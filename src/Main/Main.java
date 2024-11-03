@@ -12,6 +12,7 @@ import Screens.Menu;
 import Screens.Screen;
 import processing.core.PApplet;
 import processing.core.PConstants;
+import processing.core.PGraphics;
 
 public class Main extends PApplet implements ButtonListener {
 
@@ -175,6 +176,37 @@ public class Main extends PApplet implements ButtonListener {
         d.rect(645, 35, 20, 30);      // small white rectangle symbol
 
         d.pop();           // Restore original settings
+    }
+
+    /**
+     * Blurs the existing drawing on the screen within the specified rectangle
+     *
+     * @param d PApplet
+     * @param x x-coordinate of the top-left corner of the rectangle
+     * @param y y-coordinate of the top-left corner of the rectangle
+     * @param width width of the rectangle
+     * @param height height of the rectangle
+     * @param blurStrength strength of the blur
+     */
+    public static void blur(PApplet d, int x, int y, int width, int height, float blurStrength) {
+        PGraphics g = d.createGraphics(width, height);
+        g.beginDraw();
+        g.loadPixels();
+
+        d.loadPixels();
+        int graphicsIndex = 0;
+        for (int pixY = 0; pixY < height; pixY++) {
+            for (int pixX = 0; pixX < width; pixX++) {
+                g.pixels[graphicsIndex] = d.pixels[(y + pixY) * d.width + (x + pixX)];
+                graphicsIndex++;
+            }
+        }
+        d.updatePixels();
+
+        g.updatePixels();
+        g.filter(PConstants.BLUR, blurStrength);
+        g.endDraw();
+        d.image(g, x, y);
     }
 
 }

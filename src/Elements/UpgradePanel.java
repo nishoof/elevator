@@ -2,7 +2,7 @@ package Elements;
 
 import Elements.Button.Button;
 import Elements.Button.ButtonListener;
-import Elements.Button.UpgradeButton;
+import Main.Main;
 import Main.PlayerStats;
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -13,91 +13,118 @@ public class UpgradePanel {
     private final int TITLE_TEXT_SIZE = 30;
     private final int TITLE_TEXT_HEIGHT = 26;           // calculate using ascent + descent
 
-    private int x;
+    private int visibleX;           // x-coordinate when fully visible
+    private int hiddenX;            // x-coordinate when fully hidden
     private int y;
     private int width;
     private int height;
 
-    private UpgradeButton[] upgradeButtons;
-    private UpgradeUI[] upgradeUIs;
-
     private boolean visible;
+    private int currX;
+    private int targetX;
+
+    private UpgradeUI[] upgradeUIs;
+    private int upgradeUIHeight;
 
     public UpgradePanel(int x, int y, int width, int height, PlayerStats playerStats) {
-        this.x = x;
+        this.visibleX = x;
+        this.hiddenX = Main.WINDOW_WIDTH + 10;
         this.y = y;
         this.width = width;
         this.height = height;
 
-        int buttonHeight = (height - TITLE_TEXT_HEIGHT - MARGIN*2) / 4 - MARGIN;
-        upgradeButtons = new UpgradeButton[4];
-        upgradeButtons[0] = new UpgradeButton(x + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (buttonHeight + MARGIN)*0, width - MARGIN*2, buttonHeight,
-            "Capacity", playerStats::getCapacity, playerStats::upgradeCapacity, playerStats.CAPACITY_UPGRADE_COST);
-        upgradeButtons[1] = new UpgradeButton(x + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (buttonHeight + MARGIN)*1, width - MARGIN*2, buttonHeight,
-            "Movement Speed", playerStats::getMovementSpeed, playerStats::upgradeMovementSpeed, playerStats.MOVEMENT_SPEED_UPGRADE_COST);
-        upgradeButtons[2] = new UpgradeButton(x + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (buttonHeight + MARGIN)*2, width - MARGIN*2, buttonHeight,
-            "Door Speed", playerStats::getDoorSpeed, playerStats::upgradeDoorSpeed, playerStats.DOOR_SPEED_UPGRADE_COST);
-        upgradeButtons[3] = new UpgradeButton(x + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (buttonHeight + MARGIN)*3, width - MARGIN*2, buttonHeight,
-            "People Speed", playerStats::getPeopleSpeed, playerStats::upgradePeopleSpeed, playerStats.PEOPLE_SPEED_UPGRADE_COST);
+        this.currX = hiddenX;
+        this.targetX = hiddenX;
 
+        upgradeUIHeight = (height - TITLE_TEXT_HEIGHT - MARGIN*2) / 4 - MARGIN;
         upgradeUIs = new UpgradeUI[4];
-        upgradeUIs[0] = new UpgradeUI(x + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (buttonHeight + MARGIN)*0, width - MARGIN*2, buttonHeight, "Capacity", playerStats.CAPACITY_UPGRADE_COST, playerStats::getCapacity, playerStats::upgradeCapacity);
-        upgradeUIs[1] = new UpgradeUI(x + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (buttonHeight + MARGIN)*1, width - MARGIN*2, buttonHeight, "Movement Speed", playerStats.MOVEMENT_SPEED_UPGRADE_COST, playerStats::getMovementSpeed, playerStats::upgradeMovementSpeed);
-        upgradeUIs[2] = new UpgradeUI(x + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (buttonHeight + MARGIN)*2, width - MARGIN*2, buttonHeight, "Door Speed", playerStats.DOOR_SPEED_UPGRADE_COST, playerStats::getDoorSpeed, playerStats::upgradeDoorSpeed);
-        upgradeUIs[3] = new UpgradeUI(x + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (buttonHeight + MARGIN)*3, width - MARGIN*2, buttonHeight, "People Speed", playerStats.PEOPLE_SPEED_UPGRADE_COST, playerStats::getPeopleSpeed, playerStats::upgradePeopleSpeed);
+        upgradeUIs[0] = new UpgradeUI(0, 0, width - MARGIN*2, upgradeUIHeight, "Capacity", playerStats.CAPACITY_UPGRADE_COST, playerStats::getCapacity, playerStats::upgradeCapacity);
+        upgradeUIs[1] = new UpgradeUI(0, 0, width - MARGIN*2, upgradeUIHeight, "Movement Speed", playerStats.MOVEMENT_SPEED_UPGRADE_COST, playerStats::getMovementSpeed, playerStats::upgradeMovementSpeed);
+        upgradeUIs[2] = new UpgradeUI(0, 0, width - MARGIN*2, upgradeUIHeight, "Door Speed", playerStats.DOOR_SPEED_UPGRADE_COST, playerStats::getDoorSpeed, playerStats::upgradeDoorSpeed);
+        upgradeUIs[3] = new UpgradeUI(0, 0, width - MARGIN*2, upgradeUIHeight, "People Speed", playerStats.PEOPLE_SPEED_UPGRADE_COST, playerStats::getPeopleSpeed, playerStats::upgradePeopleSpeed);
+        updateUpgradeUIPositions();
     }
 
     public void draw(PApplet d) {
-        if (!visible) return;
+        // Update position
+        updatePanelPosition();
+        updateUpgradeUIPositions();
 
-        d.push();          // Save original settings
+        // If panel is off the screen, don't draw
+        if (currX == hiddenX) return;
+
+        // Save original settings
+        d.push();
+
+        // Blur area behind panel
+        Main.blur(d, currX, y, width, height, 4);
 
         // Draw Rect
-        d.fill(250);
+        d.fill(250, 200F);
         d.stroke(0);
         d.strokeWeight(3);
-        d.rect(x, y, width, height, 8);
+        d.rect(currX, y, width, height, 8);
 
         // Draw Title
         d.fill(0);
         d.textSize(TITLE_TEXT_SIZE);
         d.textAlign(PConstants.CENTER, PConstants.TOP);
-        d.text("Upgrades", x + width/2, y + 20);
+        d.text("Upgrades", currX + width/2, y + 20);
 
         // Draw Upgrades
         for (UpgradeUI ui : upgradeUIs) {
             ui.draw(d);
         }
 
-        d.pop();           // Restore original settings
+        // Restore original settings
+        d.pop();
     }
 
-    public void mousePressed(int x, int y) {
-        if (!visible) return;
-
-        // for (UpgradeButton b : upgradeButtons) {
-        //     b.mousePressed(x, y);
-        // }
-
+    public boolean mousePressed(int x, int y) {
         for (UpgradeUI uui : upgradeUIs) {
             uui.mousePressed(x, y);
         }
+
+        return x >= currX && x <= currX + width && y >= this.y && y <= this.y + height;
     }
 
     public void toggleVisible() {
         visible = !visible;
+        targetX = visible ? visibleX : hiddenX;
+    }
+
+    private void updatePanelPosition() {
+        final int SPEED = 70;
+
+        if (Math.abs(currX - targetX) < SPEED) {
+            currX = targetX;
+            return;
+        }
+
+        if (currX < targetX) {
+            currX += SPEED;
+        } else if (currX > targetX) {
+            currX -= SPEED;
+        }
+    }
+
+    private void updateUpgradeUIPositions() {
+        upgradeUIs[0].updatePosition(currX + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (upgradeUIHeight + MARGIN)*0);
+        upgradeUIs[1].updatePosition(currX + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (upgradeUIHeight + MARGIN)*1);
+        upgradeUIs[2].updatePosition(currX + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (upgradeUIHeight + MARGIN)*2);
+        upgradeUIs[3].updatePosition(currX + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (upgradeUIHeight + MARGIN)*3);
     }
 
     private class UpgradeUI implements ButtonListener {
         // Interface for getting a player stat
         // Used for a lambda expression
-        public interface StatGetter {
+        private interface StatGetter {
             int getStat();
         }
 
         // Interface for getting a player stat
         // Used for a lambda expression
-        public interface StatUpgrader {
+        private interface StatUpgrader {
             boolean upgradeStat();
         }
 
@@ -132,9 +159,6 @@ public class UpgradePanel {
         private StatUpgrader statUpgrader;
 
         private UpgradeUI(int x, int y, int width, int height, String upgradeName, int upgradeCost, StatGetter statGetter, StatUpgrader statUpgrader) {
-            this.x = x;
-            this.y = y;
-
             this.upgradeName = upgradeName;
             this.statGetter = statGetter;
             this.statUpgrader = statUpgrader;
@@ -150,10 +174,12 @@ public class UpgradePanel {
             costWidth = upgradeBarWidth*5 + upgradeBarMarginWidth*4 - nameWidth - marginWidth;      // accounts for the int rounding so everything lines up perfectly :)
             costHeight = nameHeight;
 
-            costButton = new Button(x + nameWidth + marginWidth, y, costWidth - 3, costHeight);
+            costButton = new Button(0, 0, costWidth - 3, costHeight);
             costButton.setText(String.valueOf(upgradeCost));
             costButton.setStrokeWeight(2);
             costButton.addListener(this);
+
+            this.updatePosition(x, y);
         }
 
         private void draw(PApplet d) {
@@ -190,6 +216,12 @@ public class UpgradePanel {
 
         private void mousePressed(int x, int y) {
             costButton.mousePressed(x, y);
+        }
+
+        private void updatePosition(int x, int y) {
+            this.x = x;
+            this.y = y;
+            costButton.setPosition(x + nameWidth + marginWidth, y);
         }
 
         // Implementing ButtonListener

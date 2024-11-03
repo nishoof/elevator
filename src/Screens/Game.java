@@ -272,16 +272,19 @@ public class Game implements Screen {
             return;
         }
 
+        // Upgrade Panel
+        boolean upgradePanelClicked = upgradePanel.mousePressed(mouseX, mouseY);
+        if (upgradePanelClicked) return;
+
         // If hint was clicked on, remove it
         if (hint != null && hint.contains(mouseX, mouseY)) {
             hint = null;
+            return;
         }
 
         for (Elevator elevator : elevators) {
             elevator.mousePressed(mouseX, mouseY);
         }
-
-        upgradePanel.mousePressed(mouseX, mouseY);
     }
 
     @Override
