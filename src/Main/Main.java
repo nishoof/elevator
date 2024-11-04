@@ -1,7 +1,5 @@
 package Main;
 
-import java.awt.Point;
-
 import java.util.ArrayList;
 
 import Elements.Button.Button;
@@ -40,7 +38,8 @@ public class Main extends PApplet implements ButtonListener {
     private Button returnToMenuButton;
 
     public Main() {
-        if (instance != null) throw new IllegalStateException("There can only be one instance of Main");
+        if (instance != null)
+            throw new IllegalStateException("There can only be one instance of Main");
         instance = this;
     }
 
@@ -77,7 +76,7 @@ public class Main extends PApplet implements ButtonListener {
         screens.add(null);
 
         // Menu Play Button
-        menuPlayButton = ((Menu)(screens.get(MENU))).getPlayButton();
+        menuPlayButton = ((Menu) (screens.get(MENU))).getPlayButton();
         menuPlayButton.addListener(this);
     }
 
@@ -91,9 +90,7 @@ public class Main extends PApplet implements ButtonListener {
 
     @Override
     public void mousePressed() {
-        Point mouse = getScaledMouse(this);
-
-        screens.get(currentScreen).mousePressed(mouse.x, mouse.y);
+        screens.get(currentScreen).mousePressed(rmouseX, rmouseY);
     }
 
     @Override
@@ -123,7 +120,7 @@ public class Main extends PApplet implements ButtonListener {
 
     public void startLevel(int level) {
         // Make the new game
-        int[][] waves = new int[][] {{3, 3000, 3000}, {5, 2500, 2500}, {10, 750, 1250}};
+        int[][] waves = new int[][] { { 3, 3000, 3000 }, { 5, 2500, 2500 }, { 10, 750, 1250 } };
         Game game;
         switch (level) {
             case 1:
@@ -155,49 +152,51 @@ public class Main extends PApplet implements ButtonListener {
         return instance;
     }
 
-    public static Point getScaledMouse(PApplet d) {
-        int scaledMouseX = (int)(1.0 * d.mouseX / d.width * WINDOW_WIDTH);
-        int scaledMouseY = (int)(1.0 * d.mouseY / d.height * WINDOW_HEIGHT);
-
-        return new Point(scaledMouseX, scaledMouseY);
-    }
-
     public static void drawGameTitle(PApplet d) {
-        d.push();          // Save original settings
+        d.push(); // Save original settings
 
         d.strokeWeight(0);
         d.textFont(DataHolder.getRegularFont());
         d.fill(0);
-        d.rect(280, 25, 400, 50);      // outer black rect
+        d.rect(280, 25, 400, 50); // outer black rect
         d.textSize(32);
         d.fill(255);
         d.textAlign(PConstants.LEFT, PConstants.CENTER);
         d.text("Elevator Simulator", 285, 50);
-        d.rect(645, 35, 20, 30);      // small white rectangle symbol
+        d.rect(645, 35, 20, 30); // small white rectangle symbol
 
-        d.pop();           // Restore original settings
+        d.pop(); // Restore original settings
     }
 
     /**
      * Blurs the existing drawing on the screen within the specified rectangle
      *
-     * @param d PApplet
-     * @param x x-coordinate of the top-left corner of the rectangle
-     * @param y y-coordinate of the top-left corner of the rectangle
-     * @param width width of the rectangle
-     * @param height height of the rectangle
+     * @param d            PApplet
+     * @param x            x-coordinate of the top-left corner of the rectangle
+     * @param y            y-coordinate of the top-left corner of the rectangle
+     * @param width        width of the rectangle
+     * @param height       height of the rectangle
      * @param blurStrength strength of the blur
      */
     public static void blur(PApplet d, int x, int y, int width, int height, float blurStrength) {
-        PGraphics g = d.createGraphics(width, height);
+
+        float deadSpaceX = d.width - d.rwidth * d.ratioScale;
+        float deadSpaceY = d.height - d.rheight * d.ratioScale;
+        int realX = (int) ((1.0 * x * d.ratioScale) + (deadSpaceX / 2));
+        int realY = (int) ((1.0 * y * d.ratioScale) + (deadSpaceY / 2));
+        int realWidth = (int) (width * d.ratioScale);
+        int realHeight = (int) (height * d.ratioScale);
+
+        PGraphics g = d.createGraphics(realWidth, realHeight);
         g.beginDraw();
         g.loadPixels();
 
         d.loadPixels();
         int graphicsIndex = 0;
-        for (int pixY = 0; pixY < height; pixY++) {
-            for (int pixX = 0; pixX < width; pixX++) {
-                g.pixels[graphicsIndex] = d.pixels[(y + pixY) * d.width + (x + pixX)];
+
+        for (int pixY = 0; pixY < realHeight; pixY++) {
+            for (int pixX = 0; pixX < realWidth; pixX++) {
+                g.pixels[graphicsIndex] = getPixel(d, realX + pixX, realY + pixY);
                 graphicsIndex++;
             }
         }
@@ -206,7 +205,15 @@ public class Main extends PApplet implements ButtonListener {
         g.updatePixels();
         g.filter(PConstants.BLUR, blurStrength);
         g.endDraw();
-        d.image(g, x, y);
+        d.image(g, x, y, width, height);
+    }
+
+    private static int getPixel(PApplet d, int x, int y) {
+        int i = y * d.pixelWidth + x;
+        if (i < 0 || i >= d.pixels.length) {
+            return -1;
+        }
+        return d.pixels[i];
     }
 
 }

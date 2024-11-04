@@ -11,10 +11,10 @@ public class UpgradePanel {
 
     private final int MARGIN = 20;
     private final int TITLE_TEXT_SIZE = 30;
-    private final int TITLE_TEXT_HEIGHT = 26;           // calculate using ascent + descent
+    private final int TITLE_TEXT_HEIGHT = 26; // calculate using ascent + descent
 
-    private int visibleX;           // x-coordinate when fully visible
-    private int hiddenX;            // x-coordinate when fully hidden
+    private int visibleX; // x-coordinate when fully visible
+    private int hiddenX; // x-coordinate when fully hidden
     private int y;
     private int width;
     private int height;
@@ -36,12 +36,17 @@ public class UpgradePanel {
         this.currX = hiddenX;
         this.targetX = hiddenX;
 
-        upgradeUIHeight = (height - TITLE_TEXT_HEIGHT - MARGIN*2) / 4 - MARGIN;
+        upgradeUIHeight = (height - TITLE_TEXT_HEIGHT - MARGIN * 2) / 4 - MARGIN;
         upgradeUIs = new UpgradeUI[4];
-        upgradeUIs[0] = new UpgradeUI(0, 0, width - MARGIN*2, upgradeUIHeight, "Capacity", playerStats.CAPACITY_UPGRADE_COST, playerStats::getCapacity, playerStats::upgradeCapacity);
-        upgradeUIs[1] = new UpgradeUI(0, 0, width - MARGIN*2, upgradeUIHeight, "Movement Speed", playerStats.MOVEMENT_SPEED_UPGRADE_COST, playerStats::getMovementSpeed, playerStats::upgradeMovementSpeed);
-        upgradeUIs[2] = new UpgradeUI(0, 0, width - MARGIN*2, upgradeUIHeight, "Door Speed", playerStats.DOOR_SPEED_UPGRADE_COST, playerStats::getDoorSpeed, playerStats::upgradeDoorSpeed);
-        upgradeUIs[3] = new UpgradeUI(0, 0, width - MARGIN*2, upgradeUIHeight, "People Speed", playerStats.PEOPLE_SPEED_UPGRADE_COST, playerStats::getPeopleSpeed, playerStats::upgradePeopleSpeed);
+        upgradeUIs[0] = new UpgradeUI(0, 0, width - MARGIN * 2, upgradeUIHeight, "Capacity",
+                playerStats.CAPACITY_UPGRADE_COST, playerStats::getCapacity, playerStats::upgradeCapacity);
+        upgradeUIs[1] = new UpgradeUI(0, 0, width - MARGIN * 2, upgradeUIHeight, "Movement Speed",
+                playerStats.MOVEMENT_SPEED_UPGRADE_COST, playerStats::getMovementSpeed,
+                playerStats::upgradeMovementSpeed);
+        upgradeUIs[2] = new UpgradeUI(0, 0, width - MARGIN * 2, upgradeUIHeight, "Door Speed",
+                playerStats.DOOR_SPEED_UPGRADE_COST, playerStats::getDoorSpeed, playerStats::upgradeDoorSpeed);
+        upgradeUIs[3] = new UpgradeUI(0, 0, width - MARGIN * 2, upgradeUIHeight, "People Speed",
+                playerStats.PEOPLE_SPEED_UPGRADE_COST, playerStats::getPeopleSpeed, playerStats::upgradePeopleSpeed);
         updateUpgradeUIPositions();
     }
 
@@ -51,13 +56,14 @@ public class UpgradePanel {
         updateUpgradeUIPositions();
 
         // If panel is off the screen, don't draw
-        if (currX == hiddenX) return;
+        if (currX == hiddenX)
+            return;
 
         // Save original settings
         d.push();
 
         // Blur area behind panel
-        Main.blur(d, currX, y, width, height, 4);
+        Main.blur(d, currX, y, width, height, 2.5F);
 
         // Draw Rect
         d.fill(250, 200F);
@@ -69,7 +75,7 @@ public class UpgradePanel {
         d.fill(0);
         d.textSize(TITLE_TEXT_SIZE);
         d.textAlign(PConstants.CENTER, PConstants.TOP);
-        d.text("Upgrades", currX + width/2, y + 20);
+        d.text("Upgrades", currX + width / 2, y + 20);
 
         // Draw Upgrades
         for (UpgradeUI ui : upgradeUIs) {
@@ -109,10 +115,14 @@ public class UpgradePanel {
     }
 
     private void updateUpgradeUIPositions() {
-        upgradeUIs[0].updatePosition(currX + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (upgradeUIHeight + MARGIN)*0);
-        upgradeUIs[1].updatePosition(currX + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (upgradeUIHeight + MARGIN)*1);
-        upgradeUIs[2].updatePosition(currX + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (upgradeUIHeight + MARGIN)*2);
-        upgradeUIs[3].updatePosition(currX + MARGIN, y + TITLE_TEXT_HEIGHT + MARGIN*2 + (upgradeUIHeight + MARGIN)*3);
+        upgradeUIs[0].updatePosition(currX + MARGIN,
+                y + TITLE_TEXT_HEIGHT + MARGIN * 2 + (upgradeUIHeight + MARGIN) * 0);
+        upgradeUIs[1].updatePosition(currX + MARGIN,
+                y + TITLE_TEXT_HEIGHT + MARGIN * 2 + (upgradeUIHeight + MARGIN) * 1);
+        upgradeUIs[2].updatePosition(currX + MARGIN,
+                y + TITLE_TEXT_HEIGHT + MARGIN * 2 + (upgradeUIHeight + MARGIN) * 2);
+        upgradeUIs[3].updatePosition(currX + MARGIN,
+                y + TITLE_TEXT_HEIGHT + MARGIN * 2 + (upgradeUIHeight + MARGIN) * 3);
     }
 
     private class UpgradeUI implements ButtonListener {
@@ -131,10 +141,11 @@ public class UpgradePanel {
         private static final double MARGIN_WIDTH_PER = 0.1;
         private static final double NAME_WIDTH_PER = 0.65;
         private static final double NAME_HEIGHT_PER = 0.5;
-        private static final double MIDDLE_GAP_HEIGHT_PER = 0.18;           // gap between bottom of button and top of progress bar
+        private static final double MIDDLE_GAP_HEIGHT_PER = 0.18; // gap between bottom of button and top of progress
+                                                                  // bar
         private static final double UPGRADE_BAR_MARGIN_WIDTH_PER = 0.05;
         private static final double UPGRADE_BAR_MARGIN_HEIGHT_PER = 0.1;
-        private static final double UPGRADE_BAR_WIDTH_PER = (1 - UPGRADE_BAR_MARGIN_WIDTH_PER*4) / 5;
+        private static final double UPGRADE_BAR_WIDTH_PER = (1 - UPGRADE_BAR_MARGIN_WIDTH_PER * 4) / 5;
         private static final double UPGRADE_BAR_HEIGHT_PER = (1 - NAME_HEIGHT_PER) / 4;
 
         private int x;
@@ -158,20 +169,21 @@ public class UpgradePanel {
         private StatGetter statGetter;
         private StatUpgrader statUpgrader;
 
-        private UpgradeUI(int x, int y, int width, int height, String upgradeName, int upgradeCost, StatGetter statGetter, StatUpgrader statUpgrader) {
+        private UpgradeUI(int x, int y, int width, int height, String upgradeName, int upgradeCost,
+                StatGetter statGetter, StatUpgrader statUpgrader) {
             this.upgradeName = upgradeName;
             this.statGetter = statGetter;
             this.statUpgrader = statUpgrader;
 
-            marginWidth = (int)(width * MARGIN_WIDTH_PER);
-            nameWidth = (int)(width * NAME_WIDTH_PER);
-            nameHeight = (int)(height * NAME_HEIGHT_PER);
-            middleGapHeight = (int)(height * MIDDLE_GAP_HEIGHT_PER);
-            upgradeBarMarginWidth = (int)(width * UPGRADE_BAR_MARGIN_WIDTH_PER);
-            upgradeBarMarginHeight = (int)(height * UPGRADE_BAR_MARGIN_HEIGHT_PER);
-            upgradeBarWidth = (int)(width * UPGRADE_BAR_WIDTH_PER);
-            upgradeBarHeight = (int)(height * UPGRADE_BAR_HEIGHT_PER);;
-            costWidth = upgradeBarWidth*5 + upgradeBarMarginWidth*4 - nameWidth - marginWidth;      // accounts for the int rounding so everything lines up perfectly :)
+            marginWidth = (int) (width * MARGIN_WIDTH_PER);
+            nameWidth = (int) (width * NAME_WIDTH_PER);
+            nameHeight = (int) (height * NAME_HEIGHT_PER);
+            middleGapHeight = (int) (height * MIDDLE_GAP_HEIGHT_PER);
+            upgradeBarMarginWidth = (int) (width * UPGRADE_BAR_MARGIN_WIDTH_PER);
+            upgradeBarMarginHeight = (int) (height * UPGRADE_BAR_MARGIN_HEIGHT_PER);
+            upgradeBarWidth = (int) (width * UPGRADE_BAR_WIDTH_PER);
+            upgradeBarHeight = (int) (height * UPGRADE_BAR_HEIGHT_PER);
+            costWidth = upgradeBarWidth * 5 + upgradeBarMarginWidth * 4 - nameWidth - marginWidth;
             costHeight = nameHeight;
 
             costButton = new Button(0, 0, costWidth - 3, costHeight);
@@ -183,7 +195,7 @@ public class UpgradePanel {
         }
 
         private void draw(PApplet d) {
-            d.push();          // Save original settings
+            d.push(); // Save original settings
 
             // Name
             d.fill(0);
@@ -203,7 +215,7 @@ public class UpgradePanel {
             for (int row = 0; row < 2; row++) {
                 rectX = x;
                 for (int col = 0; col < 5; col++) {
-                    int rectNum = row*5 + col;
+                    int rectNum = row * 5 + col;
                     d.fill(rectNum < stat ? 0 : 255);
                     d.rect(rectX, rectY, upgradeBarWidth, upgradeBarHeight);
                     rectX += upgradeBarWidth + upgradeBarMarginWidth;
@@ -211,7 +223,7 @@ public class UpgradePanel {
                 rectY += upgradeBarHeight + upgradeBarMarginHeight;
             }
 
-            d.pop();           // Restore original settings
+            d.pop(); // Restore original settings
         }
 
         private void mousePressed(int x, int y) {
@@ -226,7 +238,8 @@ public class UpgradePanel {
 
         // Implementing ButtonListener
         public void onClick(Button button) {
-            if (!button.equals(costButton)) return;
+            if (!button.equals(costButton))
+                return;
 
             statUpgrader.upgradeStat();
         }

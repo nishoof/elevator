@@ -26,15 +26,20 @@ public class Game implements Screen {
         private int maxDelay;
 
         /**
-         * Constructs a new Wave. A wave will spawn a numPeople amount of people with a delay in the range of [avgDelay - delayRange/2, avgDelay + delayRange/2)
+         * Constructs a new Wave. A wave will spawn a numPeople amount of people with a
+         * delay in the range of [avgDelay - delayRange/2, avgDelay + delayRange/2)
+         *
          * @param numPeople the number of people in this wave
-         * @param minDelay the minimum delay between spawning people, in miliseconds
-         * @param maxDelay the maximum delay between spawning people, in miliseconds
+         * @param minDelay  the minimum delay between spawning people, in miliseconds
+         * @param maxDelay  the maximum delay between spawning people, in miliseconds
          */
         private Wave(int numPeople, int minDelay, int maxDelay) {
-            if (numPeople < 1) throw new IllegalArgumentException("Must have at least 1 person in the wave");
-            if (minDelay < 0 || maxDelay < 0) throw new IllegalArgumentException("Delay cannot be negative");
-            if (maxDelay < minDelay) throw new IllegalArgumentException("Max delay cannot be less than min delay");
+            if (numPeople < 1)
+                throw new IllegalArgumentException("Must have at least 1 person in the wave");
+            if (minDelay < 0 || maxDelay < 0)
+                throw new IllegalArgumentException("Delay cannot be negative");
+            if (maxDelay < minDelay)
+                throw new IllegalArgumentException("Max delay cannot be less than min delay");
 
             this.numPeople = numPeople;
             this.minDelay = minDelay;
@@ -47,9 +52,10 @@ public class Game implements Screen {
                 newPerson();
 
                 // Delay
-                if (i == numPeople - 1) continue;           // don't delay on last person
+                if (i == numPeople - 1)
+                    continue; // don't delay on last person
                 try {
-                    Thread.sleep((long)(Math.random() * (maxDelay - minDelay) + minDelay));
+                    Thread.sleep((long) (Math.random() * (maxDelay - minDelay) + minDelay));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -58,7 +64,7 @@ public class Game implements Screen {
 
     }
 
-    private final char[] ELEVATOR_KEYS = {'q', 'w'};
+    private final char[] ELEVATOR_KEYS = { 'q', 'w' };
     private final int MAX_ELEVATORS = ELEVATOR_KEYS.length;
     private final int MAX_QUEUE_DISPLAYED = 10;
 
@@ -67,7 +73,7 @@ public class Game implements Screen {
     private ArrayList<Elevator> elevators;
     private HashMap<Character, Elevator> charToElevatorMap;
 
-    private List<Person> peopleInLine;          // synchronized list, use a synchronized block
+    private List<Person> peopleInLine; // synchronized list, use a synchronized block
     private int[][] waves;
     private long startTime;
     private long endTime;
@@ -83,18 +89,26 @@ public class Game implements Screen {
     private int lives;
     private boolean gameOver;
     private boolean won;
-    private boolean lastGameFrameDrawn;         // we draw one last frame after the game is over
+    private boolean lastGameFrameDrawn; // we draw one last frame after the game is over
     private Button returnToMenuButton;
 
     /**
      * Constructs a new Game
-     * @param numElevators the number of elevators in the game
-     * @param startingNumFloors the number of floors per elevator the game starts with
-     * @param waves the waves of people to spawn. Each wave is an array of 3 integers: [numPeople, minDelay, maxDelay]. numPeople is the number of people in this wave. The people will be spawned with a delay between minDelay (inclusive) and maxDelay (exclusive).
+     *
+     * @param numElevators      the number of elevators in the game
+     * @param startingNumFloors the number of floors per elevator the game starts
+     *                          with
+     * @param waves             the waves of people to spawn. Each wave is an array
+     *                          of 3 integers: [numPeople, minDelay, maxDelay].
+     *                          numPeople is the number of people in this wave. The
+     *                          people will be spawned with a delay between minDelay
+     *                          (inclusive) and maxDelay (exclusive).
      */
     public Game(int numElevators, int startingNumFloors, int[][] waves) {
-        if (numElevators < 1) throw new IllegalArgumentException("Must have at least 1 elevator");
-        if (numElevators > ELEVATOR_KEYS.length) throw new IllegalArgumentException("Cannot have more than " + ELEVATOR_KEYS.length + " elevators");
+        if (numElevators < 1)
+            throw new IllegalArgumentException("Must have at least 1 elevator");
+        if (numElevators > ELEVATOR_KEYS.length)
+            throw new IllegalArgumentException("Cannot have more than " + ELEVATOR_KEYS.length + " elevators");
 
         // Player Stats
         playerStats = new PlayerStats();
@@ -136,7 +150,8 @@ public class Game implements Screen {
 
     @Override
     public void draw(PApplet d) {
-        if (startTime == 0) throw new IllegalStateException("Tried to draw the game screen before starting the game");
+        if (startTime == 0)
+            throw new IllegalStateException("Tried to draw the game screen before starting the game");
 
         // Draw game over screen
         if (gameOver) {
@@ -152,9 +167,11 @@ public class Game implements Screen {
         if (doneSpawningPeople && peopleInLine.size() == 0) {
             boolean elevatorsEmpty = true;
             for (Elevator elevator : elevators) {
-                if (elevator.getPeopleInElevator().size() != 0) elevatorsEmpty = false;
+                if (elevator.getPeopleInElevator().size() != 0)
+                    elevatorsEmpty = false;
             }
-            if (elevatorsEmpty) gameOver(true);
+            if (elevatorsEmpty)
+                gameOver(true);
         }
 
         d.background(255);
@@ -163,12 +180,12 @@ public class Game implements Screen {
         d.strokeWeight(0);
         d.textFont(DataHolder.getRegularFont());
         d.fill(0);
-        d.rect(15, 15, 400, 50);      // outer black rect
+        d.rect(15, 15, 400, 50); // outer black rect
         d.textSize(32);
         d.fill(255);
         d.textAlign(PConstants.LEFT, PConstants.CENTER);
         d.text("Elevator Simulator", 20, 40);
-        d.rect(380, 25, 20, 30);      // small white rectangle symbol
+        d.rect(380, 25, 20, 30); // small white rectangle symbol
 
         // Queue
         d.fill(0);
@@ -186,7 +203,8 @@ public class Game implements Screen {
                 peopleInLine.get(i).draw(d, 20, 130 + i * 24);
             }
         }
-        if (numPeopleNotDisplayed > 0) d.text(numPeopleNotDisplayed + " more...", 20, 130 + numPeopleToDisplay * 24);
+        if (numPeopleNotDisplayed > 0)
+            d.text(numPeopleNotDisplayed + " more...", 20, 130 + numPeopleToDisplay * 24);
 
         // Points
         d.textAlign(PConstants.LEFT, PConstants.CENTER);
@@ -214,15 +232,17 @@ public class Game implements Screen {
 
         // Lives
         for (int i = 0; i < lives; i++) {
-            d.image(heartImg, Main.WINDOW_WIDTH - 80 - i*60, Main.WINDOW_HEIGHT - 80);
+            d.image(heartImg, Main.WINDOW_WIDTH - 80 - i * 60, Main.WINDOW_HEIGHT - 80);
         }
 
         // Upgrade Panel
         upgradePanel.draw(d);
 
         // Last Game Frame Drawn
-        // Basically, once the game is over, we draw one last frame of the game, then draw the game over screen
-        // This is so that the player can see the last state of the game before it ends (with 0 hearts and the person leaving the queue)
+        // Basically, once the game is over, we draw one last frame of the game, then
+        // draw the game over screen
+        // This is so that the player can see the last state of the game before it ends
+        // (with 0 hearts and the person leaving the queue)
         if (gameOver) {
             lastGameFrameDrawn = true;
             d.rectMode(PConstants.CORNER);
@@ -238,16 +258,16 @@ public class Game implements Screen {
 
         if (won) {
             d.fill(0, 255, 0);
-            d.text("Level Complete!", Main.WINDOW_WIDTH/2, Main.WINDOW_HEIGHT/2 - 70);
+            d.text("Level Complete!", Main.WINDOW_WIDTH / 2, Main.WINDOW_HEIGHT / 2 - 70);
         } else {
             d.fill(255, 0, 0);
-            d.text("Game Over", Main.WINDOW_WIDTH/2, Main.WINDOW_HEIGHT/2 - 70);
+            d.text("Game Over", Main.WINDOW_WIDTH / 2, Main.WINDOW_HEIGHT / 2 - 70);
         }
 
         String time = getTimeStr(endTime, true);
         d.fill(0);
         d.textSize(30);
-        d.text(time, Main.WINDOW_WIDTH/2, Main.WINDOW_HEIGHT/2 - 20);
+        d.text(time, Main.WINDOW_WIDTH / 2, Main.WINDOW_HEIGHT / 2 - 20);
 
         returnToMenuButton.draw(d);
     }
@@ -274,7 +294,8 @@ public class Game implements Screen {
 
         // Upgrade Panel
         boolean upgradePanelClicked = upgradePanel.mousePressed(mouseX, mouseY);
-        if (upgradePanelClicked) return;
+        if (upgradePanelClicked)
+            return;
 
         // If hint was clicked on, remove it
         if (hint != null && hint.contains(mouseX, mouseY)) {
@@ -289,20 +310,23 @@ public class Game implements Screen {
 
     @Override
     public void keyPressed(char key) {
-        if (gameOver) return;
+        if (gameOver)
+            return;
 
-        // Make the key lowercase to make it work even if the user did a capital for some reason
+        // Make the key lowercase to make it work even if the user did a capital for
+        // some reason
         key = Character.toLowerCase(key);
 
-        if (key >= 'a' && key <= 'z') {                   // keyIsALetter
+        if (key >= 'a' && key <= 'z') { // keyIsALetter
             if (key == 'b') {
                 upgradePanel.toggleVisible();
             } else {
                 selectElevator(key);
             }
-        } else if (key >= '1' && key <= '9') {            // keyIsANumber
+        } else if (key >= '1' && key <= '9') { // keyIsANumber
             // If there is no elevator selected already, then there's nothing we can do
-            if (selectedElevator == null) return;
+            if (selectedElevator == null)
+                return;
 
             // Otherwise, tell the elevator to go to this floor
             selectedElevator.addFloorToQueue(key - '0');
@@ -318,26 +342,30 @@ public class Game implements Screen {
         Elevator elevator = charToElevatorMap.get(key);
 
         // Ignore keys that aren't paired to an elevator
-        if (elevator == null) return;
+        if (elevator == null)
+            return;
 
         // Select the elevator
         if (selectedElevator == elevator) {
             selectedElevator.setHighlighted(false);
             selectedElevator = null;
         } else {
-            if (selectedElevator != null) selectedElevator.setHighlighted(false);
+            if (selectedElevator != null)
+                selectedElevator.setHighlighted(false);
             selectedElevator = elevator;
             selectedElevator.setHighlighted(true);
         }
     }
 
     public void rewardPoints() {
-        if (gameOver) return;
+        if (gameOver)
+            return;
 
         playerStats.addCreditsAndPoints();
 
         if (!buyMenuHintShown && playerStats.getCredits() >= 10) {
-            hint = new Hint(500, Main.WINDOW_HEIGHT + 50, Main.WINDOW_HEIGHT - 90, "Press 'b' to open the upgrades menu");
+            hint = new Hint(500, Main.WINDOW_HEIGHT + 50, Main.WINDOW_HEIGHT - 90,
+                    "Press 'b' to open the upgrades menu");
             buyMenuHintShown = true;
         }
     }
@@ -348,10 +376,10 @@ public class Game implements Screen {
 
         int currentFloor, desiredFloor;
 
-        currentFloor = (int)(Math.random() * (maxFloor - minFloor + 1) + minFloor);
+        currentFloor = (int) (Math.random() * (maxFloor - minFloor + 1) + minFloor);
 
         do {
-            desiredFloor = (int)(Math.random() * (maxFloor - minFloor + 1) + minFloor);
+            desiredFloor = (int) (Math.random() * (maxFloor - minFloor + 1) + minFloor);
         } while (desiredFloor == currentFloor);
 
         Person person = new Person(currentFloor, desiredFloor, 20_000, this::onPersonTimeOver);
@@ -359,9 +387,11 @@ public class Game implements Screen {
         peopleInLine.add(person);
     }
 
-    // Called when a person has waited too long. Removes the person from the queue and decrements the player's lives
+    // Called when a person has waited too long. Removes the person from the queue
+    // and decrements the player's lives
     private void onPersonTimeOver(Person person) {
-        if (gameOver) return;
+        if (gameOver)
+            return;
 
         System.out.println("Person " + person + " waited too long");
         peopleInLine.remove(person);
@@ -398,7 +428,8 @@ public class Game implements Screen {
         int numElevators = elevators.size();
 
         // Make sure we aren't exceeding the maximum number of elevators
-        if (numElevators >= MAX_ELEVATORS) throw new IllegalStateException("Cannot add more elevators");
+        if (numElevators >= MAX_ELEVATORS)
+            throw new IllegalStateException("Cannot add more elevators");
 
         // Create the elevator and add it to the list of elevators and the map
         Elevator elevator = new Elevator(x, y, width, height, currentNumFloors, this, playerStats);
@@ -429,24 +460,30 @@ public class Game implements Screen {
     }
 
     /**
-     * Transfers people from the line to the provided list if they are on the provided floor
-     * @param list the list to transfer the people to
-     * @param floor the floor to check for
+     * Transfers people from the line to the provided list if they are on the
+     * provided floor
+     *
+     * @param list      the list to transfer the people to
+     * @param floor     the floor to check for
      * @param maxPeople the maximum number of people to transfer
      */
     public void transferPeopleFromLine(List<Person> list, int floor, int maxPeople) {
-        if (list == null) throw new IllegalArgumentException("List cannot be null");
-        if (maxPeople < 0) throw new IllegalArgumentException("Max people cannot be negative");
+        if (list == null)
+            throw new IllegalArgumentException("List cannot be null");
+        if (maxPeople < 0)
+            throw new IllegalArgumentException("Max people cannot be negative");
 
-        if (maxPeople == 0) return;
+        if (maxPeople == 0)
+            return;
 
         synchronized (peopleInLine) {
-            int n = 0;          // number of people transferred
+            int n = 0; // number of people transferred
 
             for (int i = 0; i < peopleInLine.size(); i++) {
                 Person person = peopleInLine.get(i);
 
-                if (person.getCurrentFloor() != floor) continue;
+                if (person.getCurrentFloor() != floor)
+                    continue;
 
                 person.cancelTimer();
                 peopleInLine.remove(i);
@@ -455,7 +492,8 @@ public class Game implements Screen {
                 i--;
                 n++;
 
-                if (n == maxPeople) break;
+                if (n == maxPeople)
+                    break;
             }
         }
     }

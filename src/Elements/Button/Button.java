@@ -24,9 +24,10 @@ public class Button {
 
     /**
      * Constructs a new Button
-     * @param x x-coordinate of the top-left corner of this Button
-     * @param y y-coordinate of the top-left corner of this Button
-     * @param width width of this Button
+     *
+     * @param x      x-coordinate of the top-left corner of this Button
+     * @param y      y-coordinate of the top-left corner of this Button
+     * @param width  width of this Button
      * @param height height of this Button
      */
     public Button(int x, int y, int width, int height) {
@@ -46,11 +47,10 @@ public class Button {
     }
 
     public void draw(PApplet d) {
-        d.push();          // Save original settings
+        d.push(); // Save original settings
 
         // Update button hovered
-        Point mouse = Main.getScaledMouse(d);
-        boolean hovered = contains(mouse.x, mouse.y);
+        boolean hovered = contains(d.rmouseX, d.rmouseY);
 
         // Rect representing the button
         d.fill(hovered ? hoveredColor : fillColor);
@@ -68,10 +68,10 @@ public class Button {
             d.fill(0);
             d.textAlign(PApplet.CENTER, PApplet.CENTER);
             d.textSize(textSize);
-            d.text(text, x + width/2, y + height/2);
+            d.text(text, x + width / 2, y + height / 2);
         }
 
-        d.pop();           // Restore original settings
+        d.pop(); // Restore original settings
     }
 
     public void mousePressed(int x, int y) {
@@ -81,12 +81,12 @@ public class Button {
     }
 
     public int getX() {
-		return x;
-	}
+        return x;
+    }
 
-	public int getY() {
-		return y;
-	}
+    public int getY() {
+        return y;
+    }
 
     public void setX(int x) {
         this.x = x;
@@ -101,21 +101,21 @@ public class Button {
         setY(y);
     }
 
-	public int getWidth() {
-		return width;
-	}
+    public int getWidth() {
+        return width;
+    }
 
-	public int getHeight() {
-		return height;
-	}
+    public int getHeight() {
+        return height;
+    }
 
-	public void setCornerRounding(int cornerRounding) {
-		this.cornerRounding = cornerRounding;
-	}
+    public void setCornerRounding(int cornerRounding) {
+        this.cornerRounding = cornerRounding;
+    }
 
-	public void setStrokeWeight(int strokeWeight) {
-		this.strokeWeight = strokeWeight;
-	}
+    public void setStrokeWeight(int strokeWeight) {
+        this.strokeWeight = strokeWeight;
+    }
 
     public void setStroke(int stroke) {
         this.stroke = stroke;
@@ -125,17 +125,17 @@ public class Button {
         this.stroke = Main.getInstance().color(r, g, b);
     }
 
-	public void setFillColor(int fillColor) {
-		this.fillColor = fillColor;
-	}
+    public void setFillColor(int fillColor) {
+        this.fillColor = fillColor;
+    }
 
     public void setFillColor(int r, int g, int b) {
         this.fillColor = Main.getInstance().color(r, g, b);
     }
 
-	public void setHoveredColor(int hoveredColor) {
-		this.hoveredColor = hoveredColor;
-	}
+    public void setHoveredColor(int hoveredColor) {
+        this.hoveredColor = hoveredColor;
+    }
 
     public void setHoveredColor(int r, int g, int b) {
         this.hoveredColor = Main.getInstance().color(r, g, b);
@@ -153,11 +153,15 @@ public class Button {
         listeners.add(listener);
     }
 
-	protected boolean contains(int x, int y) {
-        if (x < this.x) return false;
-        if (x > this.x + width) return false;
-        if (y < this.y) return false;
-        if (y > this.y + height) return false;
+    protected boolean contains(int x, int y) {
+        if (x < this.x)
+            return false;
+        if (x > this.x + width)
+            return false;
+        if (y < this.y)
+            return false;
+        if (y > this.y + height)
+            return false;
 
         return true;
     }
