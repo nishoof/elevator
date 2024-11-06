@@ -179,7 +179,6 @@ public class Main extends PApplet implements ButtonListener {
      * @param blurStrength strength of the blur
      */
     public static void blur(PApplet d, int x, int y, int width, int height, float blurStrength) {
-
         float deadSpaceX = d.width - d.rwidth * d.ratioScale;
         float deadSpaceY = d.height - d.rheight * d.ratioScale;
         int realX = (int) ((1.0 * x * d.ratioScale) + (deadSpaceX / 2));
