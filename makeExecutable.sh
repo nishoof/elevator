@@ -8,7 +8,7 @@ mkdir -p bin
 mkdir -p dist
 
 echo "Compiling Java files..."
-javac -cp "lib/core.jar:." -d bin src/Main/*.java src/Screens/*.java src/Elements/*.java src/Elements/Button/*.java
+javac --release 16 -cp "lib/core.jar:." -d bin src/Main/*.java src/Screens/*.java src/Elements/*.java src/Elements/Button/*.java
 
 echo "Packaging JAR file..."
 mkdir -p temp_processing_classes
