@@ -393,7 +393,6 @@ public class Game implements Screen {
         if (gameOver)
             return;
 
-        System.out.println("Person " + person + " waited too long");
         peopleInLine.remove(person);
 
         lives--;
@@ -404,7 +403,6 @@ public class Game implements Screen {
 
     // Ends the game. Called when the player wins or loses.
     private void gameOver(boolean won) {
-        System.out.println("Game Over");
         endTime = System.currentTimeMillis() - startTime;
         this.won = won;
         gameOver = true;
