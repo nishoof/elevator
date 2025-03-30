@@ -9,7 +9,7 @@ import Elements.Elevator;
 import Elements.Hint;
 import Elements.Person;
 import Elements.Button.Button;
-import Elements.UpgradePanel;
+import Elements.UpgradeMenu;
 import Main.DataHolder;
 import Main.Main;
 import Main.PlayerStats;
@@ -80,7 +80,7 @@ public class Game implements Screen {
     private boolean doneSpawningPeople;
 
     private PlayerStats playerStats;
-    private UpgradePanel upgradePanel;
+    private UpgradeMenu upgradeMenu;
 
     private Hint hint;
     private boolean buyMenuHintShown;
@@ -133,7 +133,7 @@ public class Game implements Screen {
         startTime = 0;
 
         // Upgrade Panel
-        upgradePanel = new UpgradePanel(620, 40, 300, 460, playerStats);
+        upgradeMenu = new UpgradeMenu(620, 40, 300, 460, playerStats);
 
         // Hints
         hint = null;
@@ -236,7 +236,7 @@ public class Game implements Screen {
         }
 
         // Upgrade Panel
-        upgradePanel.draw(d);
+        upgradeMenu.draw(d);
 
         // Last Game Frame Drawn
         // Basically, once the game is over, we draw one last frame of the game, then
@@ -293,8 +293,8 @@ public class Game implements Screen {
         }
 
         // Upgrade Panel
-        boolean upgradePanelClicked = upgradePanel.mousePressed(mouseX, mouseY);
-        if (upgradePanelClicked)
+        boolean upgradeMenuClicked = upgradeMenu.mousePressed(mouseX, mouseY);
+        if (upgradeMenuClicked)
             return;
 
         // If hint was clicked on, remove it
@@ -319,7 +319,7 @@ public class Game implements Screen {
 
         if (key >= 'a' && key <= 'z') { // keyIsALetter
             if (key == 'b') {
-                upgradePanel.toggleVisible();
+                upgradeMenu.toggleVisible();
             } else {
                 selectElevator(key);
             }
@@ -393,7 +393,6 @@ public class Game implements Screen {
         if (gameOver)
             return;
 
-        System.out.println("Person " + person + " waited too long");
         peopleInLine.remove(person);
 
         lives--;
@@ -404,7 +403,6 @@ public class Game implements Screen {
 
     // Ends the game. Called when the player wins or loses.
     private void gameOver(boolean won) {
-        System.out.println("Game Over");
         endTime = System.currentTimeMillis() - startTime;
         this.won = won;
         gameOver = true;

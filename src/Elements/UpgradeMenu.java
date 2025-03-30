@@ -1,13 +1,13 @@
 package Elements;
 
 import Elements.Button.Button;
-import Elements.Button.ButtonListener;
+import Elements.Button.Button.ButtonListener;
 import Main.Main;
 import Main.PlayerStats;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
-public class UpgradePanel {
+public class UpgradeMenu {
 
     private final int MARGIN = 20;
     private final int TITLE_TEXT_SIZE = 30;
@@ -26,7 +26,7 @@ public class UpgradePanel {
     private UpgradeUI[] upgradeUIs;
     private int upgradeUIHeight;
 
-    public UpgradePanel(int x, int y, int width, int height, PlayerStats playerStats) {
+    public UpgradeMenu(int x, int y, int width, int height, PlayerStats playerStats) {
         this.visibleX = x;
         this.hiddenX = Main.WINDOW_WIDTH + 10;
         this.y = y;
