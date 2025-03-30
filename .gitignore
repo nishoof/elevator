@@ -1,5 +1,6 @@
-# Ignore compiled binary files (such as .class files)
+# Ignore build outputs
 bin/
+dist/
 
 # Ignore Visual Studio Code settings folder
 .vscode

@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Main-Class: Main.Main
+Implementation-Title: Elevator Simulator
+Implementation-Version: 1.0
+Implementation-Vendor: nishoof
+Created-By: makeExecutable.sh
+Built-By: nishoof
