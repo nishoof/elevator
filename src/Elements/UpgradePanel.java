@@ -1,7 +1,7 @@
 package Elements;
 
 import Elements.Button.Button;
-import Elements.Button.ButtonListener;
+import Elements.Button.Button.ButtonListener;
 import Main.Main;
 import Main.PlayerStats;
 import processing.core.PApplet;

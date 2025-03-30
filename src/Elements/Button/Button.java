@@ -6,6 +6,11 @@ import processing.core.PApplet;
 import Main.Main;
 
 public class Button {
+    // ButtonListener interface
+    // This interface is used to listen for button click events
+    public interface ButtonListener {
+        public void onClick(Button button);
+    }
 
     private int x;
     private int y;
