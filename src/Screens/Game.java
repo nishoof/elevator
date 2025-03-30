@@ -9,7 +9,7 @@ import Elements.Elevator;
 import Elements.Hint;
 import Elements.Person;
 import Elements.Button.Button;
-import Elements.UpgradePanel;
+import Elements.UpgradeMenu;
 import Main.DataHolder;
 import Main.Main;
 import Main.PlayerStats;
@@ -80,7 +80,7 @@ public class Game implements Screen {
     private boolean doneSpawningPeople;
 
     private PlayerStats playerStats;
-    private UpgradePanel upgradePanel;
+    private UpgradeMenu upgradePanel;
 
     private Hint hint;
     private boolean buyMenuHintShown;
@@ -133,7 +133,7 @@ public class Game implements Screen {
         startTime = 0;
 
         // Upgrade Panel
-        upgradePanel = new UpgradePanel(620, 40, 300, 460, playerStats);
+        upgradePanel = new UpgradeMenu(620, 40, 300, 460, playerStats);
 
         // Hints
         hint = null;
