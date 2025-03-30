@@ -15,7 +15,7 @@ public class DataHolder {
     public static void init(PApplet d) {
         heartImg = d.loadImage("images/heart.png");
         heartImg.resize(50, 50);
-        
+
         regularFont = d.createFont("fonts/GeistMono-Regular.otf", 128);
         mediumFont = d.createFont("fonts/GeistMono-Medium.otf", 128);
         d.textMode(PConstants.MODEL);

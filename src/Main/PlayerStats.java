@@ -21,9 +21,9 @@ public class PlayerStats {
     private int doorSpeed = 1;
     private int peopleSpeed = 1;
 
-	public int getCredits() {
-		return credits;
-	}
+    public int getCredits() {
+        return credits;
+    }
 
     public int getPoints() {
         return points;
@@ -42,7 +42,8 @@ public class PlayerStats {
     }
 
     /**
-     * Returns the time in seconds for the delay between elevator stop -> door open or door open -> elevator move
+     * Returns the time in seconds for the delay between elevator stop -> door open
+     * or door open -> elevator move
      */
     public double getSecDoorsDelay() {
         return 0.5 - (0.045 * movementSpeed);
@@ -53,7 +54,8 @@ public class PlayerStats {
     }
 
     /**
-     * Returns the time in seconds it takes for the door to open/close (animation time)
+     * Returns the time in seconds it takes for the door to open/close (animation
+     * time)
      */
     public double getSecDoorsToOpen() {
         return 0.25 - (0.02 * doorSpeed);
@@ -70,42 +72,50 @@ public class PlayerStats {
         return 1.5 - (0.125 * peopleSpeed);
     }
 
-	public void addCreditsAndPoints() {
+    public void addCreditsAndPoints() {
         credits++;
         points++;
     }
 
     public boolean upgradeCapacity() {
-        if (capacity >= MAX_STAT) return false;
+        if (capacity >= MAX_STAT)
+            return false;
         boolean enoughCredits = spendCredits(CAPACITY_UPGRADE_COST);
-        if (!enoughCredits) return false;
+        if (!enoughCredits)
+            return false;
         capacity++;
         notifyUpgradeEventListeners();
         return true;
     }
 
     public boolean upgradeMovementSpeed() {
-        if (movementSpeed >= MAX_STAT) return false;
+        if (movementSpeed >= MAX_STAT)
+            return false;
         boolean enoughCredits = spendCredits(MOVEMENT_SPEED_UPGRADE_COST);
-        if (!enoughCredits) return false;
+        if (!enoughCredits)
+            return false;
         movementSpeed++;
         notifyUpgradeEventListeners();
         return true;
     }
 
     public boolean upgradeDoorSpeed() {
-        if (doorSpeed >= MAX_STAT) return false;
+        if (doorSpeed >= MAX_STAT)
+            return false;
         boolean enoughCredits = spendCredits(DOOR_SPEED_UPGRADE_COST);
-        if (!enoughCredits) return false;
+        if (!enoughCredits)
+            return false;
         doorSpeed++;
         notifyUpgradeEventListeners();
         return true;
     }
 
     public boolean upgradePeopleSpeed() {
-        if (peopleSpeed >= MAX_STAT) return false;
+        if (peopleSpeed >= MAX_STAT)
+            return false;
         boolean enoughCredits = spendCredits(PEOPLE_SPEED_UPGRADE_COST);
-        if (!enoughCredits) return false;
+        if (!enoughCredits)
+            return false;
         peopleSpeed++;
         notifyUpgradeEventListeners();
         return true;
@@ -128,10 +138,12 @@ public class PlayerStats {
     }
 
     /**
-     * Spends the given amount of credits. Returns true if the credits were spent successfully, false otherwise (not enough credits to spend).
+     * Spends the given amount of credits. Returns true if the credits were spent
+     * successfully, false otherwise (not enough credits to spend).
      */
     private boolean spendCredits(int amount) {
-        if (amount > credits) return false;
+        if (amount > credits)
+            return false;
         credits -= amount;
         return true;
     }

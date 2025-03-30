@@ -9,7 +9,7 @@ public class Hint {
 
     private final int GREATEST_WIDTH = 350;
     private final int MAX_CHARS = 108;
-    
+
     private int textSize;
     private PFont font;
     private String text;
@@ -18,8 +18,7 @@ public class Hint {
     private int y;
     private int endingY;
     private int width;
-    private int height;         // height of box. text won't be drawn within 3 px of box
-
+    private int height; // height of box. text won't be drawn within 3 px of box
 
     public Hint(int x, int y, String text) {
         // Position
@@ -55,7 +54,7 @@ public class Hint {
     }
 
     public void draw(PApplet d) {
-        d.push();          // Save original settings
+        d.push(); // Save original settings
 
         updateY();
 
@@ -74,15 +73,19 @@ public class Hint {
         d.rectMode(PConstants.CENTER);
         d.text(text, x, y, width, height);
 
-        d.pop();           // Restore original settings
+        d.pop(); // Restore original settings
     }
 
     public boolean contains(int x, int y) {
-        if (x < this.x - width/2) return false;
-        if (x > this.x + width/2) return false;
-        if (y < this.y - height/2) return false;
-        if (y > this.y + height/2) return false;
-        
+        if (x < this.x - width / 2)
+            return false;
+        if (x > this.x + width / 2)
+            return false;
+        if (y < this.y - height / 2)
+            return false;
+        if (y > this.y + height / 2)
+            return false;
+
         return true;
     }
 

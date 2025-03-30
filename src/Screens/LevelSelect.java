@@ -9,7 +9,7 @@ import Main.DataHolder;
 import Main.Main;
 
 public class LevelSelect implements Screen, ButtonListener {
-    
+
     private final int MARGIN = 50;
 
     private ArrayList<Button> levelButtons;
@@ -18,17 +18,17 @@ public class LevelSelect implements Screen, ButtonListener {
     private Button level3Button;
 
     public LevelSelect() {
-        int bWidth = (int)((Main.WINDOW_WIDTH - MARGIN*4)/3.0);
+        int bWidth = (int) ((Main.WINDOW_WIDTH - MARGIN * 4) / 3.0);
         int bHeight = 80;
         int bTextSize = 32;
 
-        level1Button = new Button(MARGIN, Main.WINDOW_HEIGHT/2 - bHeight/2, bWidth, bHeight);
+        level1Button = new Button(MARGIN, Main.WINDOW_HEIGHT / 2 - bHeight / 2, bWidth, bHeight);
         level1Button.setText("Easy");
 
-        level2Button = new Button(MARGIN*2 + bWidth, Main.WINDOW_HEIGHT/2 - bHeight/2, bWidth, bHeight);
+        level2Button = new Button(MARGIN * 2 + bWidth, Main.WINDOW_HEIGHT / 2 - bHeight / 2, bWidth, bHeight);
         level2Button.setText("Medium");
 
-        level3Button = new Button(MARGIN*3 + bWidth*2, Main.WINDOW_HEIGHT/2 - bHeight/2, bWidth, bHeight);
+        level3Button = new Button(MARGIN * 3 + bWidth * 2, Main.WINDOW_HEIGHT / 2 - bHeight / 2, bWidth, bHeight);
         level3Button.setText("Hard");
 
         levelButtons = new ArrayList<>();
@@ -44,7 +44,7 @@ public class LevelSelect implements Screen, ButtonListener {
 
     @Override
     public void draw(PApplet d) {
-        d.push();           // Save original settings
+        d.push(); // Save original settings
 
         d.background(255);
 
@@ -63,7 +63,7 @@ public class LevelSelect implements Screen, ButtonListener {
             b.draw(d);
         }
 
-        d.pop();            // Restore original settings
+        d.pop(); // Restore original settings
     }
 
     @Override
