@@ -10,7 +10,6 @@ import Screens.Menu;
 import Screens.Screen;
 import processing.core.PApplet;
 import processing.core.PConstants;
-import processing.core.PGraphics;
 
 public class Main extends PApplet implements ButtonListener {
 
@@ -166,53 +165,6 @@ public class Main extends PApplet implements ButtonListener {
         d.rect(645, 35, 20, 30); // small white rectangle symbol
 
         d.pop(); // Restore original settings
-    }
-
-    /**
-     * Blurs the existing drawing on the screen within the specified rectangle
-     *
-     * @param d            PApplet
-     * @param x            x-coordinate of the top-left corner of the rectangle
-     * @param y            y-coordinate of the top-left corner of the rectangle
-     * @param width        width of the rectangle
-     * @param height       height of the rectangle
-     * @param blurStrength strength of the blur
-     */
-    public static void blur(PApplet d, int x, int y, int width, int height, float blurStrength) {
-        float deadSpaceX = d.width - d.rwidth * d.ratioScale;
-        float deadSpaceY = d.height - d.rheight * d.ratioScale;
-        int realX = (int) ((1.0 * x * d.ratioScale) + (deadSpaceX / 2));
-        int realY = (int) ((1.0 * y * d.ratioScale) + (deadSpaceY / 2));
-        int realWidth = (int) (width * d.ratioScale);
-        int realHeight = (int) (height * d.ratioScale);
-
-        PGraphics g = d.createGraphics(realWidth, realHeight);
-        g.beginDraw();
-        g.loadPixels();
-
-        d.loadPixels();
-        int graphicsIndex = 0;
-
-        for (int pixY = 0; pixY < realHeight; pixY++) {
-            for (int pixX = 0; pixX < realWidth; pixX++) {
-                g.pixels[graphicsIndex] = getPixel(d, realX + pixX, realY + pixY);
-                graphicsIndex++;
-            }
-        }
-        d.updatePixels();
-
-        g.updatePixels();
-        g.filter(PConstants.BLUR, blurStrength);
-        g.endDraw();
-        d.image(g, x, y, width, height);
-    }
-
-    private static int getPixel(PApplet d, int x, int y) {
-        int i = y * d.pixelWidth + x;
-        if (i < 0 || i >= d.pixels.length) {
-            return -1;
-        }
-        return d.pixels[i];
     }
 
 }

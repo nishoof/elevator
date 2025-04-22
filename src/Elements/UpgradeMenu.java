@@ -62,11 +62,8 @@ public class UpgradeMenu {
         // Save original settings
         d.push();
 
-        // Blur area behind panel
-        Main.blur(d, currX, y, width, height, 2.5F);
-
         // Draw Rect
-        d.fill(250, 200F);
+        d.fill(250, 230F);
         d.stroke(0);
         d.strokeWeight(3);
         d.rect(currX, y, width, height, 8);
